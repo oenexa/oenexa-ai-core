@@ -1,13 +1,25 @@
 package com.oenexa.application;
 
 import com.oenexa.domain.User;
+import com.oenexa.domain.UserRegistration;
 import org.springframework.stereotype.Service;
 
+import java.util.Objects;
+
+/**
+ * Enterprise Application Service for User Management.
+ * Why: Encapsulates user registration logic cleanly.
+ * How: Uses immutable UserRegistration record inputs and enforces validation.
+ */
 @Service
 public class UserService {
-    public User registerUser(String username, String email, String passwordHash) {
-        // TODO: add validation, password hashing, etc.
-        return new User(username, passwordHash, email);
+
+    public User registerUser(UserRegistration registration) {
+        Objects.requireNonNull(registration, "registration must not be null");
+        return new User(
+                registration.username(),
+                registration.passwordHash(),
+                registration.email()
+        );
     }
-    // Additional business use‑cases go here
 }

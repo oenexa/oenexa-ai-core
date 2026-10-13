@@ -4,6 +4,5 @@ include(
     "domain",
     "application",
     "infrastructure",
-    "api",
-    "ui"
+    "api"
 )

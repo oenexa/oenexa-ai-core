@@ -1,18 +1,30 @@
 plugins {
-    id("org.springframework.boot") version "3.2.0" apply false
-    id("io.spring.dependency-management") version "1.1.5" apply false
-    java
+    id("org.springframework.boot")
 }
 
-java {
-    sourceCompatibility = JavaVersion.VERSION_25
-    targetCompatibility = JavaVersion.VERSION_25
+springBoot {
+    mainClass.set("com.oenexa.api.OenexaAiEngineerApplication")
+}
+
+tasks.named<org.springframework.boot.gradle.tasks.bundling.BootJar>("bootJar") {
+    mainClass.set("com.oenexa.api.OenexaAiEngineerApplication")
 }
 
 dependencies {
+    implementation(project(":domain"))
     implementation(project(":application"))
-    implementation("org.springframework.boot:spring-boot-starter-webflux")
-    implementation("org.springframework.boot:spring-boot-starter-security")
-    implementation("org.springdoc:springdoc-openapi-webflux-ui:2.3.0")
+    implementation(project(":infrastructure"))
+    implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.boot:spring-boot-starter-validation")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+}
+
+tasks.named<JacocoReport>("jacocoTestReport") {
+    classDirectories.setFrom(
+        files(classDirectories.files.map {
+            fileTree(it) {
+                exclude("**/OenexaAiEngineerApplication.class")
+            }
+        })
+    )
 }

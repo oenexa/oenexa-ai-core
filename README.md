@@ -44,7 +44,7 @@ High‑level architecture is described in **[ARCHITECTURE.md](ARCHITECTURE.md)**
 Additional docs are generated as part of the build:
 - Swagger / OpenAPI UI available at `http://localhost:8080/swagger-ui.html`
 - Javadoc generated with `./gradlew javadoc`
-- Architecture diagrams (Mermaid) are included in the markdown files.
+- Architecture diagrams (Mermaid) are included in the Markdown files.
 
 ## License
 Apache‑2.0
