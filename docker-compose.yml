@@ -1,0 +1,123 @@
+version: '3.9'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: oenexa-postgres
+    environment:
+      POSTGRES_USER: oenexa
+      POSTGRES_PASSWORD: oenexa_secret
+      POSTGRES_DB: oenexa_db
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "oenexa"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - oenexa-net
+
+  redis:
+    image: redis:7-alpine
+    container_name: oenexa-redis
+    ports:
+      - "6379:6379"
+    networks:
+      - oenexa-net
+
+  zookeeper:
+    image: bitnami/zookeeper:latest
+    container_name: oenexa-zookeeper
+    environment:
+      - ALLOW_ANONYMOUS_LOGIN=yes
+    ports:
+      - "2181:2181"
+    networks:
+      - oenexa-net
+
+  kafka:
+    image: bitnami/kafka:latest
+    container_name: oenexa-kafka
+    depends_on:
+      - zookeeper
+    environment:
+      - KAFKA_BROKER_ID=1
+      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
+      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092
+      - KAFKA_LISTENERS=PLAINTEXT://0.0.0.0:9092
+      - ALLOW_PLAINTEXT_LISTENER=yes
+    ports:
+      - "9092:9092"
+    networks:
+      - oenexa-net
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.12.0
+    container_name: oenexa-elasticsearch
+    environment:
+      - discovery.type=single-node
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+      - xpack.security.enabled=false
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    mem_limit: 1g
+    ports:
+      - "9200:9200"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9200"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - oenexa-net
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: oenexa-api
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      kafka:
+        condition: service_started
+      elasticsearch:
+        condition: service_healthy
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/oenexa_db
+      - SPRING_DATASOURCE_USERNAME=oenexa
+      - SPRING_DATASOURCE_PASSWORD=oenexa_secret
+      - SPRING_REDIS_HOST=redis
+      - SPRING_REDIS_PORT=6379
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+      - SPRING_ELASTICSEARCH_URIS=http://elasticsearch:9200
+    ports:
+      - "8080:8080"
+    networks:
+      - oenexa-net
+
+  ui:
+    image: node:20-alpine
+    container_name: oenexa-ui
+    working_dir: /app
+    volumes:
+      - ./ui:/app
+    command: sh -c "npm install && npm run dev"
+    ports:
+      - "3000:3000"
+    depends_on:
+      - api
+    environment:
+      - VITE_API_URL=http://localhost:8080/api
+    networks:
+      - oenexa-net
+
+networks:
+  oenexa-net:
+    driver: bridge
