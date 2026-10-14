@@ -1,0 +1,28 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: oenexa-ai-engineer
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:local}
+  main:
+    allow-bean-definition-overriding: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: always
+
+# OENEXA Module Feature Toggles
+oenexa:
+  redis:
+    enabled: false
+  kafka:
+    enabled: false
+  elasticsearch:
+    enabled: false

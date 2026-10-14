@@ -39,16 +39,16 @@
 
 ## 2. Technical Stack & Standards Matrix
 
-| Capability | Backend Standard | Frontend Standard |
-|:---|:---|:---|
-| **Language** | **Java 25+** (pure Java, zero Kotlin in prod) | **TypeScript** (strict mode) |
-| **Framework** | **Spring Boot 4.1.1** (Latest GA) | **React 18** (Vite 5) |
-| **Dependency Management** | **io.spring.dependency-management 1.1.7** | **npm / Vite** |
-| **API Architecture** | **Spring MVC REST** (`@RestController`, Virtual Threads, NO WebFlux) | **Vite Proxy** (`/api` $\rightarrow$ `http://localhost:8080`) |
-| **Testing (TDD & BDD)** | **Cucumber-JVM 7.18.1 (BDD) + JUnit 5 Platform (TDD)** (Zero mocks) | **Vitest + React Testing Library (BDD/TDD)** (Real DOM) |
-| **Coverage Tool** | **JaCoCo** (100% line & branch coverage) | **Vitest Runner** |
-| **Security** | Jakarta Validation, OWASP Top-10, Immutability | Strict CSP, XSS-safe React rendering |
-| **Quality Gate** | **0 Warnings, 100% Coverage, 0 Failures** | **0 Warnings, 100% Tests passing** |
+| Capability                | Backend Standard                                                     | Frontend Standard                                             |
+|:--------------------------|:---------------------------------------------------------------------|:--------------------------------------------------------------|
+| **Language**              | **Java 25+** (pure Java, zero Kotlin in prod)                        | **TypeScript** (strict mode)                                  |
+| **Framework**             | **Spring Boot 4.1.1** (Latest GA)                                    | **React 18** (Vite 5)                                         |
+| **Dependency Management** | **io.spring.dependency-management 1.1.7**                            | **npm / Vite**                                                |
+| **API Architecture**      | **Spring MVC REST** (`@RestController`, Virtual Threads, NO WebFlux) | **Vite Proxy** (`/api` $\rightarrow$ `http://localhost:8080`) |
+| **Testing (TDD & BDD)**   | **Cucumber-JVM 7.18.1 (BDD) + JUnit 5 Platform (TDD)** (Zero mocks)  | **Vitest + React Testing Library (BDD/TDD)** (Real DOM)       |
+| **Coverage Tool**         | **JaCoCo** (100% line & branch coverage)                             | **Vitest Runner**                                             |
+| **Security**              | Jakarta Validation, OWASP Top-10, Immutability                       | Strict CSP, XSS-safe React rendering                          |
+| **Quality Gate**          | **0 Warnings, 100% Coverage, 0 Failures**                            | **0 Warnings, 100% Tests passing**                            |
 
 ---
 

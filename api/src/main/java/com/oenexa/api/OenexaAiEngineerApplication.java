@@ -4,9 +4,8 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 /**
- * Spring Boot Application Entry Point.
- * Why: Standard execution bootstrap for OENEXA AI Engineer.
- * How: SpringApplication.run scanning com.oenexa packages.
+ * Spring Boot Application Entry Point for OENEXA AI Engineer.
+ * Scans all components across com.oenexa.
  */
 @SpringBootApplication(scanBasePackages = "com.oenexa")
 public class OenexaAiEngineerApplication {

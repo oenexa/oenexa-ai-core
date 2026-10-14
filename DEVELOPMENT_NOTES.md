@@ -42,18 +42,19 @@ oenexa-ai-engineer-backend/
 
 ## 2. Step-by-Step Development & Resolution Log
 
-| Step # | Module / Component | Action Taken | Rationale & Outcome |
-|:---|:---|:---|:---|
-| **01** | Git / VCS | Isolated frontend and backend directories into separate workspaces | Ensures single-responsibility repository layout. |
-| **02** | Frontend UI | Fixed Monaco Editor integration in `App.tsx` | Replaced nonexistent named export `MonacoEditor` with default import `Editor from '@monaco-editor/react'`. `npm run build` succeeds cleanly. |
-| **03** | Backend Root | Removed deprecated `:ui` reference in `settings.gradle.kts` | Prevents Gradle multi-project resolution failure when UI lives in separate repo. |
-| **04** | Backend Build | Modernized build system to Spring Boot 3.3.4 & Gradle Java Library | Fixed `CopyProcessingSpec.getDirMode()` Gradle 9.6 incompatibility and resolved dependency scopes. |
-| **05** | Backend Domain | Added `java-library` plugin and transitive `api("jakarta.persistence:jakarta.persistence-api")` | Eliminates compiler warnings in dependent modules using entity metadata. |
-| **06** | Backend Infrastructure | Stabilized `InfrastructureConfig.java` | Cleaned Spring Beans for PostgreSQL, Redis, Kafka, and Flyway with production-grade fallback parameters. |
-| **07** | Backend Compiler | Configured explicit Java 25 source/target compatibility | Successfully compiles and packages with **0 errors and 0 warnings** in 3 seconds. |
-| **08** | Web Layer Refactoring | Removed Spring WebFlux; migrated to Spring MVC (`spring-boot-starter-web`) | Follows enterprise REST best practices, removing reactive complexity where standard MVC with virtual threads is superior. |
-| **09** | Testing Policy | Enforced real tests; removed mock tests | Added JUnit 5 Platform tests without any mocks (`UserTest`, `UserServiceTest`). |
-| **10** | Build & Test Gate | Executed full `./gradlew clean test assemble` | **BUILD SUCCESSFUL in 4s** (19/19 actionable tasks passed). |
+| Step # | Module / Component     | Action Taken                                                                                    | Rationale & Outcome                                                                                                                          |
+|:-------|:-----------------------|:------------------------------------------------------------------------------------------------|:---------------------------------------------------------------------------------------------------------------------------------------------|
+| **01** | Git / VCS              | Isolated frontend and backend directories into separate workspaces                              | Ensures single-responsibility repository layout.                                                                                             |
+| **02** | Frontend UI            | Fixed Monaco Editor integration in `App.tsx`                                                    | Replaced nonexistent named export `MonacoEditor` with default import `Editor from '@monaco-editor/react'`. `npm run build` succeeds cleanly. |
+| **03** | Backend Root           | Removed deprecated `:ui` reference in `settings.gradle.kts`                                     | Prevents Gradle multi-project resolution failure when UI lives in separate repo.                                                             |
+| **04** | Backend Build          | Modernized build system to Spring Boot 3.3.4 & Gradle Java Library                              | Fixed `CopyProcessingSpec.getDirMode()` Gradle 9.6 incompatibility and resolved dependency scopes.                                           |
+| **05** | Backend Domain         | Added `java-library` plugin and transitive `api("jakarta.persistence:jakarta.persistence-api")` | Eliminates compiler warnings in dependent modules using entity metadata.                                                                     |
+| **06** | Backend Infrastructure | Stabilized `InfrastructureConfig.java`                                                          | Cleaned Spring Beans for PostgreSQL, Redis, Kafka, and Flyway with production-grade fallback parameters.                                     |
+| **07** | Backend Compiler       | Configured explicit Java 25 source/target compatibility                                         | Successfully compiles and packages with **0 errors and 0 warnings** in 3 seconds.                                                            |
+| **08** | Web Layer Refactoring  | Removed Spring WebFlux; migrated to Spring MVC (`spring-boot-starter-web`)                      | Follows enterprise REST best practices, removing reactive complexity where standard MVC with virtual threads is superior.                    |
+| **09** | Testing Policy         | Enforced real tests; removed mock tests                                                         | Added JUnit 5 Platform tests without any mocks (`UserTest`, `UserServiceTest`).                                                              |
+| **10** | Build & Test Gate      | Executed full `./gradlew clean test assemble`                                                   | **BUILD SUCCESSFUL in 4s** (19/19 actionable tasks passed).                                                                                  |
+| **11** | Database Architecture  | Implemented Flyway `V1__init_oenexa_schema.sql`, 15 JPA entities, and zero-friction `local` profile | Resolved PostgreSQL host auth exception via embedded PostgreSQL-compatible H2 fallback with full Flyway seeding; full Docker/PostgreSQL config in `application-docker.yml`. |
 
 ---
 

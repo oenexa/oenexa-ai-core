@@ -135,15 +135,15 @@
 ---
 
 ## Milestones & Deliverables
-| Milestone | Expected Output |
-|-----------|-----------------|
-| **M1 – Core Backend** (Week 3) | Domain entities, Flyway migrations, functional API with JWT. |
-| **M2 – UI & Editor** (Week 4) | Running React UI with health check and Monaco editor. |
-| **M3 – AI Agent MVP** (Week 6) | Coordinator service + two agents (repo intel, architecture). |
-| **M4 – Observability Stack** (Week 7) | Prometheus metrics, Grafana dashboards, Loki logging. |
-| **M5 – CI/CD & Helm** (Week 9) | Fully automated build‑test‑deploy pipeline to Kubernetes. |
-| **M6 – Security & Performance** (Week 11) | OWASP‑compliant API, load‑tested system. |
-| **M7 – Release Candidate** (Week 12) | Production‑ready Docker images, Helm chart, comprehensive docs. |
+| Milestone                                 | Expected Output                                                 |
+|-------------------------------------------|-----------------------------------------------------------------|
+| **M1 – Core Backend** (Week 3)            | Domain entities, Flyway migrations, functional API with JWT.    |
+| **M2 – UI & Editor** (Week 4)             | Running React UI with health check and Monaco editor.           |
+| **M3 – AI Agent MVP** (Week 6)            | Coordinator service + two agents (repo intel, architecture).    |
+| **M4 – Observability Stack** (Week 7)     | Prometheus metrics, Grafana dashboards, Loki logging.           |
+| **M5 – CI/CD & Helm** (Week 9)            | Fully automated build‑test‑deploy pipeline to Kubernetes.       |
+| **M6 – Security & Performance** (Week 11) | OWASP‑compliant API, load‑tested system.                        |
+| **M7 – Release Candidate** (Week 12)      | Production‑ready Docker images, Helm chart, comprehensive docs. |
 
 ---
 
@@ -155,4 +155,4 @@
 
 ---
 
-*All diagrams are expressed in Mermaid syntax and can be rendered directly in the markdown files.*
+*All diagrams are expressed in Mermaid syntax and can be rendered directly in the Markdown files.*
