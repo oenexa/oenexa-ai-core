@@ -85,7 +85,7 @@ subprojects {
 
     // Coverage gate. Stub modules carry no logic and are exempt.
     val coverageExempt = setOf(
-        "oenexa-gateway", "oenexa-core",
+        "oenexa-gateway",
         "domain", "application", "infrastructure", "api"
     )
     if (name !in coverageExempt) {

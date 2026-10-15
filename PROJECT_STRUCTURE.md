@@ -134,10 +134,14 @@ oenexa-ai-engineer-backend/
 │       ├── chunking/                   # CodeChunker, MarkdownChunker
 │       └── service/                    # KnowledgeRetrievalService
 │
-├── oenexa-core/                 # [Module 10/23] Relational Kernel, JPA Entities, Flyway
-│   └── src/main/java/com/oenexa/core/
-│       ├── entity/                     # UserEntity, ProjectEntity, ScanEntity
-│       └── repository/                 # Core JpaRepository definitions
+├── oenexa-core/                 # [Module 10/23] Relational Kernel, Domain Records, Ports, JPA & Web
+│   ├── src/main/java/ai/oenexa/core/
+│   │   ├── domain/                     # Organization, Team, Project, CoreUser records & Port interfaces
+│   │   ├── persistence/                # InMemoryCorePersistenceAdapter, JpaCorePersistenceAdapter, JpaRepositories
+│   │   ├── service/                    # CoreTenancyService, DefaultCoreTenancyService, PasswordHasher
+│   │   ├── web/                        # CoreController (/api/v1/core/*)
+│   │   └── CoreModule.java             # PlatformModule definition (ACTIVE)
+│   └── src/test/java/ai/oenexa/core/   # CoreTenancyServiceTest (100% Zero-Mock Coverage, 281/281 lines)
 │
 ├── oenexa-gateway/              # [Module 11/23] Executable Modular Monolith BootJar
 │   ├── src/main/java/com/oenexa/gateway/

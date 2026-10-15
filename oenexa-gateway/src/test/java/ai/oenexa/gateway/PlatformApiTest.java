@@ -46,7 +46,7 @@ class PlatformApiTest {
         client.get().uri("/api/v1/modules").exchange().expectStatus().isOk()
                 .expectBody()
                 .jsonPath("$[0].status").isEqualTo("ACTIVE")
-                .jsonPath("$.length()").isEqualTo(16);
+                .jsonPath("$.length()").isEqualTo(17);
     }
 
     @Test

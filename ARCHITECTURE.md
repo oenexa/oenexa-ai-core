@@ -119,7 +119,7 @@ The backend is organized into 23 strictly bounded Gradle modules. All dependenci
 | **`:oenexa-agent`** | Autonomous multi-agent coordination framework: 15 agent contracts, 4 sequential workflow pipelines, step execution, and delegation boundaries. | `/api/v1/agents/*` | 100% Coverage (JaCoCo Enforced) |
 | **`:oenexa-chat`** | Conversational AI reasoning service, sliding context window memory, and multi-turn prompt history. | `/api/v1/chat/*` | 100% Coverage (JaCoCo Enforced) |
 | **`:oenexa-rag`** | Retrieval-Augmented Generation: document ingestion, token chunking, semantic vector index, and similarity retrieval. | `/api/v1/rag/*` | 100% Coverage (JaCoCo Enforced) |
-| **`:oenexa-core`** | Persistent domain kernel: JPA entities, Flyway database schema, repositories, and transactional services. | Domain Persistence | Kernel Module |
+| **`:oenexa-core`** | Relational tenancy kernel: Organizations, Teams, Projects, Users domain records, JPA/In-Memory adapters, and tenancy services (`DefaultCoreTenancyService`). | `/api/v1/core/*` | **100% Coverage (281/281 lines)** |
 | **`:oenexa-gateway`** | Executable Modular Monolith bootJar aggregating all 19 platform modules into a single production service. | Unified Gateway Host | Monolith Assembler |
 | **`:oenexa-code`** | AST inspection, smell detection, automated code refactoring, and code generation (`DefaultCodeService`). | `POST /api/v1/code/ast/analyze`<br/>`POST /api/v1/code/refactor`<br/>`POST /api/v1/code/generate` | **100% Coverage (172/172 lines)** |
 | **`:oenexa-review`** | Automated PR reviewer, unified diff hunk parser, quality grading, and blast-radius risk scoring (`DefaultReviewService`). | `POST /api/v1/review/pull-requests`<br/>`POST /api/v1/review/diff/analyze` | **100% Coverage (113/113 lines)** |
@@ -268,4 +268,5 @@ The system enforces strict quality gates:
 | **`oenexa-admin`** | 87 | 0 | **100%** | JUnit 5 | **Strictly Zero Mocks** |
 | **`oenexa-repository`** | 90 | 0 | **100%** | JUnit 5 | **Strictly Zero Mocks** |
 | **`oenexa-observability`** | 136 | 0 | **100%** | JUnit 5 | **Strictly Zero Mocks** |
-| **TOTAL** | **1,291** | **0** | **100%** | JUnit 5 | **Zero Mocks Across All Modules** |
+| **`oenexa-core`** | 281 | 0 | **100%** | JUnit 5 | **Strictly Zero Mocks** |
+| **TOTAL** | **1,572** | **0** | **100%** | JUnit 5 | **Zero Mocks Across All Modules** |

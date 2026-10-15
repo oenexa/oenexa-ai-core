@@ -4,16 +4,16 @@
 OENEXA AI Engineer is an **enterprise‑grade AI‑powered software‑engineering platform** that can automatically understand, analyze, debug, fix, improve, and document software projects.  It combines a modular Java backend, a modern React UI, and a multi‑agent AI orchestration layer.
 
 ## Technology Stack
-| Layer                  | Technologies                                                                                                          |
-|------------------------|-----------------------------------------------------------------------------------------------------------------------|
-| Layer                  | Technologies                                                                                                          |
-|------------------------|-----------------------------------------------------------------------------------------------------------------------|
-| **Backend**            | Java 25, Spring Boot 4.1.1, Spring AI 2.0.1, Spring MVC (Virtual Threads), Spring WebFlux, Flyway, PostgreSQL 15, Redis 7, Gradle 9.8.0 |
-| **AI Layer**           | Spring AI 2.0.1, Multi-Agent Orchestration (15 Agents, 4 Workflows), Semantic RAG, Sliding Context Window Memory    |
-| **Testing**            | Cucumber-JVM 7.21.1 (BDD), JUnit 5 Platform (Zero-Mock Policy), JaCoCo 0.8.13 (80% Line/Branch Coverage Gate)         |
-| **Frontend**           | React 18, TypeScript, Material-UI 5, Tailwind CSS, Vite 5, Monaco Editor                                             |
-| **Infrastructure**     | Docker, Docker Compose, Nginx Alpine Reverse Proxy, Kubernetes, Helm, Argo CD, GitHub Actions                        |
-| **Architecture Style** | Clean / Hexagonal Modular Monolith (23 Specialized Modules, Version Catalog in `gradle/libs.versions.toml`)           |
+| Layer                    | Technologies                                                                                                                            |
+|--------------------------|-----------------------------------------------------------------------------------------------------------------------------------------|
+| Layer                    | Technologies                                                                                                                            |
+| ------------------------ | -----------------------------------------------------------------------------------------------------------------------                 |
+| **Backend**              | Java 25, Spring Boot 4.1.1, Spring AI 2.0.1, Spring MVC (Virtual Threads), Spring WebFlux, Flyway, PostgreSQL 15, Redis 7, Gradle 9.8.0 |
+| **AI Layer**             | Spring AI 2.0.1, Multi-Agent Orchestration (15 Agents, 4 Workflows), Semantic RAG, Sliding Context Window Memory                        |
+| **Testing**              | Cucumber-JVM 7.21.1 (BDD), JUnit 5 Platform (Zero-Mock Policy), JaCoCo 0.8.13 (80% Line/Branch Coverage Gate)                           |
+| **Frontend**             | React 18, TypeScript, Material-UI 5, Tailwind CSS, Vite 5, Monaco Editor                                                                |
+| **Infrastructure**       | Docker, Docker Compose, Nginx Alpine Reverse Proxy, Kubernetes, Helm, Argo CD, GitHub Actions                                           |
+| **Architecture Style**   | Clean / Hexagonal Modular Monolith (23 Specialized Modules, Version Catalog in `gradle/libs.versions.toml`)                             |
 
 ## Quick Start (Linux & Git Bash)
 
@@ -116,6 +116,7 @@ The backend repository includes automated Docker runner scripts to orchestrate t
 | **HTTP** | `POST` | `/api/v1/admin/audit`                       | Tamper-evident audit logging and tenant compute/token analytics   |
 | **HTTP** | `POST` | `/api/v1/repository/inspect`                | VCS remote inspection, dependency tree, and Mermaid graph mapping |
 | **HTTP** | `POST` | `/api/v1/observability/events`              | Cross-service error fingerprint grouping and incident correlation  |
+| **HTTP** | `GET/POST`| `/api/v1/core/*`                         | Multi-tenant kernel: organizations, teams, projects, and users     |
 | **HTTP** | `GET`  | `/swagger-ui.html`                          | Interactive Swagger / OpenAPI 3.1 documentation                   |
 
 ## Master Documentation Directory
