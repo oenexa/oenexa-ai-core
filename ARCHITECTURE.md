@@ -104,10 +104,10 @@ flowchart TD
 The backend is organized into 23 strictly bounded Gradle modules. All dependencies are managed centrally in `gradle/libs.versions.toml`:
 
 ### 3.1 Hexagonal Core (4 Modules)
-| Module | Layer | Responsibility & Contents |
-| :--- | :--- | :--- |
-| **`:domain`** | Inner Hexagon | Pure Java 25 business entities, records (`UserRegistration`, `TenantContext`, `Workflow`, `AgentContract`, `RagDocument`), invariants, domain events, and RFC 7807 error codes. **Zero external framework dependencies.** |
-| **`:application`** | Use-Cases | Application services (`ChatService`, `AgentCoordinatorService`, `RagService`, `TokenService`, `PlatformEventPublisher`). Orchestrates domain objects without framework coupling. |
+| Module | Layer | Responsibility & Contents | Test Verification & Gate |
+| :--- | :--- | :--- | :--- |
+| **`:domain`** | Inner Hexagon | Pure Java 25 business entities, records (`UserRegistration`, `TenantContext`, `Workflow`, `AgentContract`, `RagDocument`), invariants, domain events, and RFC 7807 error codes. **Zero external framework dependencies.** | **100% Coverage (144/144 lines, 100% branches)** |
+| **`:application`** | Use-Cases | Application services (`ChatService`, `AgentCoordinatorService`, `RagService`, `TokenService`, `PlatformEventPublisher`). Orchestrates domain objects without framework coupling. | Planned |
 | **`:infrastructure`**| Outer Adapters | Spring Data JPA entities, Flyway database migrations (`V1__init_oenexa_schema.sql`), Redis configuration, Kafka event publishers, and embedded fallbacks. |
 | **`:api`** | Primary Adapter | Spring Boot MVC executable bootJar (`com.oenexa.api`). Exposes `@RestController` endpoints (`ChatController`, `AgentController`, `RagController`, `AuthController`, `ModulesController`), global RFC 7807 exception handler, and actuator metrics. |
 
@@ -275,4 +275,5 @@ The system enforces strict quality gates:
 | **`oenexa-rag`** | 114 | 0 | **100%** | JUnit 5 | **Strictly Zero Mocks** |
 | **`oenexa-agent`** | 153 | 0 | **100%** | JUnit 5 | **Strictly Zero Mocks** |
 | **`oenexa-gateway`** | 29 | 0 | **100%** | JUnit 5 | **Strictly Zero Mocks** |
-| **TOTAL** | **2,118** | **0** | **100%** | JUnit 5 | **Zero Mocks Across All Modules** |
+| **`domain`** | 144 | 0 | **100%** | JUnit 5 | **Strictly Zero Mocks** |
+| **TOTAL** | **2,262** | **0** | **100%** | JUnit 5 | **Zero Mocks Across All Modules** |

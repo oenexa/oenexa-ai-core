@@ -74,6 +74,7 @@ oenexa-ai-engineer-backend/
 | **26** | Retrieval-Augmented Generation & 100% Zero-Mock Verification (`oenexa-rag`) | Implemented document ingestion, chunking with paragraph/sentence boundary detection (`Chunker`), dimensional hash embeddings (`HashEmbeddingAdapter`), thread-safe in-memory cosine vector store (`InMemoryVectorStore`), citation linking, budget compaction (`RagService`), REST endpoints (`POST /api/v1/rag/ingest`, `POST /api/v1/rag/query`), and `RagModule` bean catalog. | **100% Line Coverage (114 / 114 lines covered, 0 missed lines)** under strictly Zero-Mock policy. Full 23-module `./gradlew.bat check` passed cleanly. |
 | **27** | Autonomous Multi-Agent Framework & 100% Zero-Mock Verification (`oenexa-agent`) | Implemented 15 specialized role agents (`AgentCatalog`), bounded delegation engine, 4 ordered workflow pipelines (`REPOSITORY_ANALYSIS`, `PR_REVIEW`, `INCIDENT_RESPONSE`, `FEATURE_DELIVERY`), shared blackboard memory (`AgentContext`, `AgentMemory`), tool invocation registry (`Tool.Registry`), REST endpoints (`/api/v1/agents/*`), and `AgentModule` bean catalog. | **100% Line Coverage (153 / 153 lines covered, 0 missed lines, 100% branch coverage)** under strictly Zero-Mock policy. |
 | **28** | Modular Monolith Gateway & 100% Zero-Mock Verification (`oenexa-gateway`) | Aggregated all 19 platform modules into unified executable launcher (`OenexaApplication`), reactive Spring Security chain (`SecurityConfig`), dynamic module registry endpoint (`ModulesController` exposing `/api/v1/modules`), and end-to-end integration suite (`PlatformApiTest`). Removed from `coverageExempt`. | **100% Line Coverage (29 / 29 lines covered, 0 missed lines)** under strictly Zero-Mock policy. Full 23-module `./gradlew.bat check` passed cleanly. |
+| **29** | Core Business Entities, Contracts & 100% Zero-Mock Verification (`domain`) | Implemented core business records, error models, and execution contexts across `com.oenexa.domain`: `AgentContract`, `AgentType`, `AuthDomain`, `ChatDomain`, `DomainEvent`, `ErrorCode`, `ExecutionContext`, `OenexaException`, `PlannedModule`, `PlatformModule`, `RagDocument`, `TenantContext`, `User`, `UserRegistration`, `Workflow`. Removed from `coverageExempt`. | **100% Line Coverage (144 / 144 lines covered, 0 missed lines, 100% branch coverage)** under strictly Zero-Mock policy. Full 23-module `./gradlew.bat check` passed cleanly. |
 
 
 
@@ -199,6 +200,12 @@ In accordance with **Constitution Rule 1.0**, every implemented subsystem and ar
 - **HOW:** Spring Boot `@SpringBootApplication` root package component scanning, Spring WebFlux security filtering, zero-mock end-to-end testing with `WebTestClient`, and removed from `coverageExempt`.
 - **VERIFICATION:** **100% Line Coverage (29 / 29 lines)**, 0 missed lines. Full 23-module `./gradlew.bat check` passed cleanly.
 
+### [DOMAIN] 🏛️ `domain` | Core Business Entities, Value Records & Zero-Mock Verification
+- **WHAT:** Implemented enterprise domain entities, value records, and execution contexts across `com.oenexa.domain`: `AgentContract` (Task, Result, Delegation, Step, WorkflowRun), `AgentType` (15 specialized agent roles), `AuthDomain` (TokenPair, AuthClaims, LoginRequest, RegisterRequest, RefreshRequest), `ChatDomain` (Message, Conversation, ChatRequest, ChatResponse, Role), `DomainEvent` (StandardDomainEvent marker contract), `ErrorCode` (pure integer HTTP mapping without framework coupling), `ExecutionContext` (shared multi-agent blackboard), `OenexaException` (unchecked domain exception with causal chains), `PlannedModule` (static catalog of all 20 platform modules), `PlatformModule` (capability interface), `RagDocument` (DocumentInput, Chunk, SearchResult, IngestResult), `TenantContext` (thread-safe virtual thread tenant context), `User` (JPA-compliant immutable entity with builders), `UserRegistration` (validated DTO), and `Workflow` (ordered pipelines).
+- **WHY:** Clean hexagonal architecture requires a framework-independent domain layer containing pure business logic, invariants, and value objects decoupled from external infrastructure and presentation technologies.
+- **HOW:** Java 25 records and immutable classes, strict non-null boundary validation, zero framework leakage into core business rules, and 100% test coverage using real instantiations and zero mocks.
+- **VERIFICATION:** **100% Line Coverage (144 / 144 lines)**, **100% Branch Coverage (18 / 18 branches)**, 0 missed lines. Removed from `coverageExempt`. Full 23-module `./gradlew.bat check` passed cleanly.
+
 ---
 
 ## 2.2 [DOC] 📚 Step 21: Full Documentation Synchronization & API Endpoint Catalog
@@ -310,6 +317,25 @@ In accordance with **Constitution Rule 1.0**, every implemented subsystem and ar
 - **WHY:** A high-performance modular monolith requires a unified execution shell that packages all decoupled domain engines into a production service with verified end-to-end security and module discovery.
 - **HOW:** Spring Boot 4.1.1, Spring Security reactive filter chains, zero mocking frameworks, and complete JaCoCo line verification gate enforcement.
 - **VERIFICATION:** **100% Line Coverage (29 / 29 lines)**, **0 missed lines** verified by JaCoCo. Full 23-module `./gradlew.bat check` passed cleanly in 17s.
+
+---
+
+## 2.10 [DOMAIN] 🏛️ Step 29: Core Business Entities, Contracts & 100% Zero-Mock Verification
+- **WHAT:** Hardened and verified 100% test coverage across the `domain` module business kernel:
+  - **Agent Contracts & Value Objects:** `AgentContract` (Task, Result, Delegation, Step, WorkflowRun), `AgentType` (15 specialized agent roles).
+  - **Authentication & Authorization Records:** `AuthDomain` (TokenPair, AuthClaims, LoginRequest, RegisterRequest, RefreshRequest).
+  - **Conversational Reasoning Models:** `ChatDomain` (Message, Conversation, ChatRequest, ChatResponse, Role).
+  - **Standard Event Marker:** `DomainEvent` with factory method `StandardDomainEvent.of(type, tenantId, payload)`.
+  - **Error Categorization:** `ErrorCode` mapping typed platform domain failures directly to HTTP status numbers with zero framework leakage.
+  - **Blackboard & Isolation:** `ExecutionContext` (thread-safe shared state for multi-agent workflows), `TenantContext` (thread-safe virtual thread tenant context).
+  - **Platform Module Taxonomy:** `PlannedModule` (catalog of all 20 platform modules), `PlatformModule` (capability interface, module info record, status enum).
+  - **RAG Models:** `RagDocument` (DocumentInput, Chunk, SearchResult, IngestResult).
+  - **User Aggregate:** `User` (JPA-compliant immutable entity with builders and no-arg constructor), `UserRegistration` (validated DTO).
+  - **Pipelines:** `Workflow` (ordered enum sequences).
+  - **Zero-Mock Test Suites:** Implemented `DomainModelTest` and expanded `UserTest` to achieve 100% line, branch, and instruction coverage across all 35 classes/records in `domain`. Removed `domain` from `coverageExempt` in `build.gradle.kts`.
+- **WHY:** A clean domain layer guarantees that business logic, invariants, and validation rules remain completely decoupled from database drivers, frameworks, and network layers.
+- **HOW:** Pure Java 25 records and classes, strictly zero mocking frameworks (no Mockito, PowerMock, `@MockBean`), and complete branch verification.
+- **VERIFICATION:** **100% Line Coverage (144 / 144 lines)**, **100% Branch Coverage (18 / 18 branches)**, **0 missed lines** verified by JaCoCo. Full 23-module `./gradlew.bat check` passed cleanly in 16s.
 
 ---
 

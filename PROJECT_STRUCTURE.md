@@ -68,6 +68,7 @@ oenexa-ai-engineer-backend/
 │       ├── User.java                   # User entity with business invariants
 │       ├── UserRegistration.java       # User registration request record
 │       └── Workflow.java               # 4 ordered multi-agent pipeline DAGs
+│   └── src/test/java/com/oenexa/domain/# UserTest, DomainModelTest (100% Zero-Mock Line & Branch Coverage, 144/144 lines)
 │
 ├── application/                 # [Module 2/23] Use-Case Orchestration (Hexagonal Middle Tier)
 │   ├── src/main/java/com/oenexa/application/
