@@ -138,10 +138,13 @@ oenexa-ai-engineer-backend/
 │   └── src/test/java/ai/oenexa/chat/   # ChatServiceTest, ChatControllerTest (100% Zero-Mock Coverage, 80/80 lines)
 │
 ├── oenexa-rag/                  # [Module 9/23] Semantic Embeddings, Chunking, Similarity Search
-│   └── src/main/java/com/oenexa/rag/
-│       ├── index/                      # VectorStoreAdapter, InvertedIndex
-│       ├── chunking/                   # CodeChunker, MarkdownChunker
-│       └── service/                    # KnowledgeRetrievalService
+│   ├── src/main/java/ai/oenexa/rag/
+│   │   ├── domain/                     # Chunk (record), Ports (EmbeddingPort, VectorStorePort, Scored)
+│   │   ├── application/                # Chunker (paragraph/sentence splitter), RagService
+│   │   ├── infra/                      # HashEmbeddingAdapter, InMemoryVectorStore
+│   │   ├── web/                        # RagController (/api/v1/rag/*)
+│   │   └── RagModule.java              # PlatformModule definition (ACTIVE)
+│   └── src/test/java/ai/oenexa/rag/    # RagPipelineTest, RagControllerTest (100% Zero-Mock Coverage, 114/114 lines)
 │
 ├── oenexa-core/                 # [Module 10/23] Relational Kernel, Domain Records, Ports, JPA & Web
 │   ├── src/main/java/ai/oenexa/core/

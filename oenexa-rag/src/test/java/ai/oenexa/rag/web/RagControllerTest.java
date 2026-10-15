@@ -62,7 +62,23 @@ class RagControllerTest {
     void unauthorizedPrincipalThrows() {
         Principal anonymous = () -> "anon";
         var queryBody = new RagController.QueryRequest("test", null);
+        var ingestBody = new RagController.IngestRequest("notes.md", "content");
+
         assertThatThrownBy(() -> controller.query(anonymous, queryBody))
+                .isInstanceOf(OenexaException.class);
+
+        assertThatThrownBy(() -> controller.query(null, queryBody))
+                .isInstanceOf(OenexaException.class);
+
+        assertThatThrownBy(() -> controller.ingest(anonymous, ingestBody))
+                .isInstanceOf(OenexaException.class);
+
+        assertThatThrownBy(() -> controller.ingest(null, ingestBody))
+                .isInstanceOf(OenexaException.class);
+
+        var badAuth = new UsernamePasswordAuthenticationToken("user", "pass", List.of());
+        badAuth.setDetails("bad-claims");
+        assertThatThrownBy(() -> controller.query(badAuth, queryBody))
                 .isInstanceOf(OenexaException.class);
     }
 }

@@ -96,39 +96,40 @@ The backend repository includes automated Docker runner scripts to orchestrate t
 
 ## Verified Endpoints & API Capabilities
 
-| Protocol | Method | Route | Description |
-|:---------|:-------|:--------------------------------------------|:------------------------------------------------------------------|
-| **HTTP** | `GET`  | `/actuator/health`                          | Spring Boot Actuator liveness and readiness probes                |
-| **HTTP** | `GET`  | `/api/v1/modules`                           | Discovery list of all 20 active platform modules and capabilities |
-| **HTTP** | `POST` | `/api/v1/chat/messages`                     | AI conversational chat completion with context memory             |
-| **HTTP** | `POST` | `/api/v1/auth/login`                        | User authentication issuing RFC 7519 JWT tokens                   |
-| **HTTP** | `POST` | `/api/v1/agents/workflows/{workflowId}/run` | Multi-agent autonomous workflow pipeline execution                |
-| **HTTP** | `POST` | `/api/v1/rag/documents`                     | Ingest and chunk documents into the semantic knowledge base       |
-| **HTTP** | `POST` | `/api/v1/code/ast/analyze`                  | AST node parsing, smell detection, and complexity analysis        |
-| **HTTP** | `POST` | `/api/v1/review/pull-requests`              | AI automated PR review, risk scoring, and diff hunk grading       |
-| **HTTP** | `POST` | `/api/v1/security/sast/scan`                | SAST vulnerability scanner, CVE checks, OWASP Top-10 audit        |
-| **HTTP** | `POST` | `/api/v1/testing/generate`                  | Automated test synthesis (JUnit 5, Cucumber BDD, Vitest, PyTest)   |
-| **HTTP** | `POST` | `/api/v1/documentation/generate`            | Architecture markdown documentation, ADRs, and Mermaid diagrams   |
-| **HTTP** | `POST` | `/api/v1/devops/manifest/analyze`           | Dockerfile, Kubernetes, Compose, Helm linting and security scan   |
-| **HTTP** | `POST` | `/api/v1/pipeline/diagnose`                 | CI/CD failure diagnosis and automated script repair synthesis     |
-| **HTTP** | `GET`  | `/api/v1/search/query`                      | Full-text, semantic vector, and hybrid RRF codebase search        |
-| **HTTP** | `POST` | `/api/v1/workspaces`                        | Multi-tenant organization and team workspace sandbox isolation    |
-| **HTTP** | `POST` | `/api/v1/admin/audit`                       | Tamper-evident audit logging and tenant compute/token analytics   |
-| **HTTP** | `POST` | `/api/v1/repository/inspect`                | VCS remote inspection, dependency tree, and Mermaid graph mapping |
-| **HTTP** | `POST` | `/api/v1/observability/events`              | Cross-service error fingerprint grouping and incident correlation  |
-| **HTTP** | `GET/POST`| `/api/v1/core/*`                         | Multi-tenant kernel: organizations, teams, projects, and users     |
-| **HTTP** | `GET`  | `/swagger-ui.html`                          | Interactive Swagger / OpenAPI 3.1 documentation                   |
+| Protocol | Method     | Route                                       | Description                                                       |
+|:---------|:-----------|:--------------------------------------------|:------------------------------------------------------------------|
+| **HTTP** | `GET`      | `/actuator/health`                          | Spring Boot Actuator liveness and readiness probes                |
+| **HTTP** | `GET`      | `/api/v1/modules`                           | Discovery list of all 20 active platform modules and capabilities |
+| **HTTP** | `POST`     | `/api/v1/chat/messages`                     | AI conversational chat completion with context memory             |
+| **HTTP** | `POST`     | `/api/v1/auth/login`                        | User authentication issuing RFC 7519 JWT tokens                   |
+| **HTTP** | `POST`     | `/api/v1/agents/workflows/{workflowId}/run` | Multi-agent autonomous workflow pipeline execution                |
+| **HTTP** | `POST`     | `/api/v1/rag/ingest`                        | Ingest, chunk and index documents into semantic knowledge base    |
+| **HTTP** | `POST`     | `/api/v1/rag/query`                         | Vector similarity search and context building with citations      |
+| **HTTP** | `POST`     | `/api/v1/code/ast/analyze`                  | AST node parsing, smell detection, and complexity analysis        |
+| **HTTP** | `POST`     | `/api/v1/review/pull-requests`              | AI automated PR review, risk scoring, and diff hunk grading       |
+| **HTTP** | `POST`     | `/api/v1/security/sast/scan`                | SAST vulnerability scanner, CVE checks, OWASP Top-10 audit        |
+| **HTTP** | `POST`     | `/api/v1/testing/generate`                  | Automated test synthesis (JUnit 5, Cucumber BDD, Vitest, PyTest)  |
+| **HTTP** | `POST`     | `/api/v1/documentation/generate`            | Architecture markdown documentation, ADRs, and Mermaid diagrams   |
+| **HTTP** | `POST`     | `/api/v1/devops/manifest/analyze`           | Dockerfile, Kubernetes, Compose, Helm linting and security scan   |
+| **HTTP** | `POST`     | `/api/v1/pipeline/diagnose`                 | CI/CD failure diagnosis and automated script repair synthesis     |
+| **HTTP** | `GET`      | `/api/v1/search/query`                      | Full-text, semantic vector, and hybrid RRF codebase search        |
+| **HTTP** | `POST`     | `/api/v1/workspaces`                        | Multi-tenant organization and team workspace sandbox isolation    |
+| **HTTP** | `POST`     | `/api/v1/admin/audit`                       | Tamper-evident audit logging and tenant compute/token analytics   |
+| **HTTP** | `POST`     | `/api/v1/repository/inspect`                | VCS remote inspection, dependency tree, and Mermaid graph mapping |
+| **HTTP** | `POST`     | `/api/v1/observability/events`              | Cross-service error fingerprint grouping and incident correlation |
+| **HTTP** | `GET/POST` | `/api/v1/core/*`                            | Multi-tenant kernel: organizations, teams, projects, and users    |
+| **HTTP** | `GET`      | `/swagger-ui.html`                          | Interactive Swagger / OpenAPI 3.1 documentation                   |
 
 ## Master Documentation Directory
 
-| Document                                             | Description                                                                                             |
-|:-----------------------------------------------------|:--------------------------------------------------------------------------------------------------------|
+| Document                                             | Description                                                                                                            |
+|:-----------------------------------------------------|:-----------------------------------------------------------------------------------------------------------------------|
 | **[ARCHITECTURE.md](ARCHITECTURE.md)**               | Comprehensive C4 diagrams, 23 modules breakdown, multi-agent workflows, Docker topology, and 100% test coverage stats. |
-| **[PROJECT_STRUCTURE.md](PROJECT_STRUCTURE.md)**     | Directory and file tree layout covering all 23 modules, configs, domain models, services, and tests.   |
-| **[DEVELOPMENT_NOTES.md](DEVELOPMENT_NOTES.md)**     | Chronological engineering log with symbolic tags (`[CODE]`, `[REVIEW]`, etc.) covering all development steps. |
-| **[DEVELOPMENT_PROCESS.md](DEVELOPMENT_PROCESS.md)** | 6-stage feature lifecycle, AI agent prompts library, and Stage 0 symbolic ledger mandate.               |
-| **[RULES_AND_STANDARDS.md](RULES_AND_STANDARDS.md)** | Rule 1.0 (Symbolic Ledger), strictly Zero-Mock testing policy, JaCoCo gates, and Docker conventions.   |
-| **[DESIGN_PROCESS.md](DESIGN_PROCESS.md)**           | System requirements, 12-week development roadmap, and risk management plan.                             |
+| **[PROJECT_STRUCTURE.md](PROJECT_STRUCTURE.md)**     | Directory and file tree layout covering all 23 modules, configs, domain models, services, and tests.                   |
+| **[DEVELOPMENT_NOTES.md](DEVELOPMENT_NOTES.md)**     | Chronological engineering log with symbolic tags (`[CODE]`, `[REVIEW]`, etc.) covering all development steps.          |
+| **[DEVELOPMENT_PROCESS.md](DEVELOPMENT_PROCESS.md)** | 6-stage feature lifecycle, AI agent prompts library, and Stage 0 symbolic ledger mandate.                              |
+| **[RULES_AND_STANDARDS.md](RULES_AND_STANDARDS.md)** | Rule 1.0 (Symbolic Ledger), strictly Zero-Mock testing policy, JaCoCo gates, and Docker conventions.                   |
+| **[DESIGN_PROCESS.md](DESIGN_PROCESS.md)**           | System requirements, 12-week development roadmap, and risk management plan.                                            |
 
 ## License
 Apache-2.0

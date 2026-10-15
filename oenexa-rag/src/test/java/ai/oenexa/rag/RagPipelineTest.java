@@ -80,4 +80,50 @@ class RagPipelineTest {
         assertThat(ctx.citations()).isEmpty();
         assertThat(ctx.text()).isEmpty();
     }
+
+    @Test
+    void ragModuleBeanDefinitionsAndMetadata() {
+        var module = new RagModule();
+        assertThat(module.id()).isEqualTo("rag");
+        assertThat(module.displayName()).isEqualTo("OENEXA RAG");
+        assertThat(module.description()).contains("Chunking, embedding");
+        assertThat(module.capabilities()).contains("ingestion", "embedding", "vector-search", "context-construction", "citations");
+        assertThat(module.status()).isEqualTo(ai.oenexa.common.module.PlatformModule.ModuleStatus.ACTIVE);
+
+        var embeddingPort = module.embeddingPort(256);
+        assertThat(embeddingPort).isInstanceOf(HashEmbeddingAdapter.class);
+
+        var vectorStorePort = module.vectorStorePort();
+        assertThat(vectorStorePort).isInstanceOf(InMemoryVectorStore.class);
+
+        var ragService = module.ragService(embeddingPort, vectorStorePort, 1200, 150);
+        assertThat(ragService).isNotNull();
+    }
+
+    @Test
+    void chunkAndPortsDomainContract() throws Exception {
+        var constructor = ai.oenexa.rag.domain.Ports.class.getDeclaredConstructor();
+        constructor.setAccessible(true);
+        var portsInstance = constructor.newInstance();
+        assertThat(portsInstance).isNotNull();
+
+        var docId = UUID.randomUUID();
+        float[] vector = new float[]{1.0f, 2.0f};
+        var chunk = new ai.oenexa.rag.domain.Chunk(docId, 0, "doc.txt", "content", vector);
+        assertThat(chunk.documentId()).isEqualTo(docId);
+        assertThat(chunk.index()).isEqualTo(0);
+        assertThat(chunk.source()).isEqualTo("doc.txt");
+        assertThat(chunk.text()).isEqualTo("content");
+        assertThat(chunk.embedding()).isEqualTo(vector);
+        assertThat(chunk.citation()).isEqualTo("doc.txt#0");
+
+        float[] newVec = new float[]{3.0f, 4.0f};
+        var updated = chunk.withEmbedding(newVec);
+        assertThat(updated.embedding()).isEqualTo(newVec);
+        assertThat(updated.citation()).isEqualTo("doc.txt#0");
+
+        var scored = new ai.oenexa.rag.domain.Ports.Scored(chunk, 0.95);
+        assertThat(scored.chunk()).isEqualTo(chunk);
+        assertThat(scored.score()).isEqualTo(0.95);
+    }
 }

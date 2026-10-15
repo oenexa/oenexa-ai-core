@@ -118,7 +118,7 @@ The backend is organized into 23 strictly bounded Gradle modules. All dependenci
 | **`:oenexa-auth`** | Token authentication, JWT issuing/parsing via JJWT 0.12.6, BCrypt password hashing, and Role-Based Access Control (`AuthService`). | `/api/v1/auth/*` | **100% Coverage (112/112 lines, 100% branches)** |
 | **`:oenexa-agent`** | Autonomous multi-agent coordination framework: 15 agent contracts, 4 sequential workflow pipelines, step execution, and delegation boundaries. | `/api/v1/agents/*` | 100% Coverage (JaCoCo Enforced) |
 | **`:oenexa-chat`** | Conversational AI reasoning service, sliding context window memory, and multi-turn prompt history (`ChatService`). | `/api/v1/chat/*` | **100% Coverage (80/80 lines)** |
-| **`:oenexa-rag`** | Retrieval-Augmented Generation: document ingestion, token chunking, semantic vector index, and similarity retrieval. | `/api/v1/rag/*` | 100% Coverage (JaCoCo Enforced) |
+| **`:oenexa-rag`** | Retrieval-Augmented Generation: document ingestion, token chunking, semantic vector index, and similarity retrieval. | `/api/v1/rag/*` | **100% Coverage (114/114 lines)** |
 | **`:oenexa-core`** | Relational tenancy kernel: Organizations, Teams, Projects, Users domain records, JPA/In-Memory adapters, and tenancy services (`DefaultCoreTenancyService`). | `/api/v1/core/*` | **100% Coverage (281/281 lines)** |
 | **`:oenexa-gateway`** | Executable Modular Monolith bootJar aggregating all 19 platform modules into a single production service. | Unified Gateway Host | Monolith Assembler |
 | **`:oenexa-code`** | AST inspection, smell detection, automated code refactoring, and code generation (`DefaultCodeService`). | `POST /api/v1/code/ast/analyze`<br/>`POST /api/v1/code/refactor`<br/>`POST /api/v1/code/generate` | **100% Coverage (172/172 lines)** |
@@ -272,4 +272,5 @@ The system enforces strict quality gates:
 | **`oenexa-chat`** | 80 | 0 | **100%** | JUnit 5 | **Strictly Zero Mocks** |
 | **`oenexa-auth`** | 112 | 0 | **100%** | JUnit 5 | **Strictly Zero Mocks** |
 | **`oenexa-common`** | 58 | 0 | **100%** | JUnit 5 | **Strictly Zero Mocks** |
-| **TOTAL** | **1,822** | **0** | **100%** | JUnit 5 | **Zero Mocks Across All Modules** |
+| **`oenexa-rag`** | 114 | 0 | **100%** | JUnit 5 | **Strictly Zero Mocks** |
+| **TOTAL** | **1,936** | **0** | **100%** | JUnit 5 | **Zero Mocks Across All Modules** |

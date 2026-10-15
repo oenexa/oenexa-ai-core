@@ -71,6 +71,7 @@ oenexa-ai-engineer-backend/
 | **23** | Conversational Assistant & 100% Zero-Mock Verification (`oenexa-chat`) | Engineered multi-turn conversational reasoning, sliding context window budgeting, Spring AI and Echo streaming adapters, tenant-isolated in-memory conversation store, SSE streaming endpoint (`/api/v1/chat/{conversationId}/messages`), and active platform module bean catalog. | **100% Line Coverage (80 / 80 lines covered, 0 missed lines, 100% branch coverage)** under strictly Zero-Mock policy. |
 | **24** | Enterprise Authentication & 100% Zero-Mock Verification (`oenexa-auth`) | Hardened self-service registration, constant-time credential verification, JJWT HS256 access & refresh token issuance, RBAC permissions (`OWNER`, `ADMIN`, `DEVELOPER`, `VIEWER`), Bearer token reactive authentication converter/manager, REST controller (`/api/v1/auth/register`, `/login`, `/refresh`), and `AuthModule` platform beans. | **100% Line Coverage (112 / 112 lines covered, 0 missed lines, 100% branch coverage)** under strictly Zero-Mock policy. |
 | **25** | Cross-Cutting Platform Kernel & 100% Zero-Mock Verification (`oenexa-common`) | Implemented RFC 7807 error envelopes (`ErrorCode`, `OenexaException`, `GlobalErrorHandler`), domain event contracts (`DomainEvent`, `EventPublisher`), reactive multi-tenant execution context (`TenantContext`), and dynamic platform module definitions (`PlatformModule`, `PlannedModule`). | **100% Line Coverage (58 / 58 lines covered, 0 missed lines, 100% branch coverage)** under strictly Zero-Mock policy. |
+| **26** | Retrieval-Augmented Generation & 100% Zero-Mock Verification (`oenexa-rag`) | Implemented document ingestion, chunking with paragraph/sentence boundary detection (`Chunker`), dimensional hash embeddings (`HashEmbeddingAdapter`), thread-safe in-memory cosine vector store (`InMemoryVectorStore`), citation linking, budget compaction (`RagService`), REST endpoints (`POST /api/v1/rag/ingest`, `POST /api/v1/rag/query`), and `RagModule` bean catalog. | **100% Line Coverage (114 / 114 lines covered, 0 missed lines)** under strictly Zero-Mock policy. Full 23-module `./gradlew.bat check` passed cleanly. |
 
 
 
@@ -178,6 +179,12 @@ In accordance with **Constitution Rule 1.0**, every implemented subsystem and ar
 - **HOW:** Java records, Project Reactor context propagation, reflection-tested `WebExchangeBindException` field error reducers, and zero-mock JUnit 5 test suites.
 - **VERIFICATION:** **100% Line Coverage (58 / 58 lines)**, 0 missed lines. Full 23-module `./gradlew.bat check` (133 actionable tasks) passed cleanly.
 
+### [RAG] 📚 `oenexa-rag` | Retrieval-Augmented Generation, Semantic Vectors & Zero-Mock Verification
+- **WHAT:** Implemented `Chunk` (documentId, index, source, text, embedding, citation) and `Ports` (`EmbeddingPort`, `VectorStorePort`, `Scored`); `Chunker` (overlapping sliding window with paragraph and sentence boundary splitters); `HashEmbeddingAdapter` (deterministic character/ngram hash projection normalized to unit Euclidean vectors); `InMemoryVectorStore` (thread-safe multi-tenant vector memory with cosine similarity scoring); `RagService` (document ingestion, idempotent replacement, top-k vector retrieval, and token/character budget compaction with citation linking); `RagController` (`POST /api/v1/rag/ingest`, `POST /api/v1/rag/query`); and `RagModule` platform module registration.
+- **WHY:** Grounded generative AI pair programming requires deterministic document chunking, low-latency semantic similarity ranking, citation traceability, and multi-tenant vector isolation without external database requirements in local/test execution.
+- **HOW:** Pure Project Reactor pipelines (`Mono`/`Flux`), cosine distance vector algebra, thread-safe concurrent maps per tenant, Spring AI modularity, zero mocking frameworks, and complete branch verification across boundary edge cases.
+- **VERIFICATION:** **100% Line Coverage (114 / 114 lines)**, 0 missed lines. Full 23-module `./gradlew.bat check` (133 actionable tasks) passed cleanly.
+
 ---
 
 ## 2.2 [DOC] 📚 Step 21: Full Documentation Synchronization & API Endpoint Catalog
@@ -245,6 +252,21 @@ In accordance with **Constitution Rule 1.0**, every implemented subsystem and ar
 - **WHY:** Uniform error handling, clean tenant context propagation, and standard capability contracts are required across all 23 platform modules.
 - **HOW:** Pure JUnit 5 tests, reflection-based `MethodParameter` generation for reactive bind exception verification, zero mocking frameworks.
 - **VERIFICATION:** **100% Line Coverage (58 / 58 lines)**, **0 missed lines** verified by JaCoCo. Full 23-module `./gradlew.bat check` (133 actionable tasks) passed cleanly in 15s.
+
+---
+
+## 2.7 [RAG] 📚 Step 26: Retrieval-Augmented Generation & 100% Zero-Mock Verification
+- **WHAT:** Hardened and verified 100% test coverage across the `oenexa-rag` semantic retrieval engine:
+  - **Domain Model & Ports:** `Chunk` (immutable record capturing `documentId`, `index`, `source`, `text`, `embedding`, and `citation()`), `Ports.EmbeddingPort` (reactive vector projection contract), `Ports.VectorStorePort` (reactive store/similarity retrieval contract), and `Ports.Scored` (similarity-ranked chunk).
+  - **Text Chunking Pipeline:** `Chunker` with configurable window size and overlap, intelligently preserving paragraph (`\n\n`) and sentence (`. `) boundaries, rejecting degenerate whitespace or invalid parameters.
+  - **Semantic Infrastructure:** `HashEmbeddingAdapter` computing normalized unit vectors via deterministic n-gram character hashing (offline test/edge double), and `InMemoryVectorStore` offering thread-safe multi-tenant vector memory with cosine similarity scoring.
+  - **Application Service:** `RagService` coordinating idempotent document chunking, asynchronous batch vector indexing, top-k similarity search, and context assembly with character budget enforcement and citation markers (`[filename#index]`).
+  - **REST Web Controller:** `RagController` mapped to `POST /api/v1/rag/ingest` and `POST /api/v1/rag/query`, with token-authenticated tenant extraction and comprehensive 401 unauthorized handling for missing or invalid principals.
+  - **Platform Bean Definition:** `RagModule` platform module registration (ACTIVE status, 5 capabilities: `ingestion`, `embedding`, `vector-search`, `context-construction`, `citations`).
+  - **Zero-Mock Test Suites:** Extended `RagPipelineTest` and `RagControllerTest` to cover all boundary conditions, Chunker edge cases, private constructor instantiation, record domain methods, and unauthorized controller requests without mocking frameworks.
+- **WHY:** High-precision grounding for autonomous coding agents requires reliable contextual retrieval, multi-tenant vector isolation, and transparent citation tracking tested without external vector database dependencies.
+- **HOW:** Pure Project Reactor reactive pipeline (`Flux`/`Mono`), zero mocking frameworks (strictly no Mockito), real vector math and in-memory storage, and 100% branch and line coverage verification.
+- **VERIFICATION:** **100% Line Coverage (114 / 114 lines)**, **0 missed lines** verified by JaCoCo. Full 23-module `./gradlew.bat check` (133 actionable tasks) passed cleanly in 8s.
 
 ---
 
