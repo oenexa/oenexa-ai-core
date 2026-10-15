@@ -70,6 +70,8 @@ oenexa-ai-engineer-backend/
 | **22** | Relational Tenancy Kernel & 100% Zero-Mock Verification (`oenexa-core`) | Implemented complete hexagonal multi-tenancy kernel in `oenexa-core`: domain records (`Organization`, `Team`, `Project`, `CoreUser`), port interfaces (`OrganizationPort`, `TeamPort`, `ProjectPort`, `UserPort`), concurrent in-memory persistence adapter, Spring Data JPA adapter, password hasher, tenancy services, 11 REST endpoints (`/api/v1/core/*`), and active platform module registration. Removed from `coverageExempt`. | **100% Line Coverage (281 / 281 lines covered, 0 missed lines)** under strictly Zero-Mock policy. 133/133 Gradle tasks passing cleanly. |
 | **23** | Conversational Assistant & 100% Zero-Mock Verification (`oenexa-chat`) | Engineered multi-turn conversational reasoning, sliding context window budgeting, Spring AI and Echo streaming adapters, tenant-isolated in-memory conversation store, SSE streaming endpoint (`/api/v1/chat/{conversationId}/messages`), and active platform module bean catalog. | **100% Line Coverage (80 / 80 lines covered, 0 missed lines, 100% branch coverage)** under strictly Zero-Mock policy. |
 | **24** | Enterprise Authentication & 100% Zero-Mock Verification (`oenexa-auth`) | Hardened self-service registration, constant-time credential verification, JJWT HS256 access & refresh token issuance, RBAC permissions (`OWNER`, `ADMIN`, `DEVELOPER`, `VIEWER`), Bearer token reactive authentication converter/manager, REST controller (`/api/v1/auth/register`, `/login`, `/refresh`), and `AuthModule` platform beans. | **100% Line Coverage (112 / 112 lines covered, 0 missed lines, 100% branch coverage)** under strictly Zero-Mock policy. |
+| **25** | Cross-Cutting Platform Kernel & 100% Zero-Mock Verification (`oenexa-common`) | Implemented RFC 7807 error envelopes (`ErrorCode`, `OenexaException`, `GlobalErrorHandler`), domain event contracts (`DomainEvent`, `EventPublisher`), reactive multi-tenant execution context (`TenantContext`), and dynamic platform module definitions (`PlatformModule`, `PlannedModule`). | **100% Line Coverage (58 / 58 lines covered, 0 missed lines, 100% branch coverage)** under strictly Zero-Mock policy. |
+
 
 
 
@@ -170,6 +172,12 @@ In accordance with **Constitution Rule 1.0**, every implemented subsystem and ar
 - **HOW:** Pure Project Reactor pipelines, BCrypt password hashing with work factor 12 (4 for tests), JJWT 0.12.6 verification, Bearer authorization conversion, and 100% zero-mock testing across all error branches, disabled user states, and tampered tokens.
 - **VERIFICATION:** **100% Line Coverage (112 / 112 lines)**, **100% Branch Coverage (18 / 18 branches)**, 0 missed lines. Full 23-module `./gradlew.bat check` (133 actionable tasks) passed cleanly.
 
+### [COMMON] 🌐 `oenexa-common` | Cross-Cutting Platform Kernel, RFC 7807 Errors & Zero-Mock Verification
+- **WHAT:** Implemented `ErrorCode` (typed platform errors mapped to RFC HTTP statuses), `OenexaException` (unchecked platform domain error with causal chains), `GlobalErrorHandler` (Spring WebFlux/MVC `@RestControllerAdvice` formatting non-leaking RFC 7807 `ErrorResponse` envelopes with field validation breakdown), `DomainEvent` (cross-module event contract), `EventPublisher` (reactive publishing port), `TenantContext` (Reactor context subscriber key), and `PlatformModule` / `PlannedModule` (platform capability registry).
+- **WHY:** Standardized error envelopes, multi-tenant execution contexts, and decoupled domain event contracts ensure platform-wide consistency without leaky abstractions.
+- **HOW:** Java records, Project Reactor context propagation, reflection-tested `WebExchangeBindException` field error reducers, and zero-mock JUnit 5 test suites.
+- **VERIFICATION:** **100% Line Coverage (58 / 58 lines)**, 0 missed lines. Full 23-module `./gradlew.bat check` (133 actionable tasks) passed cleanly.
+
 ---
 
 ## 2.2 [DOC] 📚 Step 21: Full Documentation Synchronization & API Endpoint Catalog
@@ -224,6 +232,19 @@ In accordance with **Constitution Rule 1.0**, every implemented subsystem and ar
 - **WHY:** Flawless zero-trust authentication guarantees cryptographic integrity, protects against credential stuffing and account enumeration, enforces multi-tenant scoping, and maintains zero mocks across all security tests.
 - **HOW:** Pure Project Reactor reactive pipeline (`Flux`/`Mono`), BCrypt hashing, JJWT 0.12.6, zero mocks (no Mockito, PowerMock, `@MockBean`), and comprehensive branch testing.
 - **VERIFICATION:** **100% Line Coverage (112 / 112 lines)**, **100% Branch Coverage (18 / 18 branches)**, **0 missed lines** verified by JaCoCo. Full 23-module `./gradlew.bat check` (133 actionable tasks) passed cleanly in 27s.
+
+---
+
+## 2.6 [COMMON] 🌐 Step 25: Cross-Cutting Platform Kernel & 100% Zero-Mock Verification
+- **WHAT:** Hardened and verified 100% test coverage across the `oenexa-common` shared infrastructure kernel:
+  - **Error Model & RFC 7807:** `ErrorCode` (NOT_FOUND, UNAUTHORIZED, FORBIDDEN, CONFLICT, VALIDATION, INTERNAL), `OenexaException` (unchecked exception with causal chains and code accessor), `GlobalErrorHandler` (`@RestControllerAdvice` capturing domain exceptions, `WebExchangeBindException` field error reducers, and unexpected runtime errors masked to 500 without information leakage).
+  - **Domain Events:** `DomainEvent` marker interface with eventId, type, tenantId, occurredAt; `EventPublisher` reactive outbound port contract.
+  - **Reactive Tenancy Context:** `TenantContext` providing reactive subscriber context keys, static `get()`, `set(UUID)`, and `defer()` helpers.
+  - **Platform Module Specification:** `PlatformModule` lifecycle specification, `ModuleStatus` enum (`ACTIVE`, `PLANNED`, `DEPRECATED`), `ModuleInfo` record, and `PlannedModule` abstract capability descriptor.
+  - **Zero-Mock Test Suites:** Extended `GlobalErrorHandlerTest` to verify `WebExchangeBindException` with field errors, `WebExchangeBindException` without field errors (`invalid request` fallback), `OenexaException` causal constructors, and all `ErrorCode` HTTP status mappings.
+- **WHY:** Uniform error handling, clean tenant context propagation, and standard capability contracts are required across all 23 platform modules.
+- **HOW:** Pure JUnit 5 tests, reflection-based `MethodParameter` generation for reactive bind exception verification, zero mocking frameworks.
+- **VERIFICATION:** **100% Line Coverage (58 / 58 lines)**, **0 missed lines** verified by JaCoCo. Full 23-module `./gradlew.bat check` (133 actionable tasks) passed cleanly in 15s.
 
 ---
 

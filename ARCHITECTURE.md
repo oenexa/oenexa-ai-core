@@ -114,7 +114,7 @@ The backend is organized into 23 strictly bounded Gradle modules. All dependenci
 ### 3.2 Platform Engineering Modules (19 Modules)
 | Module | Responsibility & Key Services | REST Endpoints | Test Verification & Gate |
 | :--- | :--- | :--- | :--- |
-| **`:oenexa-common`** | Shared cross-cutting concerns: RFC 7807 `ErrorResponse`, multi-tenant context filter, JSON serialization. | Filter / Utility layer | 100% Coverage (JaCoCo Enforced) |
+| **`:oenexa-common`** | Shared cross-cutting concerns: RFC 7807 `ErrorResponse`, global error handler, domain events, and reactive multi-tenant context (`TenantContext`). | Filter / Utility layer | **100% Coverage (58/58 lines)** |
 | **`:oenexa-auth`** | Token authentication, JWT issuing/parsing via JJWT 0.12.6, BCrypt password hashing, and Role-Based Access Control (`AuthService`). | `/api/v1/auth/*` | **100% Coverage (112/112 lines, 100% branches)** |
 | **`:oenexa-agent`** | Autonomous multi-agent coordination framework: 15 agent contracts, 4 sequential workflow pipelines, step execution, and delegation boundaries. | `/api/v1/agents/*` | 100% Coverage (JaCoCo Enforced) |
 | **`:oenexa-chat`** | Conversational AI reasoning service, sliding context window memory, and multi-turn prompt history (`ChatService`). | `/api/v1/chat/*` | **100% Coverage (80/80 lines)** |
@@ -271,4 +271,5 @@ The system enforces strict quality gates:
 | **`oenexa-core`** | 281 | 0 | **100%** | JUnit 5 | **Strictly Zero Mocks** |
 | **`oenexa-chat`** | 80 | 0 | **100%** | JUnit 5 | **Strictly Zero Mocks** |
 | **`oenexa-auth`** | 112 | 0 | **100%** | JUnit 5 | **Strictly Zero Mocks** |
-| **TOTAL** | **1,764** | **0** | **100%** | JUnit 5 | **Zero Mocks Across All Modules** |
+| **`oenexa-common`** | 58 | 0 | **100%** | JUnit 5 | **Strictly Zero Mocks** |
+| **TOTAL** | **1,822** | **0** | **100%** | JUnit 5 | **Zero Mocks Across All Modules** |

@@ -105,11 +105,13 @@ oenexa-ai-engineer-backend/
 │       ├── application.yml             # Local profile configuration (in-memory fallback)
 │       └── application-docker.yml      # Container profile (Postgres, Redis, Actuator)
 │
-├── oenexa-common/               # [Module 5/23] Shared Utilities across all Platform Modules
-│   └── src/main/java/com/oenexa/common/
-│       ├── error/                      # ErrorResponse, ErrorType, Exception handler
-│       ├── tenant/                     # TenantContextFilter, TenantContextHolder
-│       └── util/                       # JSON serialization, clock, string utilities
+├── oenexa-common/               # [Module 5/23] Cross-Cutting Platform Kernel & Common Contracts
+│   ├── src/main/java/ai/oenexa/common/
+│   │   ├── error/                      # ErrorCode, OenexaException, GlobalErrorHandler
+│   │   ├── event/                      # DomainEvent, EventPublisher
+│   │   ├── module/                     # PlatformModule, PlannedModule
+│   │   └── tenant/                     # TenantContext
+│   └── src/test/java/ai/oenexa/common/ # GlobalErrorHandlerTest, PlatformModuleTest, TenantContextTest (100% Zero-Mock Coverage, 58/58 lines)
 │
 ├── oenexa-auth/                 # [Module 6/23] Security, JJWT 0.12.6, RBAC Policies & Endpoints
 │   ├── src/main/java/ai/oenexa/auth/
