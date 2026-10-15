@@ -61,5 +61,19 @@ class ChatControllerTest {
 
         assertThatThrownBy(() -> controller.send(anonymous, conversationId, body))
                 .isInstanceOf(OenexaException.class);
+
+        assertThatThrownBy(() -> controller.send(null, conversationId, body))
+                .isInstanceOf(OenexaException.class);
+
+        assertThatThrownBy(() -> controller.history(anonymous, conversationId))
+                .isInstanceOf(OenexaException.class);
+
+        assertThatThrownBy(() -> controller.history(null, conversationId))
+                .isInstanceOf(OenexaException.class);
+
+        var badAuth = new UsernamePasswordAuthenticationToken("user", "pass", List.of());
+        badAuth.setDetails("not-claims");
+        assertThatThrownBy(() -> controller.send(badAuth, conversationId, body))
+                .isInstanceOf(OenexaException.class);
     }
 }

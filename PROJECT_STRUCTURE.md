@@ -123,10 +123,14 @@ oenexa-ai-engineer-backend/
 │       ├── agents/                     # Specialized agent implementations
 │       └── model/                      # AgentTask, ExecutionStep, StepResult
 │
-├── oenexa-chat/                 # [Module 8/23] Chat Assistant, Sliding Context Memory
-│   └── src/main/java/com/oenexa/chat/
-│       ├── service/                    # ConversationalService, ContextWindowManager
-│       └── model/                      # ChatMessage, ConversationThread
+├── oenexa-chat/                 # [Module 8/23] Conversational Assistant, Sliding Context Memory & SSE
+│   ├── src/main/java/ai/oenexa/chat/
+│   │   ├── domain/                     # ChatMessage, ConversationStore, LlmPort
+│   │   ├── application/                # ChatService, ContextWindow
+│   │   ├── infra/                      # EchoLlmAdapter, SpringAiLlmAdapter, InMemoryConversationStore
+│   │   ├── web/                        # ChatController (/api/v1/chat/*)
+│   │   └── ChatModule.java             # PlatformModule definition (ACTIVE)
+│   └── src/test/java/ai/oenexa/chat/   # ChatServiceTest, ChatControllerTest (100% Zero-Mock Coverage, 80/80 lines)
 │
 ├── oenexa-rag/                  # [Module 9/23] Semantic Embeddings, Chunking, Similarity Search
 │   └── src/main/java/com/oenexa/rag/

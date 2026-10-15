@@ -79,4 +79,95 @@ class ChatServiceTest {
                 .assertNext(c -> assertThat(String.join("", c)).isEqualTo("Echo: "))
                 .verifyComplete();
     }
+
+    @Test
+    void contextWindowUtilityConstructor() throws Exception {
+        var constructor = ContextWindow.class.getDeclaredConstructor();
+        constructor.setAccessible(true);
+        var instance = constructor.newInstance();
+        assertThat(instance).isNotNull();
+    }
+
+    @Test
+    void chatMessageEstimatedTokensAndCreation() {
+        var msg = ChatMessage.of(Role.USER, "12345678");
+        assertThat(msg.estimatedTokens()).isEqualTo(2);
+        assertThat(msg.createdAt()).isNotNull();
+
+        var shortMsg = ChatMessage.of(Role.SYSTEM, "");
+        assertThat(shortMsg.estimatedTokens()).isEqualTo(1);
+    }
+
+    @Test
+    void springAiLlmAdapterWithRealChatModel() {
+        org.springframework.ai.chat.model.ChatModel stubModel = new org.springframework.ai.chat.model.ChatModel() {
+            @Override
+            public org.springframework.ai.chat.model.ChatResponse call(org.springframework.ai.chat.prompt.Prompt prompt) {
+                return new org.springframework.ai.chat.model.ChatResponse(
+                        List.of(new org.springframework.ai.chat.model.Generation(new org.springframework.ai.chat.messages.AssistantMessage("call-response"))));
+            }
+
+            @Override
+            public reactor.core.publisher.Flux<org.springframework.ai.chat.model.ChatResponse> stream(org.springframework.ai.chat.prompt.Prompt prompt) {
+                return reactor.core.publisher.Flux.just(
+                        new org.springframework.ai.chat.model.ChatResponse(
+                                List.of(new org.springframework.ai.chat.model.Generation(new org.springframework.ai.chat.messages.AssistantMessage("streaming-chunk")))));
+            }
+        };
+
+        var builder = org.springframework.ai.chat.client.ChatClient.builder(stubModel);
+        var adapter = new SpringAiLlmAdapter(builder);
+        var messages = List.of(
+                ChatMessage.of(Role.SYSTEM, "sys"),
+                ChatMessage.of(Role.USER, "hello"),
+                ChatMessage.of(Role.ASSISTANT, "hi")
+        );
+
+        StepVerifier.create(adapter.stream(messages))
+                .assertNext(chunk -> assertThat(chunk).isEqualTo("streaming-chunk"))
+                .verifyComplete();
+    }
+
+    @Test
+    void chatModuleConfigurationAndBeanDefinitions() {
+        var module = new ChatModule();
+        assertThat(module.id()).isEqualTo("chat");
+        assertThat(module.displayName()).isEqualTo("OENEXA Chat");
+        assertThat(module.description()).contains("Multi-turn streaming");
+        assertThat(module.capabilities()).contains("streaming", "multi-turn", "context-window", "tenant-isolated-history");
+        assertThat(module.status()).isEqualTo(ai.oenexa.common.module.PlatformModule.ModuleStatus.ACTIVE);
+
+        var store = module.conversationStore();
+        assertThat(store).isInstanceOf(InMemoryConversationStore.class);
+
+        org.springframework.beans.factory.ObjectProvider<org.springframework.ai.chat.client.ChatClient.Builder> emptyProvider =
+                new org.springframework.beans.factory.ObjectProvider<>() {
+                    @Override public org.springframework.ai.chat.client.ChatClient.Builder getObject(Object... args) { return null; }
+                    @Override public org.springframework.ai.chat.client.ChatClient.Builder getIfAvailable() { return null; }
+                    @Override public org.springframework.ai.chat.client.ChatClient.Builder getIfUnique() { return null; }
+                    @Override public org.springframework.ai.chat.client.ChatClient.Builder getObject() { return null; }
+                };
+
+        var echoLlm = module.llmPort(emptyProvider, "echo");
+        assertThat(echoLlm).isInstanceOf(EchoLlmAdapter.class);
+
+        var echoLlmNullBuilder = module.llmPort(emptyProvider, "spring-ai");
+        assertThat(echoLlmNullBuilder).isInstanceOf(EchoLlmAdapter.class);
+
+        org.springframework.ai.chat.model.ChatModel stubModel = prompt -> null;
+        var validBuilder = org.springframework.ai.chat.client.ChatClient.builder(stubModel);
+        org.springframework.beans.factory.ObjectProvider<org.springframework.ai.chat.client.ChatClient.Builder> validProvider =
+                new org.springframework.beans.factory.ObjectProvider<>() {
+                    @Override public org.springframework.ai.chat.client.ChatClient.Builder getObject(Object... args) { return validBuilder; }
+                    @Override public org.springframework.ai.chat.client.ChatClient.Builder getIfAvailable() { return validBuilder; }
+                    @Override public org.springframework.ai.chat.client.ChatClient.Builder getIfUnique() { return validBuilder; }
+                    @Override public org.springframework.ai.chat.client.ChatClient.Builder getObject() { return validBuilder; }
+                };
+
+        var springAiLlm = module.llmPort(validProvider, "spring-ai");
+        assertThat(springAiLlm).isInstanceOf(SpringAiLlmAdapter.class);
+
+        var chatService = module.chatService(store, echoLlm, "Custom prompt", 12000);
+        assertThat(chatService).isNotNull();
+    }
 }

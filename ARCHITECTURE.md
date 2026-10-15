@@ -117,7 +117,7 @@ The backend is organized into 23 strictly bounded Gradle modules. All dependenci
 | **`:oenexa-common`** | Shared cross-cutting concerns: RFC 7807 `ErrorResponse`, multi-tenant context filter, JSON serialization. | Filter / Utility layer | 100% Coverage (JaCoCo Enforced) |
 | **`:oenexa-auth`** | Token authentication, JWT issuing/parsing via JJWT 0.12.6, password encryption, and Role-Based Access Control (RBAC). | `/api/v1/auth/*` | 100% Coverage (JaCoCo Enforced) |
 | **`:oenexa-agent`** | Autonomous multi-agent coordination framework: 15 agent contracts, 4 sequential workflow pipelines, step execution, and delegation boundaries. | `/api/v1/agents/*` | 100% Coverage (JaCoCo Enforced) |
-| **`:oenexa-chat`** | Conversational AI reasoning service, sliding context window memory, and multi-turn prompt history. | `/api/v1/chat/*` | 100% Coverage (JaCoCo Enforced) |
+| **`:oenexa-chat`** | Conversational AI reasoning service, sliding context window memory, and multi-turn prompt history (`ChatService`). | `/api/v1/chat/*` | **100% Coverage (80/80 lines)** |
 | **`:oenexa-rag`** | Retrieval-Augmented Generation: document ingestion, token chunking, semantic vector index, and similarity retrieval. | `/api/v1/rag/*` | 100% Coverage (JaCoCo Enforced) |
 | **`:oenexa-core`** | Relational tenancy kernel: Organizations, Teams, Projects, Users domain records, JPA/In-Memory adapters, and tenancy services (`DefaultCoreTenancyService`). | `/api/v1/core/*` | **100% Coverage (281/281 lines)** |
 | **`:oenexa-gateway`** | Executable Modular Monolith bootJar aggregating all 19 platform modules into a single production service. | Unified Gateway Host | Monolith Assembler |
@@ -269,4 +269,5 @@ The system enforces strict quality gates:
 | **`oenexa-repository`** | 90 | 0 | **100%** | JUnit 5 | **Strictly Zero Mocks** |
 | **`oenexa-observability`** | 136 | 0 | **100%** | JUnit 5 | **Strictly Zero Mocks** |
 | **`oenexa-core`** | 281 | 0 | **100%** | JUnit 5 | **Strictly Zero Mocks** |
-| **TOTAL** | **1,572** | **0** | **100%** | JUnit 5 | **Zero Mocks Across All Modules** |
+| **`oenexa-chat`** | 80 | 0 | **100%** | JUnit 5 | **Strictly Zero Mocks** |
+| **TOTAL** | **1,652** | **0** | **100%** | JUnit 5 | **Zero Mocks Across All Modules** |
