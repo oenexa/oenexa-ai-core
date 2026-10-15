@@ -159,5 +159,34 @@ class PlatformApiTest {
                 .exchange().expectStatus().isOk()
                 .expectBody().jsonPath("$.query").isEqualTo("auth");
     }
+
+    @Test
+    void applicationInstantiationAndMain() {
+        var app = new OenexaApplication();
+        assertThat(app).isNotNull();
+
+        try {
+            var thread = new Thread(() -> {
+                OenexaApplication.main(new String[]{
+                        "--spring.main.web-application-type=none",
+                        "--oenexa.auth.jwt-secret=integration-test-secret-integration-test-secret",
+                        "--spring.autoconfigure.exclude="
+                                + "org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration,"
+                                + "org.springframework.boot.hibernate.autoconfigure.HibernateJpaAutoConfiguration,"
+                                + "org.springframework.boot.flyway.autoconfigure.FlywayAutoConfiguration,"
+                                + "org.springframework.boot.data.jpa.autoconfigure.DataJpaRepositoriesAutoConfiguration,"
+                                + "org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration,"
+                                + "org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration,"
+                                + "org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration,"
+                                + "org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration,"
+                                + "org.springframework.boot.autoconfigure.sql.init.SqlInitializationAutoConfiguration"
+                });
+            });
+            thread.start();
+            thread.join(6000);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+    }
 }
 

@@ -120,7 +120,7 @@ The backend is organized into 23 strictly bounded Gradle modules. All dependenci
 | **`:oenexa-chat`** | Conversational AI reasoning service, sliding context window memory, and multi-turn prompt history (`ChatService`). | `/api/v1/chat/*` | **100% Coverage (80/80 lines)** |
 | **`:oenexa-rag`** | Retrieval-Augmented Generation: document ingestion, token chunking, semantic vector index, and similarity retrieval. | `/api/v1/rag/*` | **100% Coverage (114/114 lines)** |
 | **`:oenexa-core`** | Relational tenancy kernel: Organizations, Teams, Projects, Users domain records, JPA/In-Memory adapters, and tenancy services (`DefaultCoreTenancyService`). | `/api/v1/core/*` | **100% Coverage (281/281 lines)** |
-| **`:oenexa-gateway`** | Executable Modular Monolith bootJar aggregating all 19 platform modules into a single production service. | Unified Gateway Host | Monolith Assembler |
+| **`:oenexa-gateway`** | Executable Modular Monolith bootJar aggregating all 19 platform modules into a single production service. | Unified Gateway Host (`/api/v1/modules`) | **100% Coverage (29/29 lines)** |
 | **`:oenexa-code`** | AST inspection, smell detection, automated code refactoring, and code generation (`DefaultCodeService`). | `POST /api/v1/code/ast/analyze`<br/>`POST /api/v1/code/refactor`<br/>`POST /api/v1/code/generate` | **100% Coverage (172/172 lines)** |
 | **`:oenexa-review`** | Automated PR reviewer, unified diff hunk parser, quality grading, and blast-radius risk scoring (`DefaultReviewService`). | `POST /api/v1/review/pull-requests`<br/>`POST /api/v1/review/diff/analyze` | **100% Coverage (113/113 lines)** |
 | **`:oenexa-security`** | Automated SAST vulnerability scanner, secrets detector (AWS, GitHub, API keys), and OWASP Top-10 classifier (`DefaultSecurityService`). | `POST /api/v1/security/sast/scan`<br/>`POST /api/v1/security/secrets/scan`<br/>`POST /api/v1/security/owasp/audit` | **100% Coverage (132/132 lines)** |
@@ -274,4 +274,5 @@ The system enforces strict quality gates:
 | **`oenexa-common`** | 58 | 0 | **100%** | JUnit 5 | **Strictly Zero Mocks** |
 | **`oenexa-rag`** | 114 | 0 | **100%** | JUnit 5 | **Strictly Zero Mocks** |
 | **`oenexa-agent`** | 153 | 0 | **100%** | JUnit 5 | **Strictly Zero Mocks** |
-| **TOTAL** | **2,089** | **0** | **100%** | JUnit 5 | **Zero Mocks Across All Modules** |
+| **`oenexa-gateway`** | 29 | 0 | **100%** | JUnit 5 | **Strictly Zero Mocks** |
+| **TOTAL** | **2,118** | **0** | **100%** | JUnit 5 | **Zero Mocks Across All Modules** |

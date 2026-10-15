@@ -158,10 +158,12 @@ oenexa-ai-engineer-backend/
 │   └── src/test/java/ai/oenexa/core/   # CoreTenancyServiceTest (100% Zero-Mock Coverage, 281/281 lines)
 │
 ├── oenexa-gateway/              # [Module 11/23] Executable Modular Monolith BootJar
-│   ├── src/main/java/com/oenexa/gateway/
-│   │   └── GatewayApplication.java     # Aggregated monolith launcher
-│   └── src/main/resources/
-│       └── application.yml             # Modular gateway configuration
+│   ├── src/main/java/ai/oenexa/
+│   │   ├── OenexaApplication.java      # Aggregated modular monolith launcher
+│   │   └── gateway/                    # ModulesController (/api/v1/modules), SecurityConfig (Reactive Spring Security)
+│   ├── src/main/resources/
+│   │   └── application.yml             # Modular gateway configuration
+│   └── src/test/java/ai/oenexa/gateway/# PlatformApiTest (100% Zero-Mock Coverage, 29/29 lines)
 │
 ├── oenexa-code/                 # [Module 12/23] AST Analysis, Monaco Snippets, Code Generation
 │   ├── src/main/java/ai/oenexa/code/

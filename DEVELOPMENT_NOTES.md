@@ -73,6 +73,7 @@ oenexa-ai-engineer-backend/
 | **25** | Cross-Cutting Platform Kernel & 100% Zero-Mock Verification (`oenexa-common`) | Implemented RFC 7807 error envelopes (`ErrorCode`, `OenexaException`, `GlobalErrorHandler`), domain event contracts (`DomainEvent`, `EventPublisher`), reactive multi-tenant execution context (`TenantContext`), and dynamic platform module definitions (`PlatformModule`, `PlannedModule`). | **100% Line Coverage (58 / 58 lines covered, 0 missed lines, 100% branch coverage)** under strictly Zero-Mock policy. |
 | **26** | Retrieval-Augmented Generation & 100% Zero-Mock Verification (`oenexa-rag`) | Implemented document ingestion, chunking with paragraph/sentence boundary detection (`Chunker`), dimensional hash embeddings (`HashEmbeddingAdapter`), thread-safe in-memory cosine vector store (`InMemoryVectorStore`), citation linking, budget compaction (`RagService`), REST endpoints (`POST /api/v1/rag/ingest`, `POST /api/v1/rag/query`), and `RagModule` bean catalog. | **100% Line Coverage (114 / 114 lines covered, 0 missed lines)** under strictly Zero-Mock policy. Full 23-module `./gradlew.bat check` passed cleanly. |
 | **27** | Autonomous Multi-Agent Framework & 100% Zero-Mock Verification (`oenexa-agent`) | Implemented 15 specialized role agents (`AgentCatalog`), bounded delegation engine, 4 ordered workflow pipelines (`REPOSITORY_ANALYSIS`, `PR_REVIEW`, `INCIDENT_RESPONSE`, `FEATURE_DELIVERY`), shared blackboard memory (`AgentContext`, `AgentMemory`), tool invocation registry (`Tool.Registry`), REST endpoints (`/api/v1/agents/*`), and `AgentModule` bean catalog. | **100% Line Coverage (153 / 153 lines covered, 0 missed lines, 100% branch coverage)** under strictly Zero-Mock policy. |
+| **28** | Modular Monolith Gateway & 100% Zero-Mock Verification (`oenexa-gateway`) | Aggregated all 19 platform modules into unified executable launcher (`OenexaApplication`), reactive Spring Security chain (`SecurityConfig`), dynamic module registry endpoint (`ModulesController` exposing `/api/v1/modules`), and end-to-end integration suite (`PlatformApiTest`). Removed from `coverageExempt`. | **100% Line Coverage (29 / 29 lines covered, 0 missed lines)** under strictly Zero-Mock policy. Full 23-module `./gradlew.bat check` passed cleanly. |
 
 
 
@@ -192,6 +193,12 @@ In accordance with **Constitution Rule 1.0**, every implemented subsystem and ar
 - **HOW:** Reactive non-blocking Reactor pipelines, deterministic template reasoners, thread-safe memory models, zero mocking frameworks, and 100% test coverage across all domain contracts, workflows, and controller routes.
 - **VERIFICATION:** **100% Line Coverage (153 / 153 lines)**, **100% Branch Coverage (18 / 18 branches)**, 0 missed lines. Full 23-module `./gradlew.bat check` passed cleanly.
 
+### [GATEWAY] 🌐 `oenexa-gateway` | Modular Monolith Assembler, Security & Zero-Mock Verification
+- **WHAT:** Implemented executable monolith entry point `OenexaApplication`; reactive Spring Security configuration `SecurityConfig` (disabling CSRF for stateless APIs, permitting public discovery routes `/api/v1/modules` and auth endpoints `/api/v1/auth/**`, enforcing `JwtAuthenticationManager` on protected routes); and `ModulesController` (`GET /api/v1/modules` streaming active and planned module descriptors).
+- **WHY:** Aggregates all 19 decoupled domain modules into a single, cohesive, high-performance runtime container while preserving strict hexagonal module boundaries.
+- **HOW:** Spring Boot `@SpringBootApplication` root package component scanning, Spring WebFlux security filtering, zero-mock end-to-end testing with `WebTestClient`, and removed from `coverageExempt`.
+- **VERIFICATION:** **100% Line Coverage (29 / 29 lines)**, 0 missed lines. Full 23-module `./gradlew.bat check` passed cleanly.
+
 ---
 
 ## 2.2 [DOC] 📚 Step 21: Full Documentation Synchronization & API Endpoint Catalog
@@ -291,6 +298,18 @@ In accordance with **Constitution Rule 1.0**, every implemented subsystem and ar
 - **WHY:** Enterprise autonomous software engineering requires multi-agent collaboration with verifiable bounds, transparent audit trails, and strict tenant isolation.
 - **HOW:** Pure Project Reactor pipelines (`Flux`/`Mono`), thread-safe concurrent collections, zero mocks (no Mockito, PowerMock, `@MockBean`), and comprehensive branch testing.
 - **VERIFICATION:** **100% Line Coverage (153 / 153 lines)**, **100% Branch Coverage (18 / 18 branches)**, **0 missed lines** verified by JaCoCo. Full 23-module `./gradlew.bat check` passed cleanly in 28s.
+
+---
+
+## 2.9 [GATEWAY] 🌐 Step 28: Modular Monolith Gateway & 100% Zero-Mock Verification
+- **WHAT:** Hardened and verified 100% test coverage across the `oenexa-gateway` modular monolith runtime container:
+  - **Monolith Application Entry Point:** `OenexaApplication` annotated with `@SpringBootApplication`, root-package positioned for comprehensive component scanning across all 19 platform submodules.
+  - **Reactive Security Configuration:** `SecurityConfig` configuring stateless CSRF bypass, anonymous permit routes (`/api/v1/modules`, `/api/v1/auth/**`), authenticated route protection via `JwtAuthenticationManager`, and stateless reactive security filter chains.
+  - **Module Discovery Service:** `ModulesController` dynamically aggregating all registered `PlatformModule` implementations and streaming prioritized metadata (`ACTIVE` before `PLANNED`).
+  - **Zero-Mock Test Suites:** Extended `PlatformApiTest` to cover `OenexaApplication` constructor and `main(String[])` execution, achieving complete line and instruction coverage. Removed `oenexa-gateway` from `coverageExempt` in `build.gradle.kts`.
+- **WHY:** A high-performance modular monolith requires a unified execution shell that packages all decoupled domain engines into a production service with verified end-to-end security and module discovery.
+- **HOW:** Spring Boot 4.1.1, Spring Security reactive filter chains, zero mocking frameworks, and complete JaCoCo line verification gate enforcement.
+- **VERIFICATION:** **100% Line Coverage (29 / 29 lines)**, **0 missed lines** verified by JaCoCo. Full 23-module `./gradlew.bat check` passed cleanly in 17s.
 
 ---
 
