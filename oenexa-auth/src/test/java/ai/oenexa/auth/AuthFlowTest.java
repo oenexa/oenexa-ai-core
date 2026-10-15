@@ -66,6 +66,9 @@ class AuthFlowTest {
         StepVerifier.create(auth.register("b@example.com", "short"))
                 .expectErrorSatisfies(e -> assertThat(((OenexaException) e).code()).isEqualTo(ErrorCode.VALIDATION))
                 .verify();
+        StepVerifier.create(auth.register("b@example.com", null))
+                .expectErrorSatisfies(e -> assertThat(((OenexaException) e).code()).isEqualTo(ErrorCode.VALIDATION))
+                .verify();
     }
 
     @Test
@@ -90,6 +93,8 @@ class AuthFlowTest {
         assertThatThrownBy(() -> jwt.parse(pair.accessToken() + "x", JwtService.TYPE_ACCESS))
                 .isInstanceOf(OenexaException.class);
         assertThatThrownBy(() -> new JwtService("short", Duration.ofMinutes(1), Duration.ofMinutes(1), clock))
+                .isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> new JwtService(null, Duration.ofMinutes(1), Duration.ofMinutes(1), clock))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -116,5 +121,118 @@ class AuthFlowTest {
         assertThat(Role.VIEWER.allows("project:read")).isTrue();
         assertThat(Role.VIEWER.allows("project:write")).isFalse();
         assertThat(Role.OWNER.allows("billing:manage")).isTrue();
+        assertThat(Role.ADMIN.allows("member:manage")).isTrue();
+        assertThat(Role.DEVELOPER.allows("agent:run")).isTrue();
+    }
+
+    @Test
+    void authControllerEndpointsFlow() {
+        var controller = new ai.oenexa.auth.web.AuthController(auth);
+        var reg = new ai.oenexa.auth.web.AuthController.Credentials("controller@example.com", "secure-password-123");
+        StepVerifier.create(controller.register(reg))
+                .assertNext(pair -> {
+                    assertThat(pair.accessToken()).isNotBlank();
+                    assertThat(pair.refreshToken()).isNotBlank();
+                })
+                .verifyComplete();
+
+        StepVerifier.create(controller.login(reg))
+                .assertNext(pair -> {
+                    assertThat(pair.accessToken()).isNotBlank();
+                    var refreshReq = new ai.oenexa.auth.web.AuthController.RefreshRequest(pair.refreshToken());
+                    StepVerifier.create(controller.refresh(refreshReq))
+                            .assertNext(newPair -> assertThat(newPair.accessToken()).isNotBlank())
+                            .verifyComplete();
+                })
+                .verifyComplete();
+    }
+
+    @Test
+    void authModuleBeanDefinitionsAndMetadata() {
+        var module = new AuthModule();
+        assertThat(module.id()).isEqualTo("auth");
+        assertThat(module.displayName()).isEqualTo("Enterprise Authentication");
+        assertThat(module.description()).contains("JWT access/refresh");
+        assertThat(module.capabilities()).contains("jwt", "refresh-tokens", "rbac", "tenant-claims");
+        assertThat(module.status()).isEqualTo(ai.oenexa.common.module.PlatformModule.ModuleStatus.ACTIVE);
+
+        var clk = module.clock();
+        assertThat(clk).isNotNull();
+
+        var jwtSvc = module.jwtService(SECRET, Duration.ofMinutes(15), Duration.ofDays(7), clk);
+        assertThat(jwtSvc).isNotNull();
+
+        var encoder = module.passwordEncoder();
+        assertThat(encoder).isNotNull();
+
+        var users = module.userAccountPort();
+        assertThat(users).isInstanceOf(InMemoryUserAccountAdapter.class);
+
+        var authSvc = module.authService(users, encoder, jwtSvc);
+        assertThat(authSvc).isNotNull();
+
+        var manager = module.jwtAuthenticationManager(jwtSvc);
+        assertThat(manager).isNotNull();
+    }
+
+    @Test
+    void userAccountAndClaimsRecordContract() {
+        var uid = java.util.UUID.randomUUID();
+        var tid = java.util.UUID.randomUUID();
+        var account = new ai.oenexa.auth.domain.UserAccount(uid, tid, "u@test.com", "hash", Role.DEVELOPER, true);
+        assertThat(account.id()).isEqualTo(uid);
+        assertThat(account.tenantId()).isEqualTo(tid);
+        assertThat(account.email()).isEqualTo("u@test.com");
+        assertThat(account.passwordHash()).isEqualTo("hash");
+        assertThat(account.role()).isEqualTo(Role.DEVELOPER);
+        assertThat(account.enabled()).isTrue();
+
+        var claims = new JwtService.TokenClaims(uid, tid, Role.DEVELOPER);
+        assertThat(claims.userId()).isEqualTo(uid);
+        assertThat(claims.tenantId()).isEqualTo(tid);
+        assertThat(claims.role()).isEqualTo(Role.DEVELOPER);
+
+        var pair = new JwtService.TokenPair("acc", "ref", 900);
+        assertThat(pair.accessToken()).isEqualTo("acc");
+        assertThat(pair.refreshToken()).isEqualTo("ref");
+        assertThat(pair.expiresInSeconds()).isEqualTo(900);
+    }
+
+    @Test
+    void disabledUserCannotLoginOrRefresh() {
+        var userStore = new InMemoryUserAccountAdapter();
+        var encoder = new BCryptPasswordEncoder(4);
+        var service = new AuthService(userStore, encoder, jwt);
+
+        var uid = java.util.UUID.randomUUID();
+        var tid = java.util.UUID.randomUUID();
+        var disabled = new ai.oenexa.auth.domain.UserAccount(uid, tid, "disabled@test.com", encoder.encode("pass12345678"), Role.DEVELOPER, false);
+        userStore.save(disabled).block();
+
+        StepVerifier.create(userStore.findById(uid))
+                .assertNext(u -> assertThat(u.email()).isEqualTo("disabled@test.com"))
+                .verifyComplete();
+
+        StepVerifier.create(service.login("disabled@test.com", "pass12345678"))
+                .expectError(OenexaException.class)
+                .verify();
+
+        var tokenPair = jwt.issue(disabled);
+        StepVerifier.create(service.refresh(tokenPair.refreshToken()))
+                .expectError(OenexaException.class)
+                .verify();
+    }
+
+    @Test
+    void jwtAuthManagerRejectsNonBearerOrInvalidTokens() {
+        var manager = new JwtAuthenticationManager(jwt);
+        var basicExchange = MockServerWebExchange.from(MockServerHttpRequest.get("/x")
+                .header("Authorization", "Basic dXNlcjpwYXNz").build());
+        StepVerifier.create(manager.convert(basicExchange)).verifyComplete();
+
+        var invalidAuth = new org.springframework.security.authentication.UsernamePasswordAuthenticationToken(null, "invalid-token");
+        StepVerifier.create(manager.authenticate(invalidAuth))
+                .expectError(org.springframework.security.authentication.BadCredentialsException.class)
+                .verify();
     }
 }

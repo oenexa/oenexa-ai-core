@@ -111,11 +111,14 @@ oenexa-ai-engineer-backend/
 │       ├── tenant/                     # TenantContextFilter, TenantContextHolder
 │       └── util/                       # JSON serialization, clock, string utilities
 │
-├── oenexa-auth/                 # [Module 6/23] Security, JJWT 0.12.6, RBAC Policies
-│   └── src/main/java/com/oenexa/auth/
-│       ├── config/                     # Spring Security filter chain configuration
-│       ├── service/                    # JwtTokenProvider, AuthenticationService
-│       └── model/                      # UserDetails, Role, Permission definitions
+├── oenexa-auth/                 # [Module 6/23] Security, JJWT 0.12.6, RBAC Policies & Endpoints
+│   ├── src/main/java/ai/oenexa/auth/
+│   │   ├── domain/                     # Role, UserAccount, UserAccountPort, InMemoryUserAccountAdapter
+│   │   ├── application/                # AuthService
+│   │   ├── token/                      # JwtService (HS256 access & refresh tokens)
+│   │   ├── web/                        # AuthController (/api/v1/auth/*), JwtAuthenticationManager
+│   │   └── AuthModule.java             # PlatformModule definition (ACTIVE)
+│   └── src/test/java/ai/oenexa/auth/   # AuthFlowTest (100% Zero-Mock Line & Branch Coverage, 112/112 lines)
 │
 ├── oenexa-agent/                # [Module 7/23] Multi-Agent Coordinator (15 Agents, 4 Workflows)
 │   └── src/main/java/com/oenexa/agent/
