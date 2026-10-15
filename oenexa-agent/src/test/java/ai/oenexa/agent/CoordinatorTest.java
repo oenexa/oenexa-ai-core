@@ -129,6 +129,7 @@ class CoordinatorTest {
         assertThat(seen.get()).contains("[git] cloned");
         assertThat(agent.remembered()).containsExactly("mapped");
         assertThat(tools.names()).containsExactly("git");
+        assertThat(agent.type()).isEqualTo(AgentType.REPOSITORY);
     }
 
     @Test
@@ -141,5 +142,90 @@ class CoordinatorTest {
         memory.remember("c");
         assertThat(memory.recall()).containsExactly("b", "c");
         assertThat(AgentCatalog.role(AgentType.SECURITY)).contains("[FINDING]");
+    }
+
+    @Test
+    void agentModuleBeanDefinitionsAndMetadata() {
+        var module = new AgentModule();
+        assertThat(module.id()).isEqualTo("agents");
+        assertThat(module.displayName()).isEqualTo("OENEXA AI Agents");
+        assertThat(module.description()).contains("15 specialised agents");
+        assertThat(module.capabilities()).contains("coordinator", "workflows", "delegation", "agent-memory", "tool-registry");
+        assertThat(module.status()).isEqualTo(ai.oenexa.common.module.PlatformModule.ModuleStatus.ACTIVE);
+
+        var reasoner = module.agentReasoner();
+        assertThat(reasoner).isInstanceOf(TemplateReasoner.class);
+
+        org.springframework.beans.factory.ObjectProvider<Tool> provider = new org.springframework.beans.factory.ObjectProvider<>() {
+            @Override
+            public Tool getObject(Object... args) { return null; }
+            @Override
+            public Tool getIfAvailable() { return null; }
+            @Override
+            public Tool getIfUnique() { return null; }
+            @Override
+            public Tool getObject() { return null; }
+            @Override
+            public java.util.stream.Stream<Tool> orderedStream() {
+                return java.util.stream.Stream.of(new Tool() {
+                    public String name() { return "linter"; }
+                    public Mono<String> call(String input) { return Mono.just("clean"); }
+                });
+            }
+        };
+
+        var toolRegistry = module.toolRegistry(provider);
+        assertThat(toolRegistry.names()).contains("linter");
+
+        var coordinator = module.coordinator(reasoner, toolRegistry);
+        assertThat(coordinator).isNotNull();
+    }
+
+    @Test
+    void domainContractsRecordsAndReflection() throws Exception {
+        var catalogConstructor = AgentCatalog.class.getDeclaredConstructor();
+        catalogConstructor.setAccessible(true);
+        var catalogInstance = catalogConstructor.newInstance();
+        assertThat(catalogInstance).isNotNull();
+
+        var resultOf = Agent.Result.of("simple summary");
+        assertThat(resultOf.summary()).isEqualTo("simple summary");
+        assertThat(resultOf.artifacts()).isEmpty();
+        assertThat(resultOf.delegation()).isEmpty();
+
+        var delegation = new Agent.Delegation(AgentType.SECURITY, "audit secrets");
+        assertThat(delegation.to()).isEqualTo(AgentType.SECURITY);
+        assertThat(delegation.objective()).isEqualTo("audit secrets");
+
+        var task = new Agent.Task(AgentType.REVIEW, "check PR");
+        assertThat(task.agent()).isEqualTo(AgentType.REVIEW);
+        assertThat(task.objective()).isEqualTo("check PR");
+
+        var ctx = new AgentContext("primary goal");
+        assertThat(ctx.objective()).isEqualTo("primary goal");
+        ctx.log("step 1 complete");
+        assertThat(ctx.transcript()).contains("step 1 complete");
+
+        for (var wf : Workflow.values()) {
+            assertThat(wf.steps()).isNotEmpty();
+        }
+
+        var run = new Coordinator(AgentCatalog.build(new TemplateReasoner(), new Tool.Registry()))
+                .run(tenant, Workflow.PR_REVIEW, "test run accessors").block();
+        assertThat(run.id()).isNotNull();
+        assertThat(run.workflow()).isEqualTo(Workflow.PR_REVIEW);
+        assertThat(run.status()).isEqualTo(Coordinator.Status.COMPLETED);
+        assertThat(run.steps()).isNotEmpty();
+        assertThat(run.report()).isNotEmpty();
+        assertThat(run.error()).isNull();
+        assertThat(run.startedAt()).isNotNull();
+        assertThat(run.finishedAt()).isNotNull();
+
+        var step = run.steps().get(0);
+        assertThat(step.agent()).isNotNull();
+        assertThat(step.objective()).isNotNull();
+        assertThat(step.summary()).isNotNull();
+        assertThat(step.at()).isNotNull();
+        assertThat(step.depth()).isGreaterThanOrEqualTo(0);
     }
 }

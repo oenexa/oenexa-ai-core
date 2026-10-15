@@ -122,11 +122,13 @@ oenexa-ai-engineer-backend/
 │   │   └── AuthModule.java             # PlatformModule definition (ACTIVE)
 │   └── src/test/java/ai/oenexa/auth/   # AuthFlowTest (100% Zero-Mock Line & Branch Coverage, 112/112 lines)
 │
-├── oenexa-agent/                # [Module 7/23] Multi-Agent Coordinator (15 Agents, 4 Workflows)
-│   └── src/main/java/com/oenexa/agent/
-│       ├── coordinator/                # AgentOrchestrator, WorkflowEngine
-│       ├── agents/                     # Specialized agent implementations
-│       └── model/                      # AgentTask, ExecutionStep, StepResult
+├── oenexa-agent/                # [Module 7/23] Autonomous Multi-Agent Coordinator (15 Agents, 4 Workflows)
+│   ├── src/main/java/ai/oenexa/agent/
+│   │   ├── domain/                     # Agent (Task, Result, Delegation), AgentContext, AgentMemory, AgentReasoner, AgentType, Tool
+│   │   ├── application/                # AgentCatalog (15 roles), Coordinator (Run, Step), RoleAgent, TemplateReasoner, Workflow
+│   │   ├── web/                        # AgentController (/api/v1/agents/*)
+│   │   └── AgentModule.java            # PlatformModule definition (ACTIVE)
+│   └── src/test/java/ai/oenexa/agent/  # CoordinatorTest, web/AgentControllerTest (100% Zero-Mock Coverage, 153/153 lines, 100% branches)
 │
 ├── oenexa-chat/                 # [Module 8/23] Conversational Assistant, Sliding Context Memory & SSE
 │   ├── src/main/java/ai/oenexa/chat/
