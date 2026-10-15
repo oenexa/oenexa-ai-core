@@ -30,9 +30,22 @@ out/
 # VS Code
 .vscode/
 
-# OS Files
+# Environment & Secrets
+.env
+.env.local
+!.env.example
+
+# Test & Coverage Reports
+.nyc_output/
+coverage/
+
+# OS & Temp
 .DS_Store
 Thumbs.db
+*.tmp
+*.bak
 
 # Log files
 *.log
+logs/
+

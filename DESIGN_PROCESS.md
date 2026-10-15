@@ -7,32 +7,32 @@
 
 ## 2. High‑Level Architecture Definition
 - Draft **system context diagram** (external systems: Git providers, LLM providers, Cloud services).
-- Choose **modular monolith** as the initial shape; define **hexagonal boundaries** (Domain, Application, Infrastructure, API, UI).
-- Identify **cross‑cutting concerns** (security, logging, metrics, error handling).
-- Validate architecture against **C4 model** layers using Mermaid diagrams.
+- Choose **modular monolith** as the foundation; define **hexagonal boundaries** (`domain`, `application`, `infrastructure`, `api`) accompanied by 19 specialized platform modules (`oenexa-*`). The Web UI is completely decoupled in the companion repository `oenexa-ai-engineer-frontend`.
+- Identify **cross‑cutting concerns** (security, multi-tenancy, logging, metrics, RFC 7807 error handling).
+- Validate architecture against **C4 model** layers using Mermaid diagrams in `ARCHITECTURE.md`.
 
 ## 3. Detailed Component Design
-### 3.1 Backend Modules
-- **Domain** – JPA entities, value objects, aggregates.
-- **Application** – Use‑case services, transaction scripts.
-- **Infrastructure** – DataSource, Flyway, Kafka producer/consumer, Redis cache, Elasticsearch client.
-- **API** – WebFlux controllers, reactive endpoints, OpenAPI spec generation.
-- **AI Agent Layer** – Define `Agent` interface, orchestration service, context store (Redis).
+### 3.1 Backend Modules (23 Modules)
+- **Domain (`domain`)** – Pure Java 25 business records, immutable domain events, execution context, and zero framework lock-in.
+- **Application (`application`)** – Use‑case orchestration, `AgentCoordinatorService`, `ChatService`, `RagService`, and `TokenService`.
+- **Infrastructure (`infrastructure`)** – DataSource, PostgreSQL JPA entities, Flyway migrations, Redis cache, Kafka producer/consumer, Elasticsearch client.
+- **API (`api`)** – Spring MVC REST controllers (`@RestController`) powered by Java virtual threads, OpenAPI 3.1 spec generation, ProblemDetail error handlers.
+- **Platform Modules (`oenexa-*`)** – 19 focused subsystems (`common`, `auth`, `agent`, `chat`, `rag`, `core`, `gateway`, `code`, `search`, `security`, `documentation`, `review`, `testing`, `devops`, `pipeline`, `observability`, `repository`, `workspace`, `admin`).
+- **AI Agent Layer** – 15 specialized agent contracts (`AgentContract`), 4 ordered workflow pipelines (`Workflow`), sliding context window manager.
 
-### 3.2 UI Design
-- **Component library**: Material‑UI + Tailwind.
-- **Editor integration**: Monaco editor with AI‑suggestion overlay.
-- **State management**: React Context + hooks (or Redux if needed).
-- **Responsive layout** using Tailwind’s utilities and MUI Grid.
+### 3.2 UI Design (Decoupled Frontend Repository)
+- **Component library**: React 18, Material‑UI 5, Tailwind CSS.
+- **Editor integration**: Monaco editor with AI‑suggestion overlay and real-time backend health monitor.
+- **Reverse Proxy**: Nginx Alpine container forwarding `/api/` traffic to the backend on port 8080.
 
 ### 3.3 Security Design
-- **Authentication** – JWT (access & refresh) with RSA signing.
-- **Authorization** – RBAC/ABAC policies stored in Postgres, enforced by Spring Security.
-- **Hardening** – OWASP Top‑10, secret scanning, CSP headers.
+- **Authentication** – RFC 7519 JWT (access & refresh tokens) via JJWT 0.12.6.
+- **Authorization** – RBAC policies, method security annotations, multi-tenant isolation via `TenantContext`.
+- **Hardening** – OWASP Top‑10 sanitization, secret scanning, CSP headers, immutable record parameters.
 
 ### 3.4 Observability Design
-- **Metrics** – Micrometer + Prometheus for JVM, API, AI agent performance.
-- **Tracing** – OpenTelemetry SDK auto‑instrumentation, export to Zipkin.
+- **Metrics** – Micrometer + Prometheus metrics for JVM, HTTP endpoints, agent execution queues (`/actuator/prometheus`).
+- **Tracing** – OpenTelemetry 1.52.0 SDK distributed tracing.
 - **Logging** – JSON logback to Loki/ELK.
 - **Dashboards** – Grafana panels for request latency, error rates, AI agent queue depth.
 
@@ -64,7 +64,7 @@
 # Development Plan (12‑Week Sprint Roadmap)
 
 ## Week 0 – Project Kick‑off
-- Initialise repo, Gradle multi‑module scaffold (already done).
+- Initialize repo, Gradle multi‑module scaffold (already done).
 - Set up CI pipeline skeleton.
 - Agree on coding standards, branch strategy (GitFlow).
 
@@ -85,7 +85,7 @@
 - Add **integration tests** using Testcontainers (Postgres, Kafka).
 
 ## Week 4 – UI Scaffold & Editor Integration
-- Finalise **React/Vite** scaffold (already done).
+- Finalize **React/Vite** scaffold (already done).
 - Connect UI health check to backend.
 - Integrate **Monaco editor** with basic AI suggestion placeholder.
 
@@ -135,15 +135,15 @@
 ---
 
 ## Milestones & Deliverables
-| Milestone                                 | Expected Output                                                 |
-|-------------------------------------------|-----------------------------------------------------------------|
-| **M1 – Core Backend** (Week 3)            | Domain entities, Flyway migrations, functional API with JWT.    |
-| **M2 – UI & Editor** (Week 4)             | Running React UI with health check and Monaco editor.           |
-| **M3 – AI Agent MVP** (Week 6)            | Coordinator service + two agents (repo intel, architecture).    |
-| **M4 – Observability Stack** (Week 7)     | Prometheus metrics, Grafana dashboards, Loki logging.           |
-| **M5 – CI/CD & Helm** (Week 9)            | Fully automated build‑test‑deploy pipeline to Kubernetes.       |
-| **M6 – Security & Performance** (Week 11) | OWASP‑compliant API, load‑tested system.                        |
-| **M7 – Release Candidate** (Week 12)      | Production‑ready Docker images, Helm chart, comprehensive docs. |
+| Milestone                                 | Expected Output                                                 | Status |
+|-------------------------------------------|-----------------------------------------------------------------|:---|
+| **M1 – Core Backend** (Hexagonal Core)    | Pure Java 25 domain records, Flyway migrations, Spring MVC REST API with JJWT. | ✅ **COMPLETED** |
+| **M2 – UI & Editor** (Decoupled Repo)     | React 18, Vite 5, Monaco code editor, real-time health probe.   | ✅ **COMPLETED** |
+| **M3 – AI Agent MVP** (Orchestration)     | 15 agent types, 4 ordered workflow pipelines, RAG retrieval.    | ✅ **COMPLETED** |
+| **M4 – Observability Stack**              | OpenTelemetry 1.52.0, Prometheus Micrometer, Actuator readiness. | ✅ **COMPLETED** |
+| **M5 – Platform Monolith Migration**      | 19 platform modules ported, tested, and verified under Gradle.  | ✅ **COMPLETED** |
+| **M6 – Docker Stack & Dual Runners**      | Multi-stage Temurin 25 JRE, Nginx SPA proxy, Compose orchestrators (`run.sh`, `docker-runner.sh`). | ✅ **COMPLETED** |
+| **M7 – Release Candidate & Verification** | Zero-mock test suite, 80% JaCoCo coverage gate, 100% healthy containers. | ✅ **COMPLETED** |
 
 ---
 

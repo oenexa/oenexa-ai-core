@@ -1,6 +1,7 @@
 dependencies {
     implementation(project(":domain"))
     implementation(project(":application"))
+    implementation("org.springframework.boot:spring-boot-autoconfigure")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-data-redis")
     implementation("org.springframework.kafka:spring-kafka")

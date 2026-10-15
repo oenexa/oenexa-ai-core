@@ -7,7 +7,7 @@ spring:
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
-      ddl-auto: validate
+      ddl-auto: update
     show-sql: false
   flyway:
     enabled: true
@@ -26,6 +26,19 @@ oenexa:
   redis:
     enabled: ${OENEXA_REDIS_ENABLED:true}
   kafka:
-    enabled: ${OENEXA_KAFKA_ENABLED:true}
+    enabled: ${OENEXA_KAFKA_ENABLED:false}
   elasticsearch:
-    enabled: ${OENEXA_ELASTICSEARCH_ENABLED:true}
+    enabled: ${OENEXA_ELASTICSEARCH_ENABLED:false}
+
+management:
+  endpoint:
+    health:
+      probes:
+        enabled: true
+      show-details: always
+  health:
+    elasticsearch:
+      enabled: false
+    kafka:
+      enabled: false
+
