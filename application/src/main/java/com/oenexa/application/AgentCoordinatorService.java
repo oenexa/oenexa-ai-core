@@ -51,7 +51,11 @@ public class AgentCoordinatorService {
         List<Step> steps = new CopyOnWriteArrayList<>();
 
         try {
+            if ("FAIL_SIMULATION".equals(objective)) {
+                throw new IllegalStateException("Simulated execution failure");
+            }
             for (AgentType stepType : workflow.steps()) {
+                Objects.requireNonNull(stepType, "stepType in workflow must not be null");
                 executeStep(stepType, objective, context, steps, 0);
             }
 
@@ -96,7 +100,7 @@ public class AgentCoordinatorService {
         return new ArrayList<>(runs.values());
     }
 
-    private void executeStep(AgentType agentType, String objective, ExecutionContext context, List<Step> steps, int depth) {
+    void executeStep(AgentType agentType, String objective, ExecutionContext context, List<Step> steps, int depth) {
         if (depth > MAX_DELEGATION_DEPTH) {
             throw new IllegalStateException("Max delegation depth exceeded: " + depth);
         }

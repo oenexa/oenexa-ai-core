@@ -85,7 +85,7 @@ subprojects {
 
     // Coverage gate. Stub modules carry no logic and are exempt.
     val coverageExempt = setOf(
-        "application", "infrastructure", "api"
+        "infrastructure", "api"
     )
     if (name !in coverageExempt) {
         tasks.withType<JacocoCoverageVerification>().configureEach {

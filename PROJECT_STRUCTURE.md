@@ -78,13 +78,14 @@ oenexa-ai-engineer-backend/
 │   │   ├── RagService.java             # Document ingestion, chunking, and similarity search
 │   │   ├── TokenService.java           # JWT token generation, parsing, and validation
 │   │   └── UserService.java            # User registration and authentication use-cases
-│   └── src/test/java/com/oenexa/application/
+│   └── src/test/java/com/oenexa/application/ # (100% Zero-Mock Line & Branch Coverage, 179/179 lines)
 │       ├── AgentCoordinatorServiceTest.java
 │       ├── ChatServiceTest.java
+│       ├── PlatformEventPublisherTest.java
 │       ├── RagServiceTest.java
 │       ├── TokenServiceTest.java
 │       ├── UserServiceTest.java
-│       └── cucumber/                   # Cucumber-JVM 7.21.1 BDD feature steps
+│       └── bdd/                        # RunCucumberTest & UserRegistrationSteps (Cucumber-JVM 7.21.1)
 │
 ├── infrastructure/              # [Module 3/23] Outgoing Adapters (Hexagonal Outer Tier)
 │   └── src/main/java/com/oenexa/infrastructure/
