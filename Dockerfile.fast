@@ -1,0 +1,25 @@
+# ==============================================================================
+# OENEXA AI Engineer Backend - Fast Pre-Built Container Image
+# Assumes api/build/libs/api-0.1.0-SNAPSHOT.jar was built on host via ./run.sh build
+# ==============================================================================
+FROM eclipse-temurin:25-jre-noble AS runner
+WORKDIR /app
+
+RUN apt-get update && apt-get install -y --no-install-recommends curl && rm -rf /var/lib/apt/lists/*
+RUN groupadd -r oenexa && useradd -r -g oenexa -m -d /app oenexa
+
+COPY api/build/libs/api-0.1.0-SNAPSHOT.jar /app/app.jar
+RUN chown -R oenexa:oenexa /app
+
+USER oenexa
+
+EXPOSE 8080
+
+ENV SPRING_PROFILES_ACTIVE=docker \
+    SERVER_PORT=8080 \
+    JAVA_TOOL_OPTIONS="-XX:+UseZGC -Xmx1024m"
+
+HEALTHCHECK --interval=15s --timeout=5s --start-period=30s --retries=3 \
+  CMD curl -f http://localhost:8080/actuator/health || exit 1
+
+ENTRYPOINT ["java", "-Djava.security.egd=file:/dev/./urandom", "-Dfile.encoding=UTF-8", "-jar", "/app/app.jar"]

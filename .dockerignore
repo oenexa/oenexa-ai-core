@@ -1,0 +1,15 @@
+.git/
+.gradle/
+.idea/
+*.log
+.DS_Store
+Thumbs.db
+
+# Ignore build directories except the target executable jars
+build/
+!api/build/libs/*.jar
+!oenexa-gateway/build/libs/*.jar
+*/build/classes/
+*/build/tmp/
+*/build/reports/
+*/build/test-results/

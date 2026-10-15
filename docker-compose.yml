@@ -1,123 +1,118 @@
-version: '3.9'
-
 services:
+  # ----------------------------------------------------------------------------
+  # PostgreSQL Database (with Flyway auto-migration)
+  # ----------------------------------------------------------------------------
   postgres:
     image: postgres:15-alpine
     container_name: oenexa-postgres
+    restart: unless-stopped
     environment:
-      POSTGRES_USER: oenexa
-      POSTGRES_PASSWORD: oenexa_secret
-      POSTGRES_DB: oenexa_db
+      POSTGRES_USER: ${POSTGRES_USER:-oenexa}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-oenexa_secret}
+      POSTGRES_DB: ${POSTGRES_DB:-oenexa_db}
     ports:
-      - "5432:5432"
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD", "pg_isready", "-U", "oenexa"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-oenexa} -d ${POSTGRES_DB:-oenexa_db}"]
       interval: 10s
       timeout: 5s
       retries: 5
+      start_period: 10s
     networks:
       - oenexa-net
 
+  # ----------------------------------------------------------------------------
+  # Redis Cache & Pub/Sub
+  # ----------------------------------------------------------------------------
   redis:
     image: redis:7-alpine
     container_name: oenexa-redis
+    restart: unless-stopped
     ports:
-      - "6379:6379"
-    networks:
-      - oenexa-net
-
-  zookeeper:
-    image: bitnami/zookeeper:latest
-    container_name: oenexa-zookeeper
-    environment:
-      - ALLOW_ANONYMOUS_LOGIN=yes
-    ports:
-      - "2181:2181"
-    networks:
-      - oenexa-net
-
-  kafka:
-    image: bitnami/kafka:latest
-    container_name: oenexa-kafka
-    depends_on:
-      - zookeeper
-    environment:
-      - KAFKA_BROKER_ID=1
-      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
-      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092
-      - KAFKA_LISTENERS=PLAINTEXT://0.0.0.0:9092
-      - ALLOW_PLAINTEXT_LISTENER=yes
-    ports:
-      - "9092:9092"
-    networks:
-      - oenexa-net
-
-  elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:8.12.0
-    container_name: oenexa-elasticsearch
-    environment:
-      - discovery.type=single-node
-      - ES_JAVA_OPTS=-Xms512m -Xmx512m
-      - xpack.security.enabled=false
-    ulimits:
-      memlock:
-        soft: -1
-        hard: -1
-    mem_limit: 1g
-    ports:
-      - "9200:9200"
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - redis_data:/data
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9200"]
+      test: ["CMD", "redis-cli", "ping"]
       interval: 10s
       timeout: 5s
       retries: 5
     networks:
       - oenexa-net
 
-  api:
+  # ----------------------------------------------------------------------------
+  # OENEXA AI Engineer - Spring Boot 4 Backend (Java 25)
+  # ----------------------------------------------------------------------------
+  backend:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: oenexa-api
+    image: oenexa/ai-engineer-backend:latest
+    container_name: oenexa-backend
+    restart: unless-stopped
     depends_on:
       postgres:
         condition: service_healthy
       redis:
-        condition: service_started
-      kafka:
-        condition: service_started
-      elasticsearch:
         condition: service_healthy
     environment:
-      - SPRING_PROFILES_ACTIVE=dev
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/oenexa_db
-      - SPRING_DATASOURCE_USERNAME=oenexa
-      - SPRING_DATASOURCE_PASSWORD=oenexa_secret
+      - SPRING_PROFILES_ACTIVE=docker
+      - SERVER_PORT=8080
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/${POSTGRES_DB:-oenexa_db}
+      - SPRING_DATASOURCE_USERNAME=${POSTGRES_USER:-oenexa}
+      - SPRING_DATASOURCE_PASSWORD=${POSTGRES_PASSWORD:-oenexa_secret}
       - SPRING_REDIS_HOST=redis
       - SPRING_REDIS_PORT=6379
-      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
-      - SPRING_ELASTICSEARCH_URIS=http://elasticsearch:9200
+      - OENEXA_REDIS_ENABLED=true
+      - OENEXA_KAFKA_ENABLED=false
+      - OENEXA_ELASTICSEARCH_ENABLED=false
+      - OENEXA_JWT_SECRET=${OENEXA_JWT_SECRET:-oenexa-ai-engineer-jwt-secret-key-32bytes-min-sample}
+      - OENEXA_LLM_PROVIDER=${OENEXA_LLM_PROVIDER:-echo}
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
     ports:
-      - "8080:8080"
+      - "${BACKEND_PORT:-8080}:8080"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health/readiness"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
     networks:
       - oenexa-net
 
-  ui:
-    image: node:20-alpine
-    container_name: oenexa-ui
-    working_dir: /app
-    volumes:
-      - ./ui:/app
-    command: sh -c "npm install && npm run dev"
-    ports:
-      - "3000:3000"
+  # ----------------------------------------------------------------------------
+  # OENEXA AI Engineer - React / Vite Frontend (Nginx SPA + Reverse Proxy)
+  # ----------------------------------------------------------------------------
+  frontend:
+    build:
+      context: ../oenexa-ai-engineer-frontend
+      dockerfile: Dockerfile
+    image: oenexa/ai-engineer-frontend:latest
+    container_name: oenexa-frontend
+    restart: unless-stopped
     depends_on:
-      - api
-    environment:
-      - VITE_API_URL=http://localhost:8080/api
+      backend:
+        condition: service_healthy
+    ports:
+      - "${FRONTEND_PORT:-3000}:80"
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://127.0.0.1:80/"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
     networks:
       - oenexa-net
+
+volumes:
+  postgres_data:
+    name: oenexa_postgres_data
+  redis_data:
+    name: oenexa_redis_data
 
 networks:
   oenexa-net:
+    name: oenexa-network
     driver: bridge

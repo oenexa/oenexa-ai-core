@@ -1,7 +1,7 @@
 # OENEXA AI Engineer – Development Process, Prompts & Operating Manual
 
 > **Scope:** Enterprise Engineering Guidelines, AI Agent Prompts, Development Workflow, and Quality Gates for `oenexa-ai-engineer-backend`.  
-> **Target Runtime:** Java 25+ | Spring Boot 3.3.4 | WebFlux | PostgreSQL | Redis | Kafka | Elasticsearch  
+> **Target Runtime:** Java 25+ | Spring Boot 4.1.1 | Spring AI 2.0.1 | Spring MVC & WebFlux | PostgreSQL 15 | Redis 7 | Kafka | Elasticsearch | Gradle 9.8.0  
 
 ---
 
@@ -14,6 +14,16 @@ Each feature, agent capability, or bug fix follows this 6-stage lifecycle:
                                                                         │
 [6. Review & Deploy]    <── [5. Integration & Security]   <── [4. Application & Tests]
 ```
+
+### Stage 0: Mandatory Symbolic Step-by-Step Ledger & 100% Coverage Target
+- Every AI agent and developer **must** record every development step in `DEVELOPMENT_NOTES.md` using the standard symbolic format:
+  ```markdown
+  ### [SYMBOL] MODULE | Short Action Title
+  - **WHAT:** Detailed description of what was implemented or modified.
+  - **WHY:** Precise engineering, functional, or architectural reason for the code.
+  - **HOW:** Concrete implementation details (records, algorithms, zero mocks, test suites).
+  ```
+- All new code must be accompanied by real tests targeting **100% test coverage** without mock libraries.
 
 ### Stage 1: Specification & Task Breakdown
 - Define the user story, functional requirements, and non-functional requirements (latency, concurrency, safety).
@@ -30,8 +40,9 @@ Each feature, agent capability, or bug fix follows this 6-stage lifecycle:
 
 ### Stage 4: Application Services & AI Prompt Orchestration
 - Implement use cases in `com.oenexa.application.*`.
-- Wire orchestrators for AI prompts, multi-model fallback, token counting, and tool execution.
+- Wire orchestrators for AI prompts, multimodel fallback, token counting, and tool execution.
 - Write **real unit tests** using pure JUnit 5 (Assertions/Assumptions) **without any mocking libraries**.
+- Add BDD user scenarios in declarative Gherkin with Cucumber-JVM 7.21.1.
 
 ### Stage 5: Infrastructure Adapters & Security Hardening
 - Wire database persistence, Kafka event producers/consumers, Redis caching, and search indexes in `com.oenexa.infrastructure.*`.
@@ -41,9 +52,13 @@ Each feature, agent capability, or bug fix follows this 6-stage lifecycle:
 ### Stage 6: Build Verification & Quality Gate
 - Run:
   ```bash
-  ./gradlew clean test assemble
+  # Git Bash / Linux
+  ./run.sh test && ./run.sh build
+
+  # Windows PowerShell
+  .\gradlew.bat check
   ```
-- Verify zero compiler warnings, 100% test passing, and clean packaging of `api/build/libs/api-0.1.0-SNAPSHOT.jar`.
+- Verify zero compiler warnings with `-Xlint:all,-processing`, 100% test passing, 80% JaCoCo coverage gate, and clean packaging of `api` and `oenexa-gateway` bootJars.
 
 ---
 
@@ -73,7 +88,7 @@ Role: Ingest compile failures, stack traces, and test errors, and produce minima
 Guidelines:
 1. Analyze the root cause before writing code.
 2. Produce targeted diffs; avoid sweeping renames or reformatting unrelated code.
-3. Target Java 25+ and Spring Boot 3.3.4+ standards.
+3. Target Java 25+ and Spring Boot 4.1.1+ standards.
 4. Always provide an accompanying unit or integration test reproducing and confirming the fix.
 ```
 
