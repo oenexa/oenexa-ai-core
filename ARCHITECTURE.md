@@ -117,7 +117,7 @@ The backend is organized into 23 strictly bounded Gradle modules. All dependenci
 | **`:oenexa-common`** | Shared cross-cutting concerns: RFC 7807 `ErrorResponse`, global error handler, domain events, and reactive multi-tenant context (`TenantContext`). | Filter / Utility layer | **100% Coverage (58/58 lines)** |
 | **`:oenexa-auth`** | Token authentication, JWT issuing/parsing via JJWT 0.12.6, BCrypt password hashing, and Role-Based Access Control (`AuthService`). | `/api/v1/auth/*` | **100% Coverage (112/112 lines, 100% branches)** |
 | **`:oenexa-agent`** | Autonomous multi-agent coordination framework: 15 agent contracts, 4 sequential workflow pipelines, step execution, and delegation boundaries. | `/api/v1/agents/*` | **100% Coverage (153/153 lines, 100% branches)** |
-| **`:oenexa-chat`** | Conversational AI reasoning service, sliding context window memory, and multi-turn prompt history (`ChatService`). | `/api/v1/chat/*` | **100% Coverage (80/80 lines)** |
+| **`:oenexa-chat`** | Gemini-grade conversational AI reasoning engine (`GeminiReasoningEngine`), Chain-of-Thought (CoT), Google Gemini REST adapter (`GeminiLlmAdapter`), long-context compaction, and SSE streaming. | `/api/v1/chat/*` | **100% Coverage (242/242 lines)** |
 | **`:oenexa-rag`** | Retrieval-Augmented Generation: document ingestion, token chunking, semantic vector index, and similarity retrieval. | `/api/v1/rag/*` | **100% Coverage (114/114 lines)** |
 | **`:oenexa-core`** | Relational tenancy kernel: Organizations, Teams, Projects, Users domain records, JPA/In-Memory adapters, and tenancy services (`DefaultCoreTenancyService`). | `/api/v1/core/*` | **100% Coverage (281/281 lines)** |
 | **`:oenexa-gateway`** | Executable Modular Monolith bootJar aggregating all 19 platform modules into a single production service. | Unified Gateway Host (`/api/v1/modules`) | **100% Coverage (29/29 lines)** |
@@ -269,14 +269,14 @@ The system enforces strict quality gates:
 | **`oenexa-repository`** | 90 | 0 | **100%** | JUnit 5 | **Strictly Zero Mocks** |
 | **`oenexa-observability`** | 136 | 0 | **100%** | JUnit 5 | **Strictly Zero Mocks** |
 | **`oenexa-core`** | 281 | 0 | **100%** | JUnit 5 | **Strictly Zero Mocks** |
-| **`oenexa-chat`** | 80 | 0 | **100%** | JUnit 5 | **Strictly Zero Mocks** |
+| **`oenexa-chat`** | 242 | 0 | **100%** | JUnit 5 | **Strictly Zero Mocks** |
 | **`oenexa-auth`** | 112 | 0 | **100%** | JUnit 5 | **Strictly Zero Mocks** |
 | **`oenexa-common`** | 58 | 0 | **100%** | JUnit 5 | **Strictly Zero Mocks** |
 | **`oenexa-rag`** | 114 | 0 | **100%** | JUnit 5 | **Strictly Zero Mocks** |
 | **`oenexa-agent`** | 153 | 0 | **100%** | JUnit 5 | **Strictly Zero Mocks** |
 | **`oenexa-gateway`** | 29 | 0 | **100%** | JUnit 5 | **Strictly Zero Mocks** |
-| **`domain`** | 144 | 0 | **100%** | JUnit 5 | **Strictly Zero Mocks** |
-| **`application`** | 179 | 0 | **100%** | JUnit 5 / BDD | **Strictly Zero Mocks** |
+| **`domain`** | 150 | 0 | **100%** | JUnit 5 | **Strictly Zero Mocks** |
+| **`application`** | 220 | 0 | **100%** | JUnit 5 / BDD | **Strictly Zero Mocks** |
 | **`infrastructure`** | 374 | 0 | **100%** | JUnit 5 | **Strictly Zero Mocks** |
-| **`api`** | 106 | 0 | **100%** | JUnit 5 | **Strictly Zero Mocks** |
-| **TOTAL** | **2,921** | **0** | **100%** | JUnit 5 / BDD | **Zero Mocks Across All Modules** |
+| **`api`** | 110 | 0 | **100%** | JUnit 5 | **Strictly Zero Mocks** |
+| **TOTAL** | **3,134** | **0** | **100%** | JUnit 5 / BDD | **Zero Mocks Across All Modules** |

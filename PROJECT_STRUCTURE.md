@@ -148,14 +148,18 @@ oenexa-ai-engineer-backend/
 │   │   └── AgentModule.java            # PlatformModule definition (ACTIVE)
 │   └── src/test/java/ai/oenexa/agent/  # CoordinatorTest, web/AgentControllerTest (100% Zero-Mock Coverage, 153/153 lines, 100% branches)
 │
-├── oenexa-chat/                 # [Module 8/23] Conversational Assistant, Sliding Context Memory & SSE
+├── oenexa-chat/                 # [Module 8/23] Gemini-Grade Conversational AI, CoT Reasoning & SSE
 │   ├── src/main/java/ai/oenexa/chat/
-│   │   ├── domain/                     # ChatMessage, ConversationStore, LlmPort
-│   │   ├── application/                # ChatService, ContextWindow
-│   │   ├── infra/                      # EchoLlmAdapter, SpringAiLlmAdapter, InMemoryConversationStore
+│   │   ├── domain/                     # ChatMessage (thoughtProcess, model), ConversationStore, LlmPort
+│   │   ├── application/                # ChatService, ContextWindow (compaction), GeminiReasoningEngine (CoT)
+│   │   ├── infra/                      # GeminiLlmAdapter (REST client & fallback), EchoLlmAdapter, SpringAiLlmAdapter, InMemoryConversationStore
 │   │   ├── web/                        # ChatController (/api/v1/chat/*)
 │   │   └── ChatModule.java             # PlatformModule definition (ACTIVE)
-│   └── src/test/java/ai/oenexa/chat/   # ChatServiceTest, ChatControllerTest (100% Zero-Mock Coverage, 80/80 lines)
+│   └── src/test/java/ai/oenexa/chat/   # (100% Zero-Mock Line & Branch Coverage, 242/242 lines)
+│       ├── ChatServiceTest.java
+│       ├── application/GeminiReasoningEngineTest.java
+│       ├── infra/GeminiLlmAdapterTest.java
+│       └── web/ChatControllerTest.java
 │
 ├── oenexa-rag/                  # [Module 9/23] Semantic Embeddings, Chunking, Similarity Search
 │   ├── src/main/java/ai/oenexa/rag/

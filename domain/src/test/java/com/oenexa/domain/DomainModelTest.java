@@ -116,6 +116,18 @@ class DomainModelTest {
         assertEquals(ChatDomain.Role.USER, msg.role());
         assertEquals("Hello", msg.content());
         assertEquals(now, msg.timestamp());
+        assertNull(msg.thoughtProcess());
+        assertEquals("gemini-2.5-flash", msg.model());
+
+        ChatDomain.Message advancedMsg = new ChatDomain.Message(
+                ChatDomain.Role.ASSISTANT,
+                "Answer",
+                now,
+                "Thought step",
+                "gemini-2.5-pro"
+        );
+        assertEquals("Thought step", advancedMsg.thoughtProcess());
+        assertEquals("gemini-2.5-pro", advancedMsg.model());
 
         ChatDomain.Conversation conv = new ChatDomain.Conversation("c1", "u1", List.of(msg));
         assertEquals("c1", conv.conversationId());
@@ -125,11 +137,35 @@ class DomainModelTest {
         ChatDomain.ChatRequest req = new ChatDomain.ChatRequest("query", "c1");
         assertEquals("query", req.message());
         assertEquals("c1", req.conversationId());
+        assertEquals("gemini-2.5-flash", req.model());
+        assertTrue(req.includeThinking());
+
+        ChatDomain.ChatRequest advancedReq = new ChatDomain.ChatRequest("query", "c1", "gemini-2.5-pro", false);
+        assertEquals("gemini-2.5-pro", advancedReq.model());
+        assertFalse(advancedReq.includeThinking());
 
         ChatDomain.ChatResponse resp = new ChatDomain.ChatResponse("reply", "c1", 42);
         assertEquals("reply", resp.reply());
         assertEquals("c1", resp.conversationId());
         assertEquals(42, resp.contextTokensUsed());
+        assertNull(resp.thoughtProcess());
+        assertEquals("gemini-2.5-flash", resp.model());
+        assertEquals("GENERAL_ASSISTANT", resp.intent());
+        assertTrue(resp.suggestedFollowUps().isEmpty());
+
+        ChatDomain.ChatResponse advancedResp = new ChatDomain.ChatResponse(
+                "reply",
+                "c1",
+                42,
+                "Thought",
+                "gemini-2.5-pro",
+                "ARCHITECTURE_DESIGN",
+                List.of("Follow up 1")
+        );
+        assertEquals("Thought", advancedResp.thoughtProcess());
+        assertEquals("gemini-2.5-pro", advancedResp.model());
+        assertEquals("ARCHITECTURE_DESIGN", advancedResp.intent());
+        assertEquals(1, advancedResp.suggestedFollowUps().size());
     }
 
     @Test

@@ -28,6 +28,23 @@ class ChatControllerTest {
         assertNotNull(response.getBody());
         assertTrue(response.getBody().reply().contains("OENEXA Architecture"));
         assertNotNull(response.getBody().conversationId());
+        assertEquals("gemini-2.5-flash", response.getBody().model());
+        assertEquals("ARCHITECTURE_DESIGN", response.getBody().intent());
+        assertNotNull(response.getBody().thoughtProcess());
+        assertFalse(response.getBody().suggestedFollowUps().isEmpty());
+    }
+
+    @Test
+    @DisplayName("Should send message with custom model and thinking options")
+    void shouldSendMessageWithCustomModelOptions() {
+        ChatRequest req = new ChatRequest("Explain microservices architecture", "conv-custom", "gemini-2.5-pro", false);
+        ResponseEntity<ChatResponse> response = controller.sendMessage(req);
+
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals("gemini-2.5-pro", response.getBody().model());
+        assertNull(response.getBody().thoughtProcess());
     }
 
     @Test

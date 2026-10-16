@@ -26,7 +26,14 @@ import reactor.core.publisher.Mono;
 @RequestMapping("/api/v1/chat")
 public class ChatController {
 
-    public record SendMessage(@NotBlank @Size(max = 32_000) String content) {
+    public record SendMessage(
+            @NotBlank @Size(max = 64_000) String content,
+            String model,
+            Boolean includeThinking
+    ) {
+        public SendMessage(String content) {
+            this(content, "gemini-2.5-flash", true);
+        }
     }
 
     private final ChatService service;

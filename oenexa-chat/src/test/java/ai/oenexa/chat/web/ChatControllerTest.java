@@ -51,6 +51,11 @@ class ChatControllerTest {
                     assertThat(messages.get(1).content()).isEqualTo("Echo: Hello from test");
                 })
                 .verifyComplete();
+
+        var customBody = new ChatController.SendMessage("Custom message", "gemini-2.5-pro", false);
+        assertThat(customBody.content()).isEqualTo("Custom message");
+        assertThat(customBody.model()).isEqualTo("gemini-2.5-pro");
+        assertThat(customBody.includeThinking()).isFalse();
     }
 
     @Test

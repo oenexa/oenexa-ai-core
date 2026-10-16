@@ -25,7 +25,12 @@ public class ChatController {
         if (request.message() == null || request.message().isBlank()) {
             return ResponseEntity.badRequest().build();
         }
-        ChatResponse response = chatService.processMessage(request.conversationId(), request.message());
+        ChatResponse response = chatService.processMessage(
+                request.conversationId(),
+                request.message(),
+                request.model(),
+                request.includeThinking()
+        );
         return ResponseEntity.ok(response);
     }
 

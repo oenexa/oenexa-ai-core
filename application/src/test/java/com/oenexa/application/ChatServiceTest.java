@@ -64,6 +64,66 @@ class ChatServiceTest {
         assertNotNull(resp);
         assertFalse(resp.conversationId().isBlank());
         assertTrue(resp.reply().contains("OENEXA AI Engineer: Request received"));
+        assertEquals("GENERAL_ASSISTANT", resp.intent());
+        assertNotNull(resp.thoughtProcess());
+        assertFalse(resp.suggestedFollowUps().isEmpty());
+    }
+
+    @Test
+    @DisplayName("Should respond to refactoring questions")
+    void shouldRespondToRefactoringQuestions() {
+        ChatResponse resp = chatService.processMessage("conv-refactor", "Please refactor clean code smells");
+        assertNotNull(resp);
+        assertEquals("CODE_REFACTORING", resp.intent());
+        assertTrue(resp.reply().contains("Refactoring Engine Activated"));
+        assertTrue(resp.thoughtProcess().contains("Code Smell Refactoring"));
+        assertFalse(resp.suggestedFollowUps().isEmpty());
+    }
+
+    @Test
+    @DisplayName("Should respond to devops questions")
+    void shouldRespondToDevOpsQuestions() {
+        ChatResponse resp = chatService.processMessage("conv-devops", "Setup devops docker pipeline");
+        assertNotNull(resp);
+        assertEquals("DEVOPS_PIPELINE", resp.intent());
+        assertTrue(resp.reply().contains("DevOps & CI/CD Engine Activated"));
+        assertTrue(resp.thoughtProcess().contains("DevOps & Containerization"));
+        assertFalse(resp.suggestedFollowUps().isEmpty());
+    }
+
+    @Test
+    @DisplayName("Should respond to testing synthesis questions")
+    void shouldRespondToTestingQuestions() {
+        ChatResponse resp = chatService.processMessage("conv-test", "Generate test coverage with junit and bdd");
+        assertNotNull(resp);
+        assertEquals("TESTING_SYNTHESIS", resp.intent());
+        assertTrue(resp.reply().contains("Test Synthesizer Activated"));
+        assertTrue(resp.thoughtProcess().contains("Test Suite Generation"));
+        assertFalse(resp.suggestedFollowUps().isEmpty());
+    }
+
+    @Test
+    @DisplayName("Should respond to code generation questions")
+    void shouldRespondToCodeGenerationQuestions() {
+        ChatResponse resp = chatService.processMessage("conv-code", "Write and generate code for user record");
+        assertNotNull(resp);
+        assertEquals("CODE_GENERATION", resp.intent());
+        assertTrue(resp.reply().contains("Code Synthesizer Activated"));
+        assertTrue(resp.thoughtProcess().contains("Modern Code Generation"));
+        assertFalse(resp.suggestedFollowUps().isEmpty());
+    }
+
+    @Test
+    @DisplayName("Should support model selection and disabling thinking mode")
+    void shouldSupportModelSelectionAndDisableThinking() {
+        ChatResponse resp = chatService.processMessage("conv-custom", "Hello", "gemini-2.5-pro", false);
+        assertNotNull(resp);
+        assertEquals("gemini-2.5-pro", resp.model());
+        assertNull(resp.thoughtProcess());
+
+        ChatResponse respDefault = chatService.processMessage("conv-custom-2", "Hello", "  ", true);
+        assertEquals("gemini-2.5-flash", respDefault.model());
+        assertNotNull(respDefault.thoughtProcess());
     }
 
     @Test
