@@ -448,6 +448,18 @@ In accordance with **Constitution Rule 1.0**, every implemented subsystem and ar
 - **VERIFICATION:** **100% Line Coverage in `oenexa-chat` (242 / 242 lines)**, **100% Line Coverage in `domain` (150 / 150 lines)**, 0 missed lines. Full 23-module `./gradlew.bat check` passed cleanly across 141 tasks in 32s.
 
 
+## 2.15 [DOC] 📚 Step 34: System Context Diagram & Comprehensive C4 Architecture Blueprint
+- **WHAT:** Formulated and deployed the complete C4 Model architecture blueprint for the OENEXA AI Engineer platform:
+  - **C4 Level 1: System Context Diagram:** Visualized developer & AI agent actors, CI/CD webhook runners, system boundary, and external integrations (Google Gemini 2.5 API with CoT, PostgreSQL 15, Redis 7, Apache Kafka 9092, and Git VCS hosts).
+  - **C4 Level 2: Container Ecosystem:** Visualized the isolated Docker bridge network (`oenexa-network`), Nginx Alpine reverse proxy (:3000), Eclipse Temurin 25 JRE runtime (:8080) with Generational ZGC, dual-runner bootJars (`:api` and `:oenexa-gateway`), Actuator health probes, and persistent volumes (`oenexa_pgdata`, `oenexa_redisdata`).
+  - **C4 Level 3: Hexagonal Modular Monolith:** Visualized the 4 concentric rings (Ring 1 Domain, Ring 2 Application, Ring 3 Infrastructure, Ring 4 API/Gateway) alongside the 19 platform modules organized by functional domain (Identity, AI & Search, Engineering Automation, DevOps & Operations).
+  - **End-to-End Gemini CoT Sequence Trace:** Visualized virtual thread allocation, Bearer token extraction, intent classification, compaction, Gemini REST model invocation, and asynchronous persistence.
+  - **Interactive Generative UI Architecture Explorer:** Built standalone interactive HTML artifact (`system_architecture_viewer.html`) with tabbed C4-L1 inspector, container specifications, 23-module filterable card deck with 100% Zero-Mock badges, and interactive multi-agent workflow DAG simulator.
+  - **Architectural Markdown Blueprint:** Generated comprehensive markdown artifact (`oenexa_architecture_blueprint.md`) and synchronized repository `ARCHITECTURE.md`.
+- **WHY:** Fulfills the user requirement to construct the System Context Diagram and internal architecture "in the best way," giving engineers and autonomous agents clear visual and technical orientation across all 23 subsystems.
+- **HOW:** Mermaid C4Context, flowchart TD, and sequence diagrams; interactive standalone Generative UI built with Tailwind CSS and CSS design tokens; verified synchronization across all repository documentation.
+
+
 ---
 
 ## 3. Developer & AI Agent Guide

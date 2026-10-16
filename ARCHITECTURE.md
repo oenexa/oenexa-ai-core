@@ -20,81 +20,156 @@ The platform follows a **Hexagonal / Clean Modular Monolith** architecture:
 
 ---
 
-## 2. System Context & Container Diagram (C4 Model)
+## 2. System Context, Container & Hexagonal Architecture (C4 Model)
 
 ### 2.1 System Context Diagram (Level 1)
 
 ```mermaid
 C4Context
-    title System Context Diagram - OENEXA AI Engineer Platform
+    title System Context Diagram (C4 Level 1) - OENEXA AI Engineer Platform
 
-    Person(developer, "Software Engineer / AI Agent", "Interacts with Monaco editor, prompts AI, triggers code reviews, and executes builds")
-    
-    System(oenexaFrontend, "OENEXA Frontend UI", "React 18 + Vite 5 SPA with Monaco Editor, module dashboard, and live logs (Port 3000/5173)")
-    System(oenexaBackend, "OENEXA Backend Services", "Spring Boot 4.1.1 + Java 25 Clean Modular Monolith (Port 8080)")
-    
-    System_Ext(postgres, "PostgreSQL Database", "Persistent relational store for users, tenants, workflows, scans (Port 5432)")
-    System_Ext(redis, "Redis Cache", "In-memory cache for conversational context, agent locks, rate limits (Port 6379)")
-    System_Ext(llm, "LLM Providers", "OpenAI / Anthropic Claude / Google Gemini / Ollama / Spring AI")
-    System_Ext(git, "Git Host / Workspace", "GitHub, GitLab, local polyrepo workspaces")
+    Person(developer, "Software Engineer / AI Agent", "Interacts with Monaco editor, prompts AI, requests AST refactoring, triggers code reviews")
+    Person_Ext(cicd_runner, "CI/CD & Webhook Runner", "Triggers automated PR reviews, security scans, and build failure repairs")
 
-    Rel(developer, oenexaFrontend, "Uses via web browser", "HTTPS / HTTP")
-    Rel(oenexaFrontend, oenexaBackend, "Proxies API requests / chat / module discovery", "REST / JSON (:3000/api -> :8080)")
-    Rel(oenexaBackend, postgres, "Reads and writes transactional data", "JDBC / JPA (:5432)")
-    Rel(oenexaBackend, redis, "Caches conversational sessions & state", "RESP (:6379)")
-    Rel(oenexaBackend, llm, "Sends prompt chains & reasoning requests", "HTTPS")
-    Rel(oenexaBackend, git, "Inspects code trees & generates patches", "File / Git SSH")
+    Enterprise_Boundary(b_oenexa, "OENEXA Autonomous Engineering Boundary") {
+        System(oenexa_ui, "OENEXA Frontend UI", "React 18 + Vite 5 SPA with Monaco Editor, SSE Stream Client, and Module Dashboard (Port 3000/5173)")
+        System(oenexa_be, "OENEXA Backend Services", "Spring Boot 4.1.1 + Java 25 Clean Modular Monolith (Port 8080)")
+    }
+
+    System_Ext(gemini_api, "Google Gemini API", "Gemini 2.5 Pro / Flash models for deep Chain-of-Thought reasoning, long-context analysis, and code synthesis")
+    System_Ext(postgres_db, "PostgreSQL 15 Store", "Persistent relational datastore for multi-tenant organizations, projects, workflows, AST scans (Port 5432)")
+    System_Ext(redis_cache, "Redis 7 Cache", "In-memory cache for conversational session history, sliding-window compaction, and agent locks (Port 6379)")
+    System_Ext(git_vcs, "Git VCS Providers", "GitHub, GitLab, Bitbucket, and local polyrepo repositories inspected via SSH / REST")
+    System_Ext(kafka_bus, "Apache Kafka", "High-throughput domain event streaming and asynchronous multi-agent task distribution (Port 9092)")
+
+    Rel(developer, oenexa_ui, "Uses via web browser", "HTTPS / WSS")
+    Rel(cicd_runner, oenexa_be, "Triggers review & repair webhooks", "REST / JSON (:8080)")
+    Rel(oenexa_ui, oenexa_be, "Proxies REST calls, chat SSE streams, module discovery", "REST / JSON (:3000/api -> :8080)")
+    
+    Rel(oenexa_be, gemini_api, "Dispatches prompt chains & CoT reasoning tasks", "HTTPS / REST")
+    Rel(oenexa_be, postgres_db, "Reads & writes tenant records, workflows, audit logs", "JDBC / JPA (:5432)")
+    Rel(oenexa_be, redis_cache, "Caches conversational turns & distributed mutex locks", "RESP (:6379)")
+    Rel(oenexa_be, git_vcs, "Inspects code trees, generates branch commits & patches", "Git CLI / SSH")
+    Rel(oenexa_be, kafka_bus, "Publishes & consumes domain events", "Kafka Protocol (:9092)")
 ```
 
 ### 2.2 Container Diagram (Level 2)
 
 ```mermaid
 flowchart TD
-    subgraph ClientLayer ["Client / Presentation Tier"]
-        UI["oenexa-ai-engineer-frontend<br/>(React 18 + TypeScript + Monaco Editor)"]
-        Nginx["Nginx Reverse Proxy (:3000)<br/>SPA Router & /api Proxy"]
-        UI --> Nginx
+    subgraph ClientZone ["Developer / Client Zone"]
+        Browser["Web Browser / Client<br/>(Monaco Editor, Chat UI)"]
     end
 
-    subgraph BackendLayer ["Backend Application Tier (:8080)"]
+    subgraph DockerBridge ["Docker Bridge Network (oenexa-network)"]
+        subgraph FrontContainer ["Container: oenexa-frontend"]
+            Nginx["Nginx 1.25 Alpine Reverse Proxy<br/>Port 80 / [::]:80 -> External 3000"]
+            SPA["React 18 + Vite 5 Static Assets<br/>Node 22 Multi-stage Build"]
+            Nginx --> SPA
+        end
+
+        subgraph BackContainer ["Container: oenexa-backend"]
+            direction TB
+            JVM["Eclipse Temurin 25 JRE<br/>Generational ZGC (-XX:+UseZGC)"]
+            
+            subgraph DualRunners ["Dual-Runner Executables"]
+                ApiJar["Mode 1: :api bootJar<br/>(Clean Hexagonal Core, Virtual Threads)"]
+                GatewayJar["Mode 2: :oenexa-gateway bootJar<br/>(Unified Modular Monolith, All 19 Modules)"]
+            end
+            
+            JVM --- DualRunners
+            Probes["Actuator Health Probes<br/>/actuator/health/liveness<br/>/actuator/health/readiness"]
+        end
+
+        subgraph DataContainers ["Data & Persistence Tier"]
+            Postgres["Container: oenexa-postgres<br/>PostgreSQL 15 Alpine (Port 5432)<br/>DB: oenexa_db | Flyway V1"]
+            Redis["Container: oenexa-redis<br/>Redis 7.4 Alpine (Port 6379)<br/>TTL: 3600s Sliding Cache"]
+            Volumes["Persistent Named Volumes<br/>oenexa_pgdata | oenexa_redisdata"]
+            Postgres --- Volumes
+            Redis --- Volumes
+        end
+    end
+
+    subgraph ExternalCloud ["Upstream External Cloud"]
+        Gemini["Google Gemini API<br/>gemini-2.5-pro / flash"]
+        VCS["Remote Git Hosts<br/>GitHub / GitLab / Bitbucket"]
+    end
+
+    Browser -->|http://localhost:3000| Nginx
+    Nginx -->|proxy_pass /api/*| BackContainer
+    BackContainer -->|jdbc:postgresql://postgres:5432/oenexa_db| Postgres
+    BackContainer -->|redis://redis:6379| Redis
+    BackContainer -->|HTTPS REST| Gemini
+    BackContainer -->|Git SSH / HTTPS| VCS
+```
+
+### 2.3 Component & Hexagonal Architecture Diagram (Level 3)
+
+```mermaid
+flowchart TB
+    subgraph Ring4 ["Ring 4: Inbound Adapters (Primary)"]
+        API[":api<br/>(Spring MVC REST Controllers, Virtual Threads)"]
+        GATEWAY[":oenexa-gateway<br/>(Modular Monolith Aggregator bootJar)"]
+    end
+
+    subgraph Ring3 ["Ring 3: Outer Persistence & Messaging Adapters (Secondary)"]
+        INFRA[":infrastructure<br/>(Spring Data JPA, Flyway V1, Redis Adapters, Kafka)"]
+    end
+
+    subgraph Ring2 ["Ring 2: Application Orchestration"]
+        APP[":application<br/>(AgentCoordinatorService, ChatService, RagService, TokenService)"]
+    end
+
+    subgraph Ring1 ["Ring 1: Inner Domain Core (Pure Java 25)"]
+        DOM[":domain<br/>(Pure Records, Invariants, ErrorCode, Value Objects)"]
+    end
+
+    subgraph PlatformModules ["Specialized Platform Subsystems (19 Modules)"]
         direction TB
-        Gateway["oenexa-gateway<br/>(Modular Monolith Entrypoint)"]
-        API["api (com.oenexa.api)<br/>(Spring MVC REST Controllers)"]
         
-        subgraph CoreHexagon ["Clean Hexagonal Core"]
-            App["application (com.oenexa.application)<br/>(Use-Cases, Agent Coordinator, Chat, RAG)"]
-            Dom["domain (com.oenexa.domain)<br/>(Entities, Records, Invariants, Events)"]
-            Infra["infrastructure (com.oenexa.infrastructure)<br/>(JPA Entities, Flyway, Redis, Kafka)"]
-            App --> Dom
-            Infra --> Dom
-            API --> App
-            API --> Dom
+        subgraph Group_Identity ["Identity & Multi-Tenancy"]
+            COMMON[":oenexa-common"]
+            AUTH[":oenexa-auth"]
+            CORE[":oenexa-core"]
+            WORKSPACE[":oenexa-workspace"]
+            ADMIN[":oenexa-admin"]
         end
 
-        subgraph PlatformModules ["Specialized Platform Modules (19 Modules)"]
-            M_Common["oenexa-common (Errors, Context)"]
-            M_Auth["oenexa-auth (JWT, RBAC)"]
-            M_Agent["oenexa-agent (15 Agents, Workflows)"]
-            M_Chat["oenexa-chat (Prompt Memory)"]
-            M_Rag["oenexa-rag (Semantic Embeddings)"]
-            M_Core["oenexa-core (Database Kernel)"]
-            M_Other["13 Domain Modules<br/>(code, search, security, review, devops, testing, pipeline, etc.)"]
+        subgraph Group_AI ["Cognitive AI & Search"]
+            CHAT[":oenexa-chat (Gemini CoT)"]
+            AGENT[":oenexa-agent (15 Agents)"]
+            RAG[":oenexa-rag (Embeddings)"]
+            SEARCH[":oenexa-search (Hybrid RRF)"]
         end
 
-        Gateway --> PlatformModules
-        PlatformModules --> M_Common
+        subgraph Group_Eng ["Software Engineering Automation"]
+            CODE[":oenexa-code (AST Engine)"]
+            REVIEW[":oenexa-review (PR Diff)"]
+            SECURITY[":oenexa-security (SAST/OWASP)"]
+            TESTING[":oenexa-testing (Synthesizer)"]
+            DOCS[":oenexa-documentation (ADRs)"]
+        end
+
+        subgraph Group_Ops ["DevOps & Reliability Operations"]
+            DEVOPS[":oenexa-devops (K8s/Docker)"]
+            PIPELINE[":oenexa-pipeline (CI Repair)"]
+            REPO[":oenexa-repository (VCS Tree)"]
+            OBS[":oenexa-observability (Fingerprints)"]
+        end
     end
 
-    subgraph DataLayer ["Data & Persistence Tier"]
-        DB[(PostgreSQL 15<br/>oenexa_db)]
-        Cache[(Redis 7<br/>Cache / Context)]
-    end
-
-    Nginx -->|/api/*| API
-    Nginx -->|/api/*| Gateway
-    Infra --> DB
-    Infra --> Cache
-    M_Core --> DB
+    %% Inward dependency rules
+    API --> APP
+    API --> DOM
+    INFRA --> DOM
+    APP --> DOM
+    
+    GATEWAY --> PlatformModules
+    PlatformModules --> COMMON
+    CHAT --> AUTH
+    AGENT --> AUTH
+    RAG --> AUTH
+    CORE --> INFRA
 ```
 
 ---
@@ -173,6 +248,52 @@ sequenceDiagram
 2. **`FEATURE_IMPLEMENTATION`**: `ARCHITECTURE_UNDERSTANDING` $\rightarrow$ `CODE_GENERATION` $\rightarrow$ `TESTING_VERIFICATION` $\rightarrow$ `DOCUMENTATION_GENERATION`.
 3. **`BUG_FIX`**: `DEBUG_DIAGNOSIS` $\rightarrow$ `AUTOMATED_BUG_FIX` $\rightarrow$ `TESTING_VERIFICATION` $\rightarrow$ `DEVOPS_INTEGRATION`.
 4. **`SECURITY_HARDENING`**: `SECURITY_AUDIT` $\rightarrow$ `AUTOMATED_BUG_FIX` $\rightarrow$ `TESTING_VERIFICATION` $\rightarrow$ `DEVOPS_INTEGRATION`.
+
+### 4.2 End-to-End Gemini Chain-of-Thought (CoT) Request Flow
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor Dev as Developer / Web UI
+    participant Nginx as Nginx Proxy (:3000)
+    participant Ctrl as ChatController (:api / :gateway)
+    participant Sec as JwtFilter & TenantContext
+    participant Engine as GeminiReasoningEngine (:oenexa-chat)
+    participant Cache as Redis Session Store (:infrastructure)
+    participant Adapter as GeminiLlmAdapter (:oenexa-chat)
+    participant Gemini as Google Gemini 2.5 API (REST)
+    participant DB as PostgreSQL 15 (:infrastructure)
+
+    Dev->>Nginx: POST /api/v1/chat/reasoning (Bearer JWT, payload)
+    Nginx->>Ctrl: Forward request (:8080)
+    Ctrl->>Sec: Validate Bearer token & extract TenantContext
+    Sec-->>Ctrl: Context bound to Java 25 Virtual Thread
+    
+    Ctrl->>Engine: reasonWithCoT(sessionId, prompt, options)
+    Engine->>Cache: fetchHistory(sessionId)
+    Cache-->>Engine: List of prior chat turns
+    
+    opt If history exceeds token budget (> 12 turns)
+        Engine->>Engine: compactContextSummary(history)
+    end
+
+    Engine->>Engine: classifyIntent(prompt) -> Intent.CODE_GENERATION
+    Engine->>Adapter: executeCoTCall(systemPrompt, prompt, model)
+    Adapter->>Gemini: POST /v1beta/models/gemini-2.5-pro:generateContent
+    Gemini-->>Adapter: JSON (Thought Process + Output Code)
+    
+    Adapter-->>Engine: GeminiModelOutput(rawThinking, responseText)
+    Engine->>Engine: parseCoTResponse(output) -> ReasoningResponse
+    
+    par Async Persistence
+        Engine->>Cache: appendTurn(sessionId, prompt, response)
+        Engine->>DB: persistChatLog(tenantId, sessionId, prompt, response)
+    end
+
+    Engine-->>Ctrl: ReasoningResponse(thoughts, code, confidence)
+    Ctrl-->>Nginx: HTTP 200 OK (application/json)
+    Nginx-->>Dev: HTTP 200 OK (Rendered in UI)
+```
 
 ---
 
