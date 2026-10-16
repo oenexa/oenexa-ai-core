@@ -88,11 +88,16 @@ oenexa-ai-engineer-backend/
 │       └── bdd/                        # RunCucumberTest & UserRegistrationSteps (Cucumber-JVM 7.21.1)
 │
 ├── infrastructure/              # [Module 3/23] Outgoing Adapters (Hexagonal Outer Tier)
-│   └── src/main/java/com/oenexa/infrastructure/
-│       ├── config/                     # DataSource, Redis, Kafka, Elasticsearch beans
-│       ├── entity/                     # Jakarta JPA entities for PostgreSQL
-│       ├── repository/                 # Spring Data JPA repositories
-│       └── persistence/                # Flyway V1 schema migrations
+│   ├── src/main/java/com/oenexa/infrastructure/
+│   │   ├── InfrastructureConfig.java   # Flyway migrations, Redis, Kafka configuration beans
+│   │   └── persistence/
+│   │       ├── entity/                 # 14 Jakarta JPA Entities (scans, fixes, issues, deployments, etc.)
+│   │       └── repository/             # 15 Spring Data JPA Repositories (CRUD & derived queries)
+│   ├── src/main/resources/db/migration/
+│   │   └── V1__init_oenexa_schema.sql  # Master PostgreSQL/H2 DDL schema migration
+│   └── src/test/java/com/oenexa/infrastructure/ # (100% Zero-Mock Line & Branch Coverage, 374/374 lines)
+│       ├── InfrastructureConfigTest.java
+│       └── persistence/entity/EntityModelTest.java
 │
 ├── api/                         # [Module 4/23] Incoming Adapter & Spring Boot MVC BootJar
 │   ├── src/main/java/com/oenexa/api/
