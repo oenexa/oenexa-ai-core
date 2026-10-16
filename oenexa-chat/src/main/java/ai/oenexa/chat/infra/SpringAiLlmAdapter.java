@@ -30,6 +30,7 @@ public class SpringAiLlmAdapter implements LlmPort {
             case SYSTEM -> new SystemMessage(m.content());
             case USER -> new UserMessage(m.content());
             case ASSISTANT -> new AssistantMessage(m.content());
+            case TOOL -> new UserMessage("Tool Output: " + m.content());
         };
     }
 }

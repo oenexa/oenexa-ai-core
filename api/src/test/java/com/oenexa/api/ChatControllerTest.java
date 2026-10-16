@@ -68,4 +68,50 @@ class ChatControllerTest {
         assertNotNull(history.getBody());
         assertEquals(2, history.getBody().size());
     }
+
+    @Test
+    @DisplayName("Should support conversation management: list, create, metadata, fork, and delete")
+    void shouldSupportConversationManagementInController() {
+        var createReq = new ChatController.CreateConversationRequest("Core Discussion", "gemini-2.5-pro");
+        var createResp = controller.createConversation(createReq);
+        assertEquals(HttpStatus.OK, createResp.getStatusCode());
+        assertNotNull(createResp.getBody());
+        assertEquals("Core Discussion", createResp.getBody().title());
+
+        var defaultCreate = controller.createConversation(null);
+        assertEquals(HttpStatus.OK, defaultCreate.getStatusCode());
+        assertEquals("New Conversation", defaultCreate.getBody().title());
+
+        var listResp = controller.listConversations("default-tenant");
+        assertEquals(HttpStatus.OK, listResp.getStatusCode());
+        assertNotNull(listResp.getBody());
+        assertFalse(listResp.getBody().isEmpty());
+
+        String convId = createResp.getBody().conversationId();
+        var metaResp = controller.getMetadata(convId);
+        assertEquals(HttpStatus.OK, metaResp.getStatusCode());
+        assertNotNull(metaResp.getBody());
+
+        // Send a message with attachments
+        var attachment = new CodeContextAttachment("src/App.java", "public class App {}");
+        var reqWithAttach = new ChatRequest("Explain this design", convId, "gemini-2.5-pro", true, List.of(attachment));
+        var sendResp = controller.sendMessage(reqWithAttach);
+        assertEquals(HttpStatus.OK, sendResp.getStatusCode());
+
+        // Fork conversation
+        var forkReq = new ChatController.ForkConversationRequest("fork-api-1", 0);
+        var forkResp = controller.forkConversation(convId, forkReq);
+        assertEquals(HttpStatus.OK, forkResp.getStatusCode());
+        assertEquals("fork-api-1", forkResp.getBody().conversationId());
+
+        // Fork with null request
+        var defaultFork = controller.forkConversation(convId, null);
+        assertEquals(HttpStatus.OK, defaultFork.getStatusCode());
+        assertNotNull(defaultFork.getBody().conversationId());
+
+        // Delete conversation
+        var deleteResp = controller.deleteConversation(convId);
+        assertEquals(HttpStatus.NO_CONTENT, deleteResp.getStatusCode());
+    }
 }
+

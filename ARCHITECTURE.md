@@ -181,10 +181,10 @@ The backend is organized into 23 strictly bounded Gradle modules. All dependenci
 ### 3.1 Hexagonal Core (4 Modules)
 | Module | Layer | Responsibility & Contents | Test Verification & Gate |
 | :--- | :--- | :--- | :--- |
-| **`:domain`** | Inner Hexagon | Pure Java 25 business entities, records (`UserRegistration`, `TenantContext`, `Workflow`, `AgentContract`, `RagDocument`), invariants, domain events, and RFC 7807 error codes. **Zero external framework dependencies.** | **100% Coverage (144/144 lines, 100% branches)** |
-| **`:application`** | Use-Cases | Application services (`UserService`, `ChatService`, `AgentCoordinatorService`, `RagService`, `TokenService`, `PlatformEventPublisher`). Orchestrates domain objects without framework coupling. | **100% Coverage (179/179 lines, 100% branches)** |
+| **`:domain`** | Inner Hexagon | Pure Java 25 business entities, records (`UserRegistration`, `TenantContext`, `Workflow`, `AgentContract`, `RagDocument`, `ChatDomain`, `CodeContextAttachment`, `CodeArtifact`, `ToolCall`, `ToolResult`), invariants, domain events, and RFC 7807 error codes. **Zero external framework dependencies.** | **100% Coverage (171/171 lines, 100% branches)** |
+| **`:application`** | Use-Cases | Application services (`UserService`, `ChatService`, `AgentCoordinatorService`, `RagService`, `TokenService`, `PlatformEventPublisher`). Orchestrates domain objects without framework coupling. | **100% Coverage (305/305 lines, 100% branches)** |
 | **`:infrastructure`**| Outer Adapters | Spring Data JPA entities, Flyway database migrations (`V1__init_oenexa_schema.sql`), Redis configuration, Kafka event publishers, and embedded fallbacks. | **100% Coverage (374/374 lines, 100% branches)** |
-| **`:api`** | Primary Adapter | Spring Boot MVC executable bootJar (`com.oenexa.api`). Exposes `@RestController` endpoints (`ChatController`, `AgentController`, `RagController`, `AuthController`, `ModulesController`), global RFC 7807 exception handler, and actuator metrics. | **100% Coverage (106/106 lines, 100% branches)** |
+| **`:api`** | Primary Adapter | Spring Boot MVC executable bootJar (`com.oenexa.api`). Exposes `@RestController` endpoints (`ChatController`, `AgentController`, `RagController`, `AuthController`, `ModulesController`), global RFC 7807 exception handler, and actuator metrics. | **100% Coverage (123/123 lines, 100% branches)** |
 
 ### 3.2 Platform Engineering Modules (19 Modules)
 | Module | Responsibility & Key Services | REST Endpoints | Test Verification & Gate |
@@ -192,7 +192,7 @@ The backend is organized into 23 strictly bounded Gradle modules. All dependenci
 | **`:oenexa-common`** | Shared cross-cutting concerns: RFC 7807 `ErrorResponse`, global error handler, domain events, and reactive multi-tenant context (`TenantContext`). | Filter / Utility layer | **100% Coverage (58/58 lines)** |
 | **`:oenexa-auth`** | Token authentication, JWT issuing/parsing via JJWT 0.12.6, BCrypt password hashing, and Role-Based Access Control (`AuthService`). | `/api/v1/auth/*` | **100% Coverage (112/112 lines, 100% branches)** |
 | **`:oenexa-agent`** | Autonomous multi-agent coordination framework: 15 agent contracts, 4 sequential workflow pipelines, step execution, and delegation boundaries. | `/api/v1/agents/*` | **100% Coverage (153/153 lines, 100% branches)** |
-| **`:oenexa-chat`** | Gemini-grade conversational AI reasoning engine (`GeminiReasoningEngine`), Chain-of-Thought (CoT), Google Gemini REST adapter (`GeminiLlmAdapter`), long-context compaction, and SSE streaming. | `/api/v1/chat/*` | **100% Coverage (242/242 lines)** |
+| **`:oenexa-chat`** | Pro-Grade conversational AI reasoning engine (`GeminiReasoningEngine`), autonomous tool calling (`ast_analyzer`, `security_scanner`, `test_synthesizer`, `code_refactoring`, `architecture_diagram`), code context attachment ingestion (`CodeContextAttachment`), Monaco code artifact extraction (`CodeArtifact`, `ArtifactExtractor`), multi-turn session lifecycle & conversation management (metadata, pinning, forking, titling), Google Gemini 2.5 Pro/Flash models, confidence scoring, long-context compaction, and SSE streaming. | `/api/v1/chat/*` | **100% Coverage (571/571 lines)** |
 | **`:oenexa-rag`** | Retrieval-Augmented Generation: document ingestion, token chunking, semantic vector index, and similarity retrieval. | `/api/v1/rag/*` | **100% Coverage (114/114 lines)** |
 | **`:oenexa-core`** | Relational tenancy kernel: Organizations, Teams, Projects, Users domain records, JPA/In-Memory adapters, and tenancy services (`DefaultCoreTenancyService`). | `/api/v1/core/*` | **100% Coverage (281/281 lines)** |
 | **`:oenexa-gateway`** | Executable Modular Monolith bootJar aggregating all 19 platform modules into a single production service. | Unified Gateway Host (`/api/v1/modules`) | **100% Coverage (29/29 lines)** |
@@ -390,14 +390,14 @@ The system enforces strict quality gates:
 | **`oenexa-repository`** | 90 | 0 | **100%** | JUnit 5 | **Strictly Zero Mocks** |
 | **`oenexa-observability`** | 136 | 0 | **100%** | JUnit 5 | **Strictly Zero Mocks** |
 | **`oenexa-core`** | 281 | 0 | **100%** | JUnit 5 | **Strictly Zero Mocks** |
-| **`oenexa-chat`** | 242 | 0 | **100%** | JUnit 5 | **Strictly Zero Mocks** |
+| **`oenexa-chat`** | 571 | 0 | **100%** | JUnit 5 | **Strictly Zero Mocks** |
 | **`oenexa-auth`** | 112 | 0 | **100%** | JUnit 5 | **Strictly Zero Mocks** |
 | **`oenexa-common`** | 58 | 0 | **100%** | JUnit 5 | **Strictly Zero Mocks** |
 | **`oenexa-rag`** | 114 | 0 | **100%** | JUnit 5 | **Strictly Zero Mocks** |
 | **`oenexa-agent`** | 153 | 0 | **100%** | JUnit 5 | **Strictly Zero Mocks** |
 | **`oenexa-gateway`** | 29 | 0 | **100%** | JUnit 5 | **Strictly Zero Mocks** |
-| **`domain`** | 150 | 0 | **100%** | JUnit 5 | **Strictly Zero Mocks** |
-| **`application`** | 220 | 0 | **100%** | JUnit 5 / BDD | **Strictly Zero Mocks** |
+| **`domain`** | 171 | 0 | **100%** | JUnit 5 | **Strictly Zero Mocks** |
+| **`application`** | 305 | 0 | **100%** | JUnit 5 / BDD | **Strictly Zero Mocks** |
 | **`infrastructure`** | 374 | 0 | **100%** | JUnit 5 | **Strictly Zero Mocks** |
-| **`api`** | 110 | 0 | **100%** | JUnit 5 | **Strictly Zero Mocks** |
-| **TOTAL** | **3,134** | **0** | **100%** | JUnit 5 / BDD | **Zero Mocks Across All Modules** |
+| **`api`** | 123 | 0 | **100%** | JUnit 5 | **Strictly Zero Mocks** |
+| **TOTAL** | **3,485** | **0** | **100%** | JUnit 5 / BDD | **Zero Mocks Across All Modules** |

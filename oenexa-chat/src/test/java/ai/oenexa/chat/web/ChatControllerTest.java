@@ -81,4 +81,125 @@ class ChatControllerTest {
         assertThatThrownBy(() -> controller.send(badAuth, conversationId, body))
                 .isInstanceOf(OenexaException.class);
     }
+
+    @Test
+    void streamEventsAndCompletionsFlow() {
+        UUID conversationId = UUID.randomUUID();
+        var attachment = new ai.oenexa.chat.domain.CodeContextAttachment("src/Main.java", "public class Main {}");
+        var body = new ChatController.SendMessage("Perform security audit", "gemini-2.5-pro", true, List.of(attachment));
+
+        StepVerifier.create(controller.streamEvents(auth, conversationId, body))
+                .assertNext(event -> {
+                    assertThat(event.event()).isEqualTo("session_start");
+                    assertThat(event.data()).isEqualTo(conversationId.toString());
+                })
+                .thenConsumeWhile(event -> !event.event().equals("done"))
+                .assertNext(event -> {
+                    assertThat(event.event()).isEqualTo("done");
+                    assertThat(event.data()).isEqualTo("SUCCESS");
+                })
+                .verifyComplete();
+
+        StepVerifier.create(controller.complete(auth, conversationId, body))
+                .assertNext(turn -> {
+                    assertThat(turn.intent()).isEqualTo("SECURITY_AUDIT");
+                    assertThat(turn.thought()).contains("Attached Context Evaluated");
+                    assertThat(turn.thought()).contains("src/Main.java");
+                    assertThat(turn.toolCalls()).isNotEmpty();
+                    assertThat(turn.toolResults()).isNotEmpty();
+                    assertThat(turn.confidenceScore()).isEqualTo(0.98);
+                })
+                .verifyComplete();
+    }
+
+    @Test
+    void conversationManagementEndpoints() {
+        // Create conversation
+        StepVerifier.create(controller.createConversation(auth, new ChatController.CreateConversation("Sprint Planning", "gemini-2.5-pro")))
+                .assertNext(meta -> {
+                    assertThat(meta.title()).isEqualTo("Sprint Planning");
+                    assertThat(meta.model()).isEqualTo("gemini-2.5-pro");
+                })
+                .verifyComplete();
+
+        // Default create
+        StepVerifier.create(controller.createConversation(auth, null))
+                .assertNext(meta -> assertThat(meta.title()).isEqualTo("New Conversation"))
+                .verifyComplete();
+
+        // List conversations
+        StepVerifier.create(controller.listConversations(auth))
+                .assertNext(list -> assertThat(list).hasSize(2))
+                .verifyComplete();
+
+        UUID convId = UUID.randomUUID();
+
+        // Get metadata
+        StepVerifier.create(controller.getMetadata(auth, convId))
+                .assertNext(meta -> assertThat(meta.conversationId()).isEqualTo(convId))
+                .verifyComplete();
+
+        // Update title
+        StepVerifier.create(controller.updateTitle(auth, convId, new ChatController.UpdateTitle("Architecture Refactor")))
+                .assertNext(meta -> assertThat(meta.title()).isEqualTo("Architecture Refactor"))
+                .verifyComplete();
+
+        // Pin conversation
+        StepVerifier.create(controller.setPinned(auth, convId, true))
+                .assertNext(meta -> assertThat(meta.pinned()).isTrue())
+                .verifyComplete();
+
+        // Fork conversation
+        UUID forkedId = UUID.randomUUID();
+        StepVerifier.create(controller.forkConversation(auth, convId, new ChatController.ForkRequest(forkedId, 0)))
+                .assertNext(meta -> assertThat(meta.conversationId()).isEqualTo(forkedId))
+                .verifyComplete();
+
+        // Fork with null request
+        StepVerifier.create(controller.forkConversation(auth, convId, null))
+                .assertNext(meta -> assertThat(meta.conversationId()).isNotNull())
+                .verifyComplete();
+
+        // Clear history
+        StepVerifier.create(controller.clearHistory(auth, convId))
+                .verifyComplete();
+
+        // Delete conversation
+        StepVerifier.create(controller.deleteConversation(auth, convId))
+                .verifyComplete();
+
+        // List tools (public, no auth required)
+        StepVerifier.create(controller.listTools())
+                .assertNext(tools -> assertThat(tools).isNotEmpty())
+                .verifyComplete();
+    }
+
+    @Test
+    void unauthorizedPrincipalAcrossNewEndpoints() {
+        UUID conversationId = UUID.randomUUID();
+        var body = new ChatController.SendMessage("test");
+        Principal anonymous = () -> "anon";
+
+        assertThatThrownBy(() -> controller.streamEvents(anonymous, conversationId, body))
+                .isInstanceOf(OenexaException.class);
+        assertThatThrownBy(() -> controller.complete(anonymous, conversationId, body))
+                .isInstanceOf(OenexaException.class);
+        assertThatThrownBy(() -> controller.listConversations(anonymous))
+                .isInstanceOf(OenexaException.class);
+        assertThatThrownBy(() -> controller.createConversation(anonymous, null))
+                .isInstanceOf(OenexaException.class);
+        assertThatThrownBy(() -> controller.getMetadata(anonymous, conversationId))
+                .isInstanceOf(OenexaException.class);
+        assertThatThrownBy(() -> controller.updateTitle(anonymous, conversationId, new ChatController.UpdateTitle("title")))
+                .isInstanceOf(OenexaException.class);
+        assertThatThrownBy(() -> controller.setPinned(anonymous, conversationId, true))
+                .isInstanceOf(OenexaException.class);
+        assertThatThrownBy(() -> controller.deleteConversation(anonymous, conversationId))
+                .isInstanceOf(OenexaException.class);
+        assertThatThrownBy(() -> controller.forkConversation(anonymous, conversationId, null))
+                .isInstanceOf(OenexaException.class);
+        assertThatThrownBy(() -> controller.clearHistory(anonymous, conversationId))
+                .isInstanceOf(OenexaException.class);
+    }
 }
+

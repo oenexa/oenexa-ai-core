@@ -1,14 +1,20 @@
 package ai.oenexa.chat.application;
 
 import ai.oenexa.chat.domain.ChatMessage;
+import ai.oenexa.chat.domain.CodeArtifact;
+import ai.oenexa.chat.domain.CodeContextAttachment;
+import ai.oenexa.chat.domain.ToolCall;
+import ai.oenexa.chat.domain.ToolResult;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import reactor.core.publisher.Flux;
 
 /**
  * Advanced Gemini-Grade Autonomous Software Engineering Reasoning Engine.
- * Why: Chain-of-Thought (CoT) reasoning, technical intent routing, and rich code/architecture synthesis.
+ * Why: Chain-of-Thought (CoT) reasoning, technical intent routing, tool calling, and rich code/architecture synthesis.
  */
 public class GeminiReasoningEngine {
 
@@ -16,8 +22,36 @@ public class GeminiReasoningEngine {
             String thought,
             String response,
             String intent,
-            List<String> followUps
-    ) {}
+            List<String> followUps,
+            List<ToolCall> toolCalls,
+            List<ToolResult> toolResults,
+            List<CodeArtifact> artifacts,
+            double confidenceScore
+    ) {
+        public TurnResult(String thought, String response, String intent, List<String> followUps) {
+            this(thought, response, intent, followUps, List.of(), List.of(), List.of(), 0.95);
+        }
+    }
+
+    private final ToolRegistry toolRegistry;
+    private final ArtifactExtractor artifactExtractor;
+
+    public GeminiReasoningEngine() {
+        this(new ToolRegistry(), new ArtifactExtractor());
+    }
+
+    public GeminiReasoningEngine(ToolRegistry toolRegistry, ArtifactExtractor artifactExtractor) {
+        this.toolRegistry = (toolRegistry != null) ? toolRegistry : new ToolRegistry();
+        this.artifactExtractor = (artifactExtractor != null) ? artifactExtractor : new ArtifactExtractor();
+    }
+
+    public ToolRegistry toolRegistry() {
+        return toolRegistry;
+    }
+
+    public ArtifactExtractor artifactExtractor() {
+        return artifactExtractor;
+    }
 
     public String determineIntent(String input) {
         if (input == null || input.isBlank()) {
@@ -192,19 +226,90 @@ public class GeminiReasoningEngine {
     }
 
     public TurnResult process(String input, String model, boolean includeThinking) {
+        return process(input, model, includeThinking, List.of());
+    }
+
+    public TurnResult process(String input, String model, boolean includeThinking, List<CodeContextAttachment> attachments) {
         String intent = determineIntent(input);
-        String thought = includeThinking ? generateThought(intent, input, model) : "";
+        String baseThought = includeThinking ? generateThought(intent, input, model) : "";
+        StringBuilder thoughtBuilder = new StringBuilder(baseThought);
+
+        if (attachments != null && !attachments.isEmpty() && includeThinking) {
+            thoughtBuilder.append("Attached Context Evaluated: ");
+            for (CodeContextAttachment att : attachments) {
+                if (att != null) {
+                    thoughtBuilder.append("[").append(att.filePath()).append(" (lines ").append(att.startLine()).append("-").append(att.endLine()).append(")] ");
+                }
+            }
+            thoughtBuilder.append("\n");
+        }
+
+        List<ToolCall> toolCalls = new ArrayList<>();
+        List<ToolResult> toolResults = new ArrayList<>();
+
+        String toolName = resolveToolForIntent(intent);
+        if (toolName != null) {
+            ToolCall call = new ToolCall(UUID.randomUUID().toString(), toolName, Map.of(
+                    "code", (input != null) ? input : "",
+                    "systemName", "OENEXA",
+                    "className", "Component"
+            ));
+            toolCalls.add(call);
+            ToolResult result = toolRegistry.execute(call);
+            toolResults.add(result);
+            if (includeThinking) {
+                thoughtBuilder.append("Tool Invoked: ").append(toolName).append(" -> ").append(result.output()).append("\n");
+            }
+        }
+
         String response = generateResponse(intent, input);
         List<String> followUps = suggestFollowUps(intent);
-        return new TurnResult(thought, response, intent, followUps);
+        List<CodeArtifact> artifacts = artifactExtractor.extract(response);
+        double confidence = calculateConfidence(toolResults);
+
+        return new TurnResult(
+                thoughtBuilder.toString(),
+                response,
+                intent,
+                followUps,
+                List.copyOf(toolCalls),
+                List.copyOf(toolResults),
+                artifacts,
+                confidence
+        );
+    }
+
+    private String resolveToolForIntent(String intent) {
+        if (intent == null) return null;
+        return switch (intent) {
+            case "ARCHITECTURE_DESIGN" -> "architecture_diagram";
+            case "SECURITY_AUDIT" -> "security_scanner";
+            case "TESTING_SYNTHESIS" -> "test_synthesizer";
+            case "CODE_REFACTORING" -> "code_refactoring";
+            case "CODE_GENERATION" -> "ast_analyzer";
+            default -> null;
+        };
+    }
+
+    private double calculateConfidence(List<ToolResult> toolResults) {
+        if (toolResults == null || toolResults.isEmpty()) {
+            return 0.95;
+        }
+        for (ToolResult res : toolResults) {
+            if (res.isError()) {
+                return 0.70;
+            }
+        }
+        return 0.98;
     }
 
     public Flux<String> stream(List<ChatMessage> prompt, String model) {
         if (prompt == null || prompt.isEmpty()) {
             return Flux.just("OENEXA AI Engineer: Ready.");
         }
-        String lastContent = prompt.get(prompt.size() - 1).content();
-        TurnResult turn = process(lastContent, model, true);
+        ChatMessage last = prompt.get(prompt.size() - 1);
+        String lastContent = last.content();
+        TurnResult turn = process(lastContent, model, true, last.attachments());
 
         List<String> chunks = new ArrayList<>();
         if (!turn.thought().isBlank()) {
@@ -219,3 +324,4 @@ public class GeminiReasoningEngine {
         return stream(prompt, "gemini-2.5-flash");
     }
 }
+

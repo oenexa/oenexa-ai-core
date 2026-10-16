@@ -139,4 +139,79 @@ class ChatServiceTest {
     void shouldThrowNpeOnNullMessage() {
         assertThrows(NullPointerException.class, () -> chatService.processMessage("conv-1", null));
     }
+
+    @Test
+    @DisplayName("Should process message with code context attachments and extract artifacts")
+    void shouldProcessMessageWithAttachmentsAndArtifacts() {
+        var attachment = new CodeContextAttachment("src/Main.java", "java", 1, 10, "public class Main {}");
+        ChatResponse resp = chatService.processMessage(
+                "conv-attach",
+                "Explain the architecture and design",
+                "gemini-2.5-pro",
+                true,
+                List.of(attachment)
+        );
+
+        assertNotNull(resp);
+        assertNotNull(resp.thoughtProcess());
+        assertTrue(resp.thoughtProcess().contains("Evaluated Attached Context"));
+        assertTrue(resp.thoughtProcess().contains("src/Main.java"));
+        assertFalse(resp.toolCalls().isEmpty());
+        assertFalse(resp.artifacts().isEmpty());
+        assertEquals(0.98, resp.confidenceScore());
+
+        // Verify conversation history has attachments and tools
+        List<Message> history = chatService.getHistory("conv-attach");
+        assertEquals(2, history.size());
+        assertEquals(1, history.get(0).attachments().size());
+        assertFalse(history.get(1).toolCalls().isEmpty());
+        assertFalse(history.get(1).artifacts().isEmpty());
+    }
+
+    @Test
+    @DisplayName("Should support conversation metadata, listing, forking, and clearing")
+    void shouldSupportConversationManagement() {
+        ConversationMetadata created = chatService.createConversation(
+                "custom-conv-id", "tenant-alpha", "user-beta", "Project Blueprint", "gemini-2.5-pro"
+        );
+        assertEquals("custom-conv-id", created.conversationId());
+        assertEquals("Project Blueprint", created.title());
+        assertEquals("gemini-2.5-pro", created.model());
+
+        // Process a message in this conversation
+        chatService.processMessage("custom-conv-id", "Write code for user authentication");
+
+        List<ConversationMetadata> list = chatService.listConversations("tenant-alpha");
+        assertFalse(list.isEmpty());
+
+        ConversationMetadata meta = chatService.getMetadata("custom-conv-id");
+        assertNotNull(meta);
+        assertEquals("custom-conv-id", meta.conversationId());
+        assertTrue(meta.messageCount() >= 2);
+
+        // Fork conversation
+        ConversationMetadata forked = chatService.forkConversation("custom-conv-id", "forked-conv-id", 0);
+        assertEquals("forked-conv-id", forked.conversationId());
+        assertTrue(forked.title().contains("Fork of Project Blueprint"));
+        List<Message> forkedHistory = chatService.getHistory("forked-conv-id");
+        assertEquals(1, forkedHistory.size());
+
+        // Fork without newId and index -1
+        ConversationMetadata forkedDefault = chatService.forkConversation("custom-conv-id", null, -1);
+        assertNotNull(forkedDefault.conversationId());
+
+        // Clear history
+        chatService.clearHistory("custom-conv-id");
+        assertTrue(chatService.getHistory("custom-conv-id").isEmpty());
+
+        // Clear unknown conversation is safe
+        chatService.clearHistory("unknown-id");
+
+        // getMetadata for unrecorded conversation creates default metadata
+        ConversationMetadata freshMeta = chatService.getMetadata("brand-new-conversation");
+        assertNotNull(freshMeta);
+        assertEquals("brand-new-conversation", freshMeta.conversationId());
+        assertEquals("New Conversation", freshMeta.title());
+    }
 }
+

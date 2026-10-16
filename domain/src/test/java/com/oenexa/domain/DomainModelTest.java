@@ -109,7 +109,8 @@ class DomainModelTest {
     @Test
     void testChatDomainRecordsAndInstantiation() {
         assertNotNull(new ChatDomain());
-        assertEquals(3, ChatDomain.Role.values().length);
+        assertEquals(4, ChatDomain.Role.values().length);
+        assertEquals(ChatDomain.Role.TOOL, ChatDomain.Role.valueOf("TOOL"));
 
         Instant now = Instant.now();
         ChatDomain.Message msg = new ChatDomain.Message(ChatDomain.Role.USER, "Hello", now);
@@ -118,6 +119,10 @@ class DomainModelTest {
         assertEquals(now, msg.timestamp());
         assertNull(msg.thoughtProcess());
         assertEquals("gemini-2.5-flash", msg.model());
+        assertTrue(msg.attachments().isEmpty());
+        assertTrue(msg.toolCalls().isEmpty());
+        assertTrue(msg.toolResults().isEmpty());
+        assertTrue(msg.artifacts().isEmpty());
 
         ChatDomain.Message advancedMsg = new ChatDomain.Message(
                 ChatDomain.Role.ASSISTANT,
@@ -139,6 +144,7 @@ class DomainModelTest {
         assertEquals("c1", req.conversationId());
         assertEquals("gemini-2.5-flash", req.model());
         assertTrue(req.includeThinking());
+        assertTrue(req.attachments().isEmpty());
 
         ChatDomain.ChatRequest advancedReq = new ChatDomain.ChatRequest("query", "c1", "gemini-2.5-pro", false);
         assertEquals("gemini-2.5-pro", advancedReq.model());
@@ -152,6 +158,9 @@ class DomainModelTest {
         assertEquals("gemini-2.5-flash", resp.model());
         assertEquals("GENERAL_ASSISTANT", resp.intent());
         assertTrue(resp.suggestedFollowUps().isEmpty());
+        assertTrue(resp.toolCalls().isEmpty());
+        assertTrue(resp.artifacts().isEmpty());
+        assertEquals(0.95, resp.confidenceScore());
 
         ChatDomain.ChatResponse advancedResp = new ChatDomain.ChatResponse(
                 "reply",
@@ -166,6 +175,87 @@ class DomainModelTest {
         assertEquals("gemini-2.5-pro", advancedResp.model());
         assertEquals("ARCHITECTURE_DESIGN", advancedResp.intent());
         assertEquals(1, advancedResp.suggestedFollowUps().size());
+
+        // Pro Chat Additions: ToolCall, ToolResult, CodeContextAttachment, CodeArtifact, ConversationMetadata
+        ChatDomain.ToolCall toolCall = new ChatDomain.ToolCall("call-1", "ast_analyzer");
+        assertEquals("call-1", toolCall.callId());
+        assertEquals("ast_analyzer", toolCall.toolName());
+        assertTrue(toolCall.arguments().isEmpty());
+
+        ChatDomain.ToolCall toolCallWithArgs = new ChatDomain.ToolCall("call-2", "security_scan", java.util.Map.of("target", "src/"));
+        assertEquals("src/", toolCallWithArgs.arguments().get("target"));
+
+        ChatDomain.ToolResult toolResult = new ChatDomain.ToolResult("call-1", "ast_analyzer", "OK");
+        assertEquals("call-1", toolResult.callId());
+        assertEquals("ast_analyzer", toolResult.toolName());
+        assertEquals("OK", toolResult.output());
+        assertFalse(toolResult.isError());
+
+        ChatDomain.ToolResult toolResultError = new ChatDomain.ToolResult("call-2", "security_scan", "Failed", true);
+        assertTrue(toolResultError.isError());
+
+        ChatDomain.CodeContextAttachment attachment = new ChatDomain.CodeContextAttachment("src/Main.java", "public class Main {}");
+        assertEquals("src/Main.java", attachment.filePath());
+        assertEquals("public class Main {}", attachment.content());
+        assertEquals(1, attachment.startLine());
+
+        ChatDomain.CodeContextAttachment fullAttachment = new ChatDomain.CodeContextAttachment("src/App.java", "java", 10, 20, "void run() {}");
+        assertEquals("java", fullAttachment.language());
+        assertEquals(10, fullAttachment.startLine());
+        assertEquals(20, fullAttachment.endLine());
+
+        ChatDomain.CodeArtifact artifact = new ChatDomain.CodeArtifact("Main Class", "src/Main.java", "class Main {}");
+        assertEquals("Main Class", artifact.title());
+        assertEquals("src/Main.java", artifact.filePath());
+        assertEquals("CREATE", artifact.action());
+        assertNotNull(artifact.artifactId());
+
+        ChatDomain.CodeArtifact customArtifact = new ChatDomain.CodeArtifact("a-1", "Diff", "src/App.java", "diff", "+ line", "PATCH");
+        assertEquals("a-1", customArtifact.artifactId());
+        assertEquals("PATCH", customArtifact.action());
+
+        ChatDomain.ConversationMetadata meta = new ChatDomain.ConversationMetadata("c-100", "New Chat Session");
+        assertEquals("c-100", meta.conversationId());
+        assertEquals("New Chat Session", meta.title());
+        assertFalse(meta.pinned());
+        assertEquals(0, meta.messageCount());
+
+        ChatDomain.ConversationMetadata fullMeta = new ChatDomain.ConversationMetadata(
+                "c-200", "tenant-1", "user-1", "Architecture Review", "gemini-2.5-pro",
+                now, now, 5, true
+        );
+        assertEquals("tenant-1", fullMeta.tenantId());
+        assertEquals("user-1", fullMeta.userId());
+        assertTrue(fullMeta.pinned());
+        assertEquals(5, fullMeta.messageCount());
+
+        ChatDomain.Message proMsg = new ChatDomain.Message(
+                ChatDomain.Role.TOOL,
+                "Tool output",
+                now,
+                "Thinking",
+                "gemini-2.5-pro",
+                List.of(attachment),
+                List.of(toolCall),
+                List.of(toolResult),
+                List.of(artifact)
+        );
+        assertEquals(ChatDomain.Role.TOOL, proMsg.role());
+        assertEquals(1, proMsg.attachments().size());
+        assertEquals(1, proMsg.toolCalls().size());
+        assertEquals(1, proMsg.toolResults().size());
+        assertEquals(1, proMsg.artifacts().size());
+
+        ChatDomain.ChatRequest proReq = new ChatDomain.ChatRequest("Analyze", "c-100", "gemini-2.5-pro", true, List.of(attachment));
+        assertEquals(1, proReq.attachments().size());
+
+        ChatDomain.ChatResponse proResp = new ChatDomain.ChatResponse(
+                "Completed", "c-100", 150, "Thought", "gemini-2.5-pro", "CODE_GENERATION",
+                List.of("Run tests"), List.of(toolCall), List.of(artifact), 0.98
+        );
+        assertEquals(0.98, proResp.confidenceScore());
+        assertEquals(1, proResp.toolCalls().size());
+        assertEquals(1, proResp.artifacts().size());
     }
 
     @Test
