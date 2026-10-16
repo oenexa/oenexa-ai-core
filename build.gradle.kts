@@ -83,10 +83,8 @@ subprojects {
         reports { xml.required.set(true); html.required.set(true) }
     }
 
-    // Coverage gate. Stub modules carry no logic and are exempt.
-    val coverageExempt = setOf(
-        "api"
-    )
+    // Coverage gate. All 23 modules enforce JaCoCo verification.
+    val coverageExempt = emptySet<String>()
     if (name !in coverageExempt) {
         tasks.withType<JacocoCoverageVerification>().configureEach {
             violationRules { rule { limit { minimum = "0.80".toBigDecimal() } } }

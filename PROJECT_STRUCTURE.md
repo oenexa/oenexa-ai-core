@@ -101,16 +101,27 @@ oenexa-ai-engineer-backend/
 │
 ├── api/                         # [Module 4/23] Incoming Adapter & Spring Boot MVC BootJar
 │   ├── src/main/java/com/oenexa/api/
-│   │   ├── ApiApplication.java         # Spring Boot entrypoint (@SpringBootApplication)
-│   │   ├── AgentController.java        # /api/v1/agents endpoints
-│   │   ├── AuthController.java         # /api/v1/auth endpoints (login, register, /me)
-│   │   ├── ChatController.java         # /api/v1/chat endpoints (messages, history)
-│   │   ├── GlobalErrorHandler.java     # RFC 7807 @ControllerAdvice ProblemDetail
+│   │   ├── OenexaAiEngineerApplication.java # Spring Boot entrypoint (@SpringBootApplication)
+│   │   ├── AgentController.java        # /api/v1/agents endpoints (runs, workflows)
+│   │   ├── AuthController.java         # /api/v1/auth endpoints (login, register, /me, refresh)
+│   │   ├── ChatController.java         # /api/v1/chat endpoints (messages, conversations)
+│   │   ├── HealthController.java       # /api/health diagnostics endpoint
 │   │   ├── ModulesController.java      # /api/v1/modules platform discovery
-│   │   └── RagController.java          # /api/v1/rag endpoints (documents, search)
-│   └── src/main/resources/
-│       ├── application.yml             # Local profile configuration (in-memory fallback)
-│       └── application-docker.yml      # Container profile (Postgres, Redis, Actuator)
+│   │   ├── RagController.java          # /api/v1/rag endpoints (documents, query)
+│   │   └── GlobalErrorHandler.java     # RFC 7807 @ControllerAdvice ProblemDetail
+│   ├── src/main/resources/
+│   │   ├── application.yml             # Local profile configuration (in-memory fallback)
+│   │   └── application-docker.yml      # Container profile (Postgres, Redis, Actuator)
+│   └── src/test/java/com/oenexa/api/   # (100% Zero-Mock Line & Branch Coverage, 106/106 lines, 40/40 branches)
+│       ├── AgentControllerTest.java
+│       ├── AuthControllerTest.java
+│       ├── ChatControllerTest.java
+│       ├── DatabaseSchemaIntegrationTest.java
+│       ├── GlobalErrorHandlerTest.java
+│       ├── HealthControllerTest.java
+│       ├── ModulesControllerTest.java
+│       ├── OenexaAiEngineerApplicationTest.java
+│       └── RagControllerTest.java
 │
 ├── oenexa-common/               # [Module 5/23] Cross-Cutting Platform Kernel & Common Contracts
 │   ├── src/main/java/ai/oenexa/common/

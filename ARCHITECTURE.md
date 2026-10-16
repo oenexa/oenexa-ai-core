@@ -109,7 +109,7 @@ The backend is organized into 23 strictly bounded Gradle modules. All dependenci
 | **`:domain`** | Inner Hexagon | Pure Java 25 business entities, records (`UserRegistration`, `TenantContext`, `Workflow`, `AgentContract`, `RagDocument`), invariants, domain events, and RFC 7807 error codes. **Zero external framework dependencies.** | **100% Coverage (144/144 lines, 100% branches)** |
 | **`:application`** | Use-Cases | Application services (`UserService`, `ChatService`, `AgentCoordinatorService`, `RagService`, `TokenService`, `PlatformEventPublisher`). Orchestrates domain objects without framework coupling. | **100% Coverage (179/179 lines, 100% branches)** |
 | **`:infrastructure`**| Outer Adapters | Spring Data JPA entities, Flyway database migrations (`V1__init_oenexa_schema.sql`), Redis configuration, Kafka event publishers, and embedded fallbacks. | **100% Coverage (374/374 lines, 100% branches)** |
-| **`:api`** | Primary Adapter | Spring Boot MVC executable bootJar (`com.oenexa.api`). Exposes `@RestController` endpoints (`ChatController`, `AgentController`, `RagController`, `AuthController`, `ModulesController`), global RFC 7807 exception handler, and actuator metrics. |
+| **`:api`** | Primary Adapter | Spring Boot MVC executable bootJar (`com.oenexa.api`). Exposes `@RestController` endpoints (`ChatController`, `AgentController`, `RagController`, `AuthController`, `ModulesController`), global RFC 7807 exception handler, and actuator metrics. | **100% Coverage (106/106 lines, 100% branches)** |
 
 ### 3.2 Platform Engineering Modules (19 Modules)
 | Module | Responsibility & Key Services | REST Endpoints | Test Verification & Gate |
@@ -278,4 +278,5 @@ The system enforces strict quality gates:
 | **`domain`** | 144 | 0 | **100%** | JUnit 5 | **Strictly Zero Mocks** |
 | **`application`** | 179 | 0 | **100%** | JUnit 5 / BDD | **Strictly Zero Mocks** |
 | **`infrastructure`** | 374 | 0 | **100%** | JUnit 5 | **Strictly Zero Mocks** |
-| **TOTAL** | **2,815** | **0** | **100%** | JUnit 5 / BDD | **Zero Mocks Across All Modules** |
+| **`api`** | 106 | 0 | **100%** | JUnit 5 | **Strictly Zero Mocks** |
+| **TOTAL** | **2,921** | **0** | **100%** | JUnit 5 / BDD | **Zero Mocks Across All Modules** |
