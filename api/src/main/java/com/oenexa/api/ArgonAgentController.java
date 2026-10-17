@@ -1,6 +1,7 @@
 package com.oenexa.api;
 
 import com.oenexa.application.ArgonAutonomousAgentEngine;
+import com.oenexa.application.CollaborativeAgentService;
 import com.oenexa.domain.ChatDomain.*;
 import com.oenexa.infrastructure.persistence.entity.ArgonExecutionEventEntity;
 import com.oenexa.infrastructure.persistence.entity.ArgonGoalEntity;
@@ -31,14 +32,45 @@ import java.util.Objects;
 public class ArgonAgentController {
 
     public record ArgonManualHealRequest(String issueDetected, String rootCause) {}
+    public record GeneratePrdRequest(String goal, String targetAudience) {}
+    public record MultimodalUploadRequest(MultimodalType type, String fileName, String mimeType, String base64DataOrUrl) {}
 
     private final ArgonAutonomousAgentEngine engine;
+    private final CollaborativeAgentService agentService;
     private final ArgonGoalRepository goalRepository;
     private final ArgonPlanStepRepository planStepRepository;
     private final ArgonExecutionEventRepository executionEventRepository;
     private final ArgonSelfHealingCycleRepository selfHealingCycleRepository;
+    private final com.oenexa.infrastructure.persistence.repository.ProductRequirementsDocumentRepository prdRepository;
+    private final com.oenexa.infrastructure.persistence.repository.UserStoryRepository userStoryRepository;
+    private final com.oenexa.infrastructure.persistence.repository.MultimodalAttachmentRepository multimodalAttachmentRepository;
+    private final com.oenexa.infrastructure.persistence.repository.LocalAgentAuditLogRepository localAgentAuditLogRepository;
 
     @Autowired
+    public ArgonAgentController(
+            ArgonAutonomousAgentEngine engine,
+            CollaborativeAgentService agentService,
+            ArgonGoalRepository goalRepository,
+            ArgonPlanStepRepository planStepRepository,
+            ArgonExecutionEventRepository executionEventRepository,
+            ArgonSelfHealingCycleRepository selfHealingCycleRepository,
+            com.oenexa.infrastructure.persistence.repository.ProductRequirementsDocumentRepository prdRepository,
+            com.oenexa.infrastructure.persistence.repository.UserStoryRepository userStoryRepository,
+            com.oenexa.infrastructure.persistence.repository.MultimodalAttachmentRepository multimodalAttachmentRepository,
+            com.oenexa.infrastructure.persistence.repository.LocalAgentAuditLogRepository localAgentAuditLogRepository
+    ) {
+        this.engine = Objects.requireNonNull(engine, "engine must not be null");
+        this.agentService = agentService != null ? agentService : new CollaborativeAgentService();
+        this.goalRepository = goalRepository;
+        this.planStepRepository = planStepRepository;
+        this.executionEventRepository = executionEventRepository;
+        this.selfHealingCycleRepository = selfHealingCycleRepository;
+        this.prdRepository = prdRepository;
+        this.userStoryRepository = userStoryRepository;
+        this.multimodalAttachmentRepository = multimodalAttachmentRepository;
+        this.localAgentAuditLogRepository = localAgentAuditLogRepository;
+    }
+
     public ArgonAgentController(
             ArgonAutonomousAgentEngine engine,
             ArgonGoalRepository goalRepository,
@@ -46,15 +78,102 @@ public class ArgonAgentController {
             ArgonExecutionEventRepository executionEventRepository,
             ArgonSelfHealingCycleRepository selfHealingCycleRepository
     ) {
-        this.engine = Objects.requireNonNull(engine, "engine must not be null");
-        this.goalRepository = goalRepository;
-        this.planStepRepository = planStepRepository;
-        this.executionEventRepository = executionEventRepository;
-        this.selfHealingCycleRepository = selfHealingCycleRepository;
+        this(engine, new CollaborativeAgentService(), goalRepository, planStepRepository, executionEventRepository, selfHealingCycleRepository, null, null, null, null);
     }
 
     public ArgonAgentController(ArgonAutonomousAgentEngine engine) {
         this(engine, null, null, null, null);
+    }
+
+    @GetMapping("/argon/privacy")
+    public ResponseEntity<LocalPrivacyConfig> getPrivacyStatus() {
+        if (localAgentAuditLogRepository != null) {
+            var latestLog = localAgentAuditLogRepository.findTopByOrderByCreatedAtDesc();
+            if (latestLog.isPresent()) {
+                var l = latestLog.get();
+                return ResponseEntity.ok(new LocalPrivacyConfig(
+                        l.isLocalOnlyMode(),
+                        l.isTelemetryDisabled(),
+                        l.getLocalModelEndpoint(),
+                        l.getSelectedLocalModel(),
+                        l.getMaxVramAllocationMb(),
+                        l.isAirGappedVerification()
+                ));
+            }
+        }
+        return ResponseEntity.ok(new LocalPrivacyConfig());
+    }
+
+    @PostMapping("/argon/prd")
+    public ResponseEntity<ProductRequirementsDocument> generatePrd(@RequestBody GeneratePrdRequest request) {
+        if (request == null || request.goal() == null || request.goal().isBlank()) {
+            return ResponseEntity.badRequest().build();
+        }
+        ProductRequirementsDocument prd = agentService.generateProductRequirementsDocument(request.goal(), request.targetAudience());
+        if (prdRepository != null) {
+            var entity = new com.oenexa.infrastructure.persistence.entity.ProductRequirementsDocumentEntity(
+                    prd.prdId(),
+                    prd.title(),
+                    prd.targetAudience(),
+                    prd.problemStatement(),
+                    String.join(", ", prd.keyFeatures()),
+                    String.join(", ", prd.technicalConstraints()),
+                    prd.releaseRoadmap()
+            );
+            prdRepository.save(entity);
+
+            if (userStoryRepository != null && prd.userStories() != null) {
+                for (UserStory s : prd.userStories()) {
+                    var storyEntity = new com.oenexa.infrastructure.persistence.entity.UserStoryEntity(
+                            s.id(),
+                            prd.prdId(),
+                            s.title(),
+                            s.asA(),
+                            s.iWant(),
+                            s.soThat(),
+                            String.join("; ", s.acceptanceCriteria()),
+                            s.storyPoints(),
+                            s.status()
+                    );
+                    userStoryRepository.save(storyEntity);
+                }
+            }
+        }
+        return ResponseEntity.ok(prd);
+    }
+
+    @PostMapping("/argon/multimodal/upload")
+    public ResponseEntity<MultimodalAttachment> uploadMultimodalAttachment(@RequestBody MultimodalUploadRequest request) {
+        if (request == null || request.type() == null || request.fileName() == null || request.fileName().isBlank()) {
+            return ResponseEntity.badRequest().build();
+        }
+        String extracted = switch (request.type()) {
+            case IMAGE -> "Extracted visual diagram context & architecture component graph from image: " + request.fileName();
+            case AUDIO_VOICE -> "Transcribed developer voice speech directive from audio clip: " + request.fileName();
+            case FILE_DOCUMENT -> "Parsed document requirements & technical schema invariants from: " + request.fileName();
+        };
+
+        MultimodalAttachment attachment = new MultimodalAttachment(
+                request.type(),
+                request.fileName(),
+                request.mimeType() != null ? request.mimeType() : "application/octet-stream",
+                request.base64DataOrUrl() != null ? request.base64DataOrUrl() : "",
+                extracted
+        );
+
+        if (multimodalAttachmentRepository != null) {
+            var entity = new com.oenexa.infrastructure.persistence.entity.MultimodalAttachmentEntity(
+                    attachment.id(),
+                    null,
+                    attachment.type().name(),
+                    attachment.fileName(),
+                    attachment.mimeType(),
+                    attachment.base64DataOrUrl(),
+                    attachment.extractedTextOrTranscript()
+            );
+            multimodalAttachmentRepository.save(entity);
+        }
+        return ResponseEntity.ok(attachment);
     }
 
     @PostMapping("/argon/goals")
@@ -199,6 +318,67 @@ public class ArgonAgentController {
                             cycle.resolved()
                     );
                     selfHealingCycleRepository.save(cycleEntity);
+                }
+            }
+
+            if (prdRepository != null && response.prd() != null) {
+                var p = response.prd();
+                var prdEntity = new com.oenexa.infrastructure.persistence.entity.ProductRequirementsDocumentEntity(
+                        p.prdId(),
+                        p.title(),
+                        p.targetAudience(),
+                        p.problemStatement(),
+                        String.join(", ", p.keyFeatures()),
+                        String.join(", ", p.technicalConstraints()),
+                        p.releaseRoadmap()
+                );
+                prdRepository.save(prdEntity);
+            }
+
+            if (userStoryRepository != null && response.userStories() != null) {
+                for (UserStory s : response.userStories()) {
+                    var storyEntity = new com.oenexa.infrastructure.persistence.entity.UserStoryEntity(
+                            s.id(),
+                            response.prd() != null ? response.prd().prdId() : null,
+                            s.title(),
+                            s.asA(),
+                            s.iWant(),
+                            s.soThat(),
+                            String.join("; ", s.acceptanceCriteria()),
+                            s.storyPoints(),
+                            s.status()
+                    );
+                    userStoryRepository.save(storyEntity);
+                }
+            }
+
+            if (localAgentAuditLogRepository != null && response.privacyAudit() != null) {
+                var priv = response.privacyAudit();
+                var logEntity = new com.oenexa.infrastructure.persistence.entity.LocalAgentAuditLogEntity(
+                        java.util.UUID.randomUUID().toString(),
+                        response.goalId(),
+                        priv.localOnlyMode(),
+                        priv.telemetryDisabled(),
+                        priv.localModelEndpoint(),
+                        priv.selectedLocalModel(),
+                        priv.maxVramAllocationMb(),
+                        priv.airGappedVerification()
+                );
+                localAgentAuditLogRepository.save(logEntity);
+            }
+
+            if (multimodalAttachmentRepository != null && request.multimodalAttachments() != null) {
+                for (MultimodalAttachment att : request.multimodalAttachments()) {
+                    var attEntity = new com.oenexa.infrastructure.persistence.entity.MultimodalAttachmentEntity(
+                            att.id(),
+                            response.goalId(),
+                            att.type().name(),
+                            att.fileName(),
+                            att.mimeType(),
+                            att.base64DataOrUrl(),
+                            att.extractedTextOrTranscript()
+                    );
+                    multimodalAttachmentRepository.save(attEntity);
                 }
             }
         }

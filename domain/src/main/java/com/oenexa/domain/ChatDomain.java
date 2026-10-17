@@ -134,19 +134,19 @@ public class ChatDomain {
     }
 
     public enum ModelProvider {
-        OPENAI_GPT, ANTHROPIC_CLAUDE, GEMINI, DEEPSEEK, MISTRAL, LLAMA, OENEXA_CUSTOM
+        OPENAI_GPT, ANTHROPIC_CLAUDE, GEMINI, DEEPSEEK, MISTRAL, LLAMA, OENEXA_CUSTOM, LOCAL_OLLAMA, LOCAL_PRIVATE
     }
 
     public enum TaskType {
-        CODING, REASONING, FAST_CHAT, REPO_ANALYSIS, BUG_FIX, SECURITY_AUDIT, ARCHITECTURE
+        CODING, REASONING, FAST_CHAT, REPO_ANALYSIS, BUG_FIX, SECURITY_AUDIT, ARCHITECTURE, PRODUCT_MANAGEMENT, MULTIMODAL_ANALYSIS
     }
 
     public enum ConversationCategory {
-        GENERAL, ARCHITECTURE, CODE_ENGINEERING, BUG_FIXING, TESTING, DEVOPS, SECURITY
+        GENERAL, ARCHITECTURE, CODE_ENGINEERING, BUG_FIXING, TESTING, DEVOPS, SECURITY, PRODUCT_MANAGEMENT, MULTIMODAL
     }
 
     public enum SoftwareEngineerAgentType {
-        CODE_AGENT, BUG_FIX_AGENT, TEST_AGENT, DEVOPS_AGENT, DOCUMENTATION_AGENT, SECURITY_AGENT, ARCHITECTURE_AGENT
+        CODE_AGENT, BUG_FIX_AGENT, TEST_AGENT, DEVOPS_AGENT, DOCUMENTATION_AGENT, SECURITY_AGENT, ARCHITECTURE_AGENT, PRODUCT_MANAGER_AGENT
     }
 
     public record UserMemoryRecord(
@@ -309,16 +309,91 @@ public class ChatDomain {
         }
     }
 
+    public enum MultimodalType {
+        IMAGE, AUDIO_VOICE, FILE_DOCUMENT
+    }
+
+    public record MultimodalAttachment(
+            String id,
+            MultimodalType type,
+            String fileName,
+            String mimeType,
+            String base64DataOrUrl,
+            String extractedTextOrTranscript,
+            Instant uploadedAt
+    ) {
+        public MultimodalAttachment(MultimodalType type, String fileName, String mimeType, String base64DataOrUrl, String extractedTextOrTranscript) {
+            this(java.util.UUID.randomUUID().toString(), type, fileName, mimeType, base64DataOrUrl, extractedTextOrTranscript, Instant.now());
+        }
+    }
+
+    public record UserStory(
+            String id,
+            String title,
+            String asA,
+            String iWant,
+            String soThat,
+            List<String> acceptanceCriteria,
+            int storyPoints,
+            String status
+    ) {
+        public UserStory(String title, String asA, String iWant, String soThat, List<String> acceptanceCriteria) {
+            this(java.util.UUID.randomUUID().toString(), title, asA, iWant, soThat, acceptanceCriteria, 3, "BACKLOG");
+        }
+    }
+
+    public record ProductRequirementsDocument(
+            String prdId,
+            String title,
+            String targetAudience,
+            String problemStatement,
+            List<String> keyFeatures,
+            List<UserStory> userStories,
+            List<String> technicalConstraints,
+            String releaseRoadmap,
+            Instant createdAt
+    ) {
+        public ProductRequirementsDocument(String title, String targetAudience, String problemStatement, List<String> keyFeatures, List<UserStory> userStories) {
+            this(java.util.UUID.randomUUID().toString(), title, targetAudience, problemStatement, keyFeatures, userStories, List.of("Hexagonal Monolith", "100% Zero-Mock Line Coverage"), "v1.0.0 Sprint Delivery", Instant.now());
+        }
+    }
+
+    public record LocalPrivacyConfig(
+            boolean localOnlyMode,
+            boolean telemetryDisabled,
+            String localModelEndpoint,
+            String selectedLocalModel,
+            int maxVramAllocationMb,
+            boolean airGappedVerification
+    ) {
+        public LocalPrivacyConfig() {
+            this(true, true, "http://localhost:11434", "llama3.3:latest", 8192, true);
+        }
+    }
+
     public record ArgonAutonomousGoalRequest(
             String goal,
             String repositoryId,
             String userId,
             boolean autonomousSelfHealing,
             boolean extendedThinking,
-            List<CodeContextAttachment> attachments
+            List<CodeContextAttachment> attachments,
+            boolean localFirstMode,
+            List<MultimodalAttachment> multimodalAttachments
     ) {
+        public ArgonAutonomousGoalRequest(
+                String goal,
+                String repositoryId,
+                String userId,
+                boolean autonomousSelfHealing,
+                boolean extendedThinking,
+                List<CodeContextAttachment> attachments
+        ) {
+            this(goal, repositoryId, userId, autonomousSelfHealing, extendedThinking, attachments, true, List.of());
+        }
+
         public ArgonAutonomousGoalRequest(String goal) {
-            this(goal, "default-repo", "default-user", true, true, List.of());
+            this(goal, "default-repo", "default-user", true, true, List.of(), true, List.of());
         }
     }
 
@@ -329,10 +404,27 @@ public class ChatDomain {
             List<ArgonExecutionEvent> events,
             List<ArgonSelfHealingCycle> selfHealingCycles,
             List<CodeArtifact> artifacts,
+            List<UserStory> userStories,
+            ProductRequirementsDocument prd,
+            LocalPrivacyConfig privacyAudit,
             double confidenceScore,
             String finalSummary,
             Instant completedAt
-    ) {}
+    ) {
+        public ArgonAutonomousGoalResponse(
+                String goalId,
+                String goalDescription,
+                ArgonAgentPlan plan,
+                List<ArgonExecutionEvent> events,
+                List<ArgonSelfHealingCycle> selfHealingCycles,
+                List<CodeArtifact> artifacts,
+                double confidenceScore,
+                String finalSummary,
+                Instant completedAt
+        ) {
+            this(goalId, goalDescription, plan, events, selfHealingCycles, artifacts, List.of(), null, new LocalPrivacyConfig(), confidenceScore, finalSummary, completedAt);
+        }
+    }
 }
 
 

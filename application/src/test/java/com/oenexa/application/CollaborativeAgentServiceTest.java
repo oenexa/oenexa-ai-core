@@ -60,10 +60,50 @@ class CollaborativeAgentServiceTest {
     }
 
     @Test
+    @DisplayName("Should generate structured Product Requirements Document (PRD) with INVEST user stories")
+    void shouldGenerateProductRequirementsDocument() {
+        ProductRequirementsDocument prd = service.generateProductRequirementsDocument(
+                "Build Local-First Autonomous AI Agent",
+                "Enterprise Architects"
+        );
+
+        assertNotNull(prd);
+        assertNotNull(prd.prdId());
+        assertEquals("PRD: Build Local-First Autonomous AI Agent", prd.title());
+        assertEquals("Enterprise Architects", prd.targetAudience());
+        assertEquals(4, prd.keyFeatures().size());
+        assertEquals(2, prd.userStories().size());
+        assertEquals("v1.0.0 Sprint Delivery", prd.releaseRoadmap());
+
+        // Default audience check
+        ProductRequirementsDocument defaultPrd = service.generateProductRequirementsDocument("Build API", null);
+        assertEquals("Software Engineers & Platform Architects", defaultPrd.targetAudience());
+    }
+
+    @Test
+    @DisplayName("Should execute end-to-end product lifecycle pipeline including Product Manager")
+    void shouldExecuteProductLifecyclePipeline() {
+        String pipelineId = "prd-pipe-200";
+        String goal = "Deliver Air-Gapped Microservices Engine";
+
+        List<AgentCollaborationTask> tasks = service.runProductLifecyclePipeline(pipelineId, goal);
+        assertEquals(7, tasks.size());
+        assertEquals(SoftwareEngineerAgentType.PRODUCT_MANAGER_AGENT, tasks.get(0).agentType());
+        assertEquals(SoftwareEngineerAgentType.ARCHITECTURE_AGENT, tasks.get(1).agentType());
+        assertEquals(SoftwareEngineerAgentType.CODE_AGENT, tasks.get(2).agentType());
+        assertEquals(SoftwareEngineerAgentType.DOCUMENTATION_AGENT, tasks.get(6).agentType());
+
+        List<AgentCollaborationTask> fetched = service.getPipelineTasks(pipelineId);
+        assertEquals(7, fetched.size());
+    }
+
+    @Test
     @DisplayName("Should enforce null safety checks")
     void shouldEnforceInvariants() {
         assertThrows(NullPointerException.class, () -> service.executeAgentTask(null, "desc", null));
         assertThrows(NullPointerException.class, () -> service.executeAgentTask(SoftwareEngineerAgentType.CODE_AGENT, null, null));
         assertThrows(NullPointerException.class, () -> service.runCollaborativePipeline("pipe", null));
+        assertThrows(NullPointerException.class, () -> service.generateProductRequirementsDocument(null, "audience"));
+        assertThrows(NullPointerException.class, () -> service.runProductLifecyclePipeline("pipe", null));
     }
 }

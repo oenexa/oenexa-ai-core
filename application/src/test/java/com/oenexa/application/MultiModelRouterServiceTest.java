@@ -40,6 +40,14 @@ class MultiModelRouterServiceTest {
         ModelRoutingDecision arch = router.routeTask(TaskType.ARCHITECTURE, null);
         assertEquals(ModelProvider.GEMINI, arch.provider());
         assertEquals("gemini-2.5-flash", arch.modelName());
+
+        ModelRoutingDecision pm = router.routeTask(TaskType.PRODUCT_MANAGEMENT, null);
+        assertEquals(ModelProvider.ANTHROPIC_CLAUDE, pm.provider());
+        assertEquals("claude-3-5-sonnet", pm.modelName());
+
+        ModelRoutingDecision mm = router.routeTask(TaskType.MULTIMODAL_ANALYSIS, null);
+        assertEquals(ModelProvider.GEMINI, mm.provider());
+        assertEquals("gemini-2.5-flash", mm.modelName());
     }
 
     @ParameterizedTest(name = "Should honor explicit model preference: {0} -> {1}")
@@ -50,7 +58,10 @@ class MultiModelRouterServiceTest {
             "mistral, MISTRAL, mistral-large",
             "llama, LLAMA, llama-3.3-70b",
             "oenexa, OENEXA_CUSTOM, oenexa-expert-code-v1",
-            "gemini, GEMINI, gemini-2.5-flash"
+            "gemini, GEMINI, gemini-2.5-flash",
+            "ollama, LOCAL_OLLAMA, llama3.3:latest",
+            "local, LOCAL_OLLAMA, llama3.3:latest",
+            "private, LOCAL_PRIVATE, deepseek-r1:14b"
     })
     void shouldHonorExplicitPreferences(String pref, ModelProvider expectedProvider, String expectedModel) {
         ModelRoutingDecision decision = router.routeTask(TaskType.CODING, pref);
@@ -61,6 +72,14 @@ class MultiModelRouterServiceTest {
     @Test
     @DisplayName("Should classify message intent into TaskType and route directly from message")
     void shouldRouteFromMessage() {
+        ModelRoutingDecision d0 = router.routeMessage("Draft PRD with user stories and acceptance criteria", null);
+        assertEquals(TaskType.PRODUCT_MANAGEMENT, d0.taskType());
+        assertEquals(ModelProvider.ANTHROPIC_CLAUDE, d0.provider());
+
+        ModelRoutingDecision d00 = router.routeMessage("Analyze uploaded architecture image and audio screenshot", null);
+        assertEquals(TaskType.MULTIMODAL_ANALYSIS, d00.taskType());
+        assertEquals(ModelProvider.GEMINI, d00.provider());
+
         ModelRoutingDecision d1 = router.routeMessage("Show system context architecture blueprint", "auto");
         assertEquals(TaskType.ARCHITECTURE, d1.taskType());
         assertEquals(ModelProvider.GEMINI, d1.provider());

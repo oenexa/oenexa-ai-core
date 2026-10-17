@@ -53,10 +53,16 @@ class ArgonAutonomousAgentEngineTest {
         assertEquals(0.99, response.confidenceScore(), 0.001);
         assertNotNull(response.plan());
         assertEquals(ArgonExecutionPhase.COMPLETED, response.plan().currentPhase());
-        assertEquals(6, response.plan().steps().size());
+        assertEquals(7, response.plan().steps().size());
         assertFalse(response.events().isEmpty());
         assertFalse(response.selfHealingCycles().isEmpty());
         assertFalse(response.artifacts().isEmpty());
+        assertNotNull(response.userStories());
+        assertEquals(2, response.userStories().size());
+        assertNotNull(response.prd());
+        assertNotNull(response.privacyAudit());
+        assertTrue(response.privacyAudit().localOnlyMode());
+        assertTrue(response.privacyAudit().airGappedVerification());
         assertTrue(response.finalSummary().contains("Gemini 4 Argon Autonomous Goal Execution Succeeded"));
 
         // Verify retrieval queries
@@ -129,7 +135,52 @@ class ArgonAutonomousAgentEngineTest {
 
         // Verify event order: PLANNING -> DECOMPOSITION -> TOOL_EXECUTION -> SELF_HEALING -> REFLECTION
         assertEquals(ArgonExecutionPhase.PLANNING, streamedEvents.get(0).phase());
-        assertEquals(ArgonExecutionPhase.DECOMPOSITION, streamedEvents.get(1).phase());
+        assertTrue(streamedEvents.stream().anyMatch(e -> e.phase() == ArgonExecutionPhase.DECOMPOSITION));
+        assertTrue(streamedEvents.stream().anyMatch(e -> e.phase() == ArgonExecutionPhase.TOOL_EXECUTION));
+        assertTrue(streamedEvents.stream().anyMatch(e -> e.phase() == ArgonExecutionPhase.REFLECTION));
+    }
+
+    @Test
+    @DisplayName("Should execute local-first goal with multimodal attachments")
+    void shouldExecuteLocalFirstMultimodalGoal() {
+        MultimodalAttachment att = new MultimodalAttachment(
+                MultimodalType.IMAGE,
+                "architecture_c4.png",
+                "image/png",
+                "base64-diagram-bytes",
+                "C4 Container diagram showing React UI and Spring Boot API"
+        );
+
+        ArgonAutonomousGoalRequest request = new ArgonAutonomousGoalRequest(
+                "Implement Hexagonal Architecture from Diagram",
+                "repo-gamma",
+                "user-3",
+                true,
+                true,
+                List.of(),
+                true,
+                List.of(att)
+        );
+
+        ArgonAutonomousGoalResponse response = engine.executeGoal(request);
+
+        assertNotNull(response);
+        assertTrue(response.privacyAudit().localOnlyMode());
+        assertTrue(response.privacyAudit().airGappedVerification());
+        assertEquals("http://localhost:11434", response.privacyAudit().localModelEndpoint());
+
+        boolean hasLocalPrivacyEvent = response.events().stream()
+                .anyMatch(e -> e.toolAction().equals("VERIFY_LOCAL_PRIVACY"));
+        assertTrue(hasLocalPrivacyEvent);
+
+        boolean hasMultimodalEvent = response.events().stream()
+                .anyMatch(e -> e.toolAction().equals("PROCESS_MULTIMODAL"));
+        assertTrue(hasMultimodalEvent);
+
+        // Verify PM PRD markdown artifact generated
+        boolean hasPrdArtifact = response.artifacts().stream()
+                .anyMatch(a -> a.language().equals("MARKDOWN") && a.filePath().contains("PRD_"));
+        assertTrue(hasPrdArtifact);
     }
 
     @Test

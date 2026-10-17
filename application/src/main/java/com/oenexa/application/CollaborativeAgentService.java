@@ -23,6 +23,11 @@ public class CollaborativeAgentService {
 
         String taskId = UUID.randomUUID().toString();
         String output = switch (agentType) {
+            case PRODUCT_MANAGER_AGENT ->
+                    "### 📋 Product Manager Agent Output\n" +
+                    "- Formulated Product Requirements Document (PRD).\n" +
+                    "- Decomposed business goal into INVEST-compliant User Stories.\n" +
+                    "- Formulated clear Acceptance Criteria (Gherkin style) and sprint point estimations.";
             case ARCHITECTURE_AGENT ->
                     "### 🏛️ Architecture Agent Output\n" +
                     "- Domain Boundaries: Inner Hexagon sealed records isolated from frameworks.\n" +
@@ -118,6 +123,55 @@ public class CollaborativeAgentService {
                 "Generate architecture documentation and sequence diagrams",
                 engineeringGoal
         ));
+
+        activePipelines.put(id, tasks);
+        return List.copyOf(tasks);
+    }
+
+    public ProductRequirementsDocument generateProductRequirementsDocument(String goal, String targetAudience) {
+        Objects.requireNonNull(goal, "goal must not be null");
+        String audience = (targetAudience != null && !targetAudience.isBlank()) ? targetAudience : "Software Engineers & Platform Architects";
+
+        UserStory story1 = new UserStory(
+                "Autonomous Goal Execution",
+                "Developer",
+                "provide an engineering directive",
+                "have multi-agent personas coordinate to plan, write, and verify code",
+                List.of("Given high-level goal, When submitted, Then DAG execution plans all personas", "Given edge cases, When tested, Then self-healing patches apply automatically")
+        );
+
+        UserStory story2 = new UserStory(
+                "Local Privacy & Air-Gapped Mode",
+                "Security Officer",
+                "run models locally without telemetry",
+                "guarantee zero confidential code leakage outside the boundary",
+                List.of("Given local mode enabled, When inference runs, Then Ollama/Private endpoints are used", "Given audit log, When verified, Then 100% telemetry disabled is confirmed")
+        );
+
+        return new ProductRequirementsDocument(
+                "PRD: " + goal,
+                audience,
+                "Software delivery teams require autonomous, local-first AI engineering capable of zero-leakage development.",
+                List.of("Autonomous ReAct Plan Execution", "Zero-Mock 100% Coverage Assurance", "Air-Gapped Local Inference", "Multimodal Context Ingestion"),
+                List.of(story1, story2)
+        );
+    }
+
+    public List<AgentCollaborationTask> runProductLifecyclePipeline(String pipelineId, String engineeringGoal) {
+        Objects.requireNonNull(engineeringGoal, "engineeringGoal must not be null");
+        String id = (pipelineId != null && !pipelineId.isBlank()) ? pipelineId : UUID.randomUUID().toString();
+
+        List<AgentCollaborationTask> tasks = new ArrayList<>();
+
+        // 1. Product Manager Agent synthesizes PRD and user stories
+        tasks.add(executeAgentTask(
+                SoftwareEngineerAgentType.PRODUCT_MANAGER_AGENT,
+                "Formulate PRD, INVEST user stories, and acceptance criteria for: " + engineeringGoal,
+                engineeringGoal
+        ));
+
+        // 2-7. Execute engineering stages
+        tasks.addAll(runCollaborativePipeline(id + "-eng", engineeringGoal));
 
         activePipelines.put(id, tasks);
         return List.copyOf(tasks);

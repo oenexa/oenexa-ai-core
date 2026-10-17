@@ -691,4 +691,166 @@ class EntityModelTest {
         assertFalse(cycle.isResolved());
         assertEquals(now, cycle.getTimestamp());
     }
+
+    @Test
+    @DisplayName("ProductRequirementsDocumentEntity getters and setters")
+    void testProductRequirementsDocumentEntity() {
+        ProductRequirementsDocumentEntity entity = new ProductRequirementsDocumentEntity(
+                "prd-1", "AI Platform", "Engineers", "Chatbot lacks context",
+                "[\"Autonomous DAG\"]", "[\"Hexagonal\"]", "v1.0.0"
+        );
+        ProductRequirementsDocumentEntity noArg = new ProductRequirementsDocumentEntity();
+        assertNotNull(noArg);
+
+        assertEquals("prd-1", entity.getId());
+        assertEquals("AI Platform", entity.getTitle());
+        assertEquals("Engineers", entity.getTargetAudience());
+        assertEquals("Chatbot lacks context", entity.getProblemStatement());
+        assertEquals("[\"Autonomous DAG\"]", entity.getKeyFeatures());
+        assertEquals("[\"Hexagonal\"]", entity.getTechnicalConstraints());
+        assertEquals("v1.0.0", entity.getReleaseRoadmap());
+        assertNotNull(entity.getCreatedAt());
+
+        entity.setId("prd-2");
+        entity.setTitle("New PRD");
+        entity.setTargetAudience("Architects");
+        entity.setProblemStatement("New Problem");
+        entity.setKeyFeatures("Features");
+        entity.setTechnicalConstraints("Constraints");
+        entity.setReleaseRoadmap("v2.0.0");
+        Instant now = Instant.now();
+        entity.setCreatedAt(now);
+
+        assertEquals("prd-2", entity.getId());
+        assertEquals("New PRD", entity.getTitle());
+        assertEquals("Architects", entity.getTargetAudience());
+        assertEquals("New Problem", entity.getProblemStatement());
+        assertEquals("Features", entity.getKeyFeatures());
+        assertEquals("Constraints", entity.getTechnicalConstraints());
+        assertEquals("v2.0.0", entity.getReleaseRoadmap());
+        assertEquals(now, entity.getCreatedAt());
+    }
+
+    @Test
+    @DisplayName("UserStoryEntity getters and setters")
+    void testUserStoryEntity() {
+        UserStoryEntity entity = new UserStoryEntity(
+                "story-1", "prd-1", "Authentication", "User", "Log in", "Access dashboard", "Given credentials, When valid, Then 200 OK", 5, "BACKLOG"
+        );
+        UserStoryEntity noArg = new UserStoryEntity();
+        assertNotNull(noArg);
+
+        assertEquals("story-1", entity.getId());
+        assertEquals("prd-1", entity.getPrdId());
+        assertEquals("Authentication", entity.getTitle());
+        assertEquals("User", entity.getAsA());
+        assertEquals("Log in", entity.getIWant());
+        assertEquals("Access dashboard", entity.getSoThat());
+        assertEquals("Given credentials, When valid, Then 200 OK", entity.getAcceptanceCriteria());
+        assertEquals(5, entity.getStoryPoints());
+        assertEquals("BACKLOG", entity.getStatus());
+        assertNotNull(entity.getCreatedAt());
+
+        entity.setId("story-2");
+        entity.setPrdId("prd-2");
+        entity.setTitle("Logout");
+        entity.setAsA("Admin");
+        entity.setIWant("Log out");
+        entity.setSoThat("Invalidate session");
+        entity.setAcceptanceCriteria("Session terminated");
+        entity.setStoryPoints(2);
+        entity.setStatus("DONE");
+        Instant now = Instant.now();
+        entity.setCreatedAt(now);
+
+        assertEquals("story-2", entity.getId());
+        assertEquals("prd-2", entity.getPrdId());
+        assertEquals("Logout", entity.getTitle());
+        assertEquals("Admin", entity.getAsA());
+        assertEquals("Log out", entity.getIWant());
+        assertEquals("Invalidate session", entity.getSoThat());
+        assertEquals("Session terminated", entity.getAcceptanceCriteria());
+        assertEquals(2, entity.getStoryPoints());
+        assertEquals("DONE", entity.getStatus());
+        assertEquals(now, entity.getCreatedAt());
+    }
+
+    @Test
+    @DisplayName("MultimodalAttachmentEntity getters and setters")
+    void testMultimodalAttachmentEntity() {
+        MultimodalAttachmentEntity entity = new MultimodalAttachmentEntity(
+                "att-1", "goal-1", "IMAGE", "diagram.png", "image/png", "base64data", "C4 Context"
+        );
+        MultimodalAttachmentEntity noArg = new MultimodalAttachmentEntity();
+        assertNotNull(noArg);
+
+        assertEquals("att-1", entity.getId());
+        assertEquals("goal-1", entity.getGoalId());
+        assertEquals("IMAGE", entity.getAttachmentType());
+        assertEquals("diagram.png", entity.getFileName());
+        assertEquals("image/png", entity.getMimeType());
+        assertEquals("base64data", entity.getBase64DataOrUrl());
+        assertEquals("C4 Context", entity.getExtractedTextOrTranscript());
+        assertNotNull(entity.getUploadedAt());
+
+        entity.setId("att-2");
+        entity.setGoalId("goal-2");
+        entity.setAttachmentType("AUDIO_VOICE");
+        entity.setFileName("voice.wav");
+        entity.setMimeType("audio/wav");
+        entity.setBase64DataOrUrl("audiodata");
+        entity.setExtractedTextOrTranscript("Voice transcript");
+        Instant now = Instant.now();
+        entity.setUploadedAt(now);
+
+        assertEquals("att-2", entity.getId());
+        assertEquals("goal-2", entity.getGoalId());
+        assertEquals("AUDIO_VOICE", entity.getAttachmentType());
+        assertEquals("voice.wav", entity.getFileName());
+        assertEquals("audio/wav", entity.getMimeType());
+        assertEquals("audiodata", entity.getBase64DataOrUrl());
+        assertEquals("Voice transcript", entity.getExtractedTextOrTranscript());
+        assertEquals(now, entity.getUploadedAt());
+    }
+
+    @Test
+    @DisplayName("LocalAgentAuditLogEntity getters and setters")
+    void testLocalAgentAuditLogEntity() {
+        LocalAgentAuditLogEntity entity = new LocalAgentAuditLogEntity(
+                "log-1", "goal-1", true, true, "http://localhost:11434", "llama3.3", 8192, true
+        );
+        LocalAgentAuditLogEntity noArg = new LocalAgentAuditLogEntity();
+        assertNotNull(noArg);
+
+        assertEquals("log-1", entity.getId());
+        assertEquals("goal-1", entity.getGoalId());
+        assertTrue(entity.isLocalOnlyMode());
+        assertTrue(entity.isTelemetryDisabled());
+        assertEquals("http://localhost:11434", entity.getLocalModelEndpoint());
+        assertEquals("llama3.3", entity.getSelectedLocalModel());
+        assertEquals(8192, entity.getMaxVramAllocationMb());
+        assertTrue(entity.isAirGappedVerification());
+        assertNotNull(entity.getCreatedAt());
+
+        entity.setId("log-2");
+        entity.setGoalId("goal-2");
+        entity.setLocalOnlyMode(false);
+        entity.setTelemetryDisabled(false);
+        entity.setLocalModelEndpoint("http://remote:11434");
+        entity.setSelectedLocalModel("deepseek-r1");
+        entity.setMaxVramAllocationMb(16384);
+        entity.setAirGappedVerification(false);
+        Instant now = Instant.now();
+        entity.setCreatedAt(now);
+
+        assertEquals("log-2", entity.getId());
+        assertEquals("goal-2", entity.getGoalId());
+        assertFalse(entity.isLocalOnlyMode());
+        assertFalse(entity.isTelemetryDisabled());
+        assertEquals("http://remote:11434", entity.getLocalModelEndpoint());
+        assertEquals("deepseek-r1", entity.getSelectedLocalModel());
+        assertEquals(16384, entity.getMaxVramAllocationMb());
+        assertFalse(entity.isAirGappedVerification());
+        assertEquals(now, entity.getCreatedAt());
+    }
 }

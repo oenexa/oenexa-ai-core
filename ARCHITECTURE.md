@@ -506,4 +506,70 @@ graph TD
 3. **Real-Time Streaming:** Live SSE telemetry streams persona thoughts, tool calls, and output snippets directly to the developer console.
 4. **Zero-Mock Invariant:** 100% verified line coverage across all 23 backend modules with zero mock frameworks.
 
+---
+
+## 10. Local-First Private AI, Multimodal Ingestion & AI Product Manager Architecture
+
+OENEXA operates as a local-first, privacy-guaranteed engineering platform with multimodal comprehension and automated product requirement formulation:
+
+```mermaid
+graph TD
+    Client["User Input: Voice, Image, Document or Goal"] --> Gateway["ArgonAgentController (:api)"]
+    
+    subgraph LocalFirstPrivacy ["Local-First & Air-Gapped Privacy Boundary"]
+        PrivacyGuard["LocalPrivacyConfig<br/>(Telemetry Disabled, Air-Gapped Verification)"]
+        LocalOllama["Local Ollama Inference<br/>(http://localhost:11434 / llama3.3 / deepseek-r1)"]
+    end
+    
+    Gateway --> PrivacyGuard
+    PrivacyGuard --> LocalOllama
+    
+    subgraph MultimodalPipeline ["Multimodal Ingestion Engine"]
+        Voice["Audio / Voice Clips<br/>(Developer Speech Directives)"] --> SpeechTranscriber["Voice Transcriber"]
+        Images["Architecture Diagrams & UI Mockups"] --> VisionOCR["Diagram & OCR Extractor"]
+        Docs["PRDs, SQL DDL & OpenAPI Schemas"] --> DocParser["Schema & AST Parser"]
+        
+        SpeechTranscriber --> MultiModalContext["Multimodal Context Graph"]
+        VisionOCR --> MultiModalContext
+        DocParser --> MultiModalContext
+    end
+    
+    Client --> MultimodalPipeline
+    MultiModalContext --> Engine["ArgonAutonomousAgentEngine (:application)"]
+    
+    subgraph ProductLifecycleDAG ["7-Stage Autonomous Plan DAG"]
+        PM["1. PRODUCT_MANAGER_AGENT<br/>(PRD Synthesis, INVEST User Stories, Acceptance Criteria)"]
+        Arch["2. ARCHITECTURE_AGENT<br/>(Hexagonal Invariants, C4 Contracts)"]
+        Code["3. CODE_AGENT<br/>(Java 25 Records, REST, Spring Data)"]
+        Test["4. TEST_AGENT<br/>(JUnit 5 Zero-Mock 100% Coverage)"]
+        Sec["5. SECURITY_AGENT<br/>(SAST & Air-Gapped Verification)"]
+        DevOps["6. DEVOPS_AGENT<br/>(Multi-Stage Docker & Kubernetes)"]
+        DocsStage["7. DOCUMENTATION_AGENT<br/>(OpenAPI & Mermaid Diagrams)"]
+        
+        PM --> Arch
+        Arch --> Code
+        Code --> Test
+        Test --> Sec
+        Sec --> DevOps
+        DevOps --> DocsStage
+    end
+    
+    Engine --> ProductLifecycleDAG
+    
+    subgraph V4Persistence ["PostgreSQL V4 Schema (:infrastructure)"]
+        PRDTable[("product_requirements_documents")]
+        StoriesTable[("user_stories")]
+        AttachmentsTable[("multimodal_attachments")]
+        AuditTable[("local_agent_audit_logs")]
+    end
+    
+    ProductLifecycleDAG --> V4Persistence
+```
+
+### Key Capabilities:
+1. **Local-First & Zero-Telemetry Mode:** Guarantees that sensitive proprietary codebases, schema definitions, and credentials never leave the host machine.
+2. **Native Multimodal Understanding:** Ingests visual architecture diagrams, developer voice directives, and complex technical documents directly into agent context.
+3. **End-to-End Product Engineering:** From business requirements (`PRODUCT_MANAGER_AGENT` formulating PRDs and INVEST user stories) through implementation, zero-mock testing, security, containerization, and documentation.
+
+
 

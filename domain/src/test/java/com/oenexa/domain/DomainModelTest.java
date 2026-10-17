@@ -261,10 +261,20 @@ class DomainModelTest {
     @Test
     void testPhase2AndPhase3DomainModels() {
         // Enums
-        assertEquals(7, ChatDomain.ModelProvider.values().length);
-        assertEquals(7, ChatDomain.TaskType.values().length);
-        assertEquals(7, ChatDomain.ConversationCategory.values().length);
-        assertEquals(7, ChatDomain.SoftwareEngineerAgentType.values().length);
+        assertEquals(9, ChatDomain.ModelProvider.values().length);
+        assertEquals(ChatDomain.ModelProvider.LOCAL_OLLAMA, ChatDomain.ModelProvider.valueOf("LOCAL_OLLAMA"));
+        assertEquals(ChatDomain.ModelProvider.LOCAL_PRIVATE, ChatDomain.ModelProvider.valueOf("LOCAL_PRIVATE"));
+
+        assertEquals(9, ChatDomain.TaskType.values().length);
+        assertEquals(ChatDomain.TaskType.PRODUCT_MANAGEMENT, ChatDomain.TaskType.valueOf("PRODUCT_MANAGEMENT"));
+        assertEquals(ChatDomain.TaskType.MULTIMODAL_ANALYSIS, ChatDomain.TaskType.valueOf("MULTIMODAL_ANALYSIS"));
+
+        assertEquals(9, ChatDomain.ConversationCategory.values().length);
+        assertEquals(ChatDomain.ConversationCategory.PRODUCT_MANAGEMENT, ChatDomain.ConversationCategory.valueOf("PRODUCT_MANAGEMENT"));
+        assertEquals(ChatDomain.ConversationCategory.MULTIMODAL, ChatDomain.ConversationCategory.valueOf("MULTIMODAL"));
+
+        assertEquals(8, ChatDomain.SoftwareEngineerAgentType.values().length);
+        assertEquals(ChatDomain.SoftwareEngineerAgentType.PRODUCT_MANAGER_AGENT, ChatDomain.SoftwareEngineerAgentType.valueOf("PRODUCT_MANAGER_AGENT"));
 
         // UserMemoryRecord
         ChatDomain.UserMemoryRecord memory = new ChatDomain.UserMemoryRecord("user-1", "preferred_style", "concise");
@@ -358,6 +368,117 @@ class DomainModelTest {
         assertEquals(0.99, resp.confidenceScore());
         assertEquals(1, resp.relevantUserMemories().size());
         assertEquals(1, resp.repositoryCitations().size());
+    }
+
+    @Test
+    void testLocalFirstMultimodalAndProductManagerModels() {
+        // MultimodalType
+        assertEquals(3, ChatDomain.MultimodalType.values().length);
+        assertEquals(ChatDomain.MultimodalType.IMAGE, ChatDomain.MultimodalType.valueOf("IMAGE"));
+        assertEquals(ChatDomain.MultimodalType.AUDIO_VOICE, ChatDomain.MultimodalType.valueOf("AUDIO_VOICE"));
+        assertEquals(ChatDomain.MultimodalType.FILE_DOCUMENT, ChatDomain.MultimodalType.valueOf("FILE_DOCUMENT"));
+
+        // MultimodalAttachment
+        ChatDomain.MultimodalAttachment att = new ChatDomain.MultimodalAttachment(
+                ChatDomain.MultimodalType.IMAGE, "arch.png", "image/png", "base64data", "Extracted diagram OCR"
+        );
+        assertNotNull(att.id());
+        assertEquals(ChatDomain.MultimodalType.IMAGE, att.type());
+        assertEquals("arch.png", att.fileName());
+        assertEquals("image/png", att.mimeType());
+        assertEquals("base64data", att.base64DataOrUrl());
+        assertEquals("Extracted diagram OCR", att.extractedTextOrTranscript());
+        assertNotNull(att.uploadedAt());
+
+        Instant now = Instant.now();
+        ChatDomain.MultimodalAttachment fullAtt = new ChatDomain.MultimodalAttachment(
+                "att-1", ChatDomain.MultimodalType.AUDIO_VOICE, "voice.wav", "audio/wav", "audiodata", "Deploy to prod", now
+        );
+        assertEquals("att-1", fullAtt.id());
+        assertEquals(now, fullAtt.uploadedAt());
+
+        // UserStory
+        ChatDomain.UserStory story = new ChatDomain.UserStory(
+                "OAuth2 Login", "developer", "authenticate via GitHub", "access repositories securely",
+                List.of("AC1: JWT issued", "AC2: Refresh token supported")
+        );
+        assertNotNull(story.id());
+        assertEquals("OAuth2 Login", story.title());
+        assertEquals("developer", story.asA());
+        assertEquals("authenticate via GitHub", story.iWant());
+        assertEquals("access repositories securely", story.soThat());
+        assertEquals(2, story.acceptanceCriteria().size());
+        assertEquals(3, story.storyPoints());
+        assertEquals("BACKLOG", story.status());
+
+        ChatDomain.UserStory fullStory = new ChatDomain.UserStory(
+                "story-1", "Billing API", "finance user", "pay invoice", "keep service active",
+                List.of("Stripe webhook received"), 5, "IN_PROGRESS"
+        );
+        assertEquals("story-1", fullStory.id());
+        assertEquals(5, fullStory.storyPoints());
+        assertEquals("IN_PROGRESS", fullStory.status());
+
+        // ProductRequirementsDocument
+        ChatDomain.ProductRequirementsDocument prd = new ChatDomain.ProductRequirementsDocument(
+                "Autonomous AI Agent PRD", "Software Engineers & Architects",
+                "Chatbots are static and lack autonomous context",
+                List.of("Autonomous ReAct Loop", "Air-gapped privacy mode"),
+                List.of(story)
+        );
+        assertNotNull(prd.prdId());
+        assertEquals("Autonomous AI Agent PRD", prd.title());
+        assertEquals("Software Engineers & Architects", prd.targetAudience());
+        assertEquals("Chatbots are static and lack autonomous context", prd.problemStatement());
+        assertEquals(2, prd.keyFeatures().size());
+        assertEquals(1, prd.userStories().size());
+        assertEquals(2, prd.technicalConstraints().size());
+        assertEquals("v1.0.0 Sprint Delivery", prd.releaseRoadmap());
+        assertNotNull(prd.createdAt());
+
+        ChatDomain.ProductRequirementsDocument fullPrd = new ChatDomain.ProductRequirementsDocument(
+                "prd-100", "Custom PRD", "Enterprises", "Problem", List.of("Feature"),
+                List.of(fullStory), List.of("Constraint"), "Q3 2026", now
+        );
+        assertEquals("prd-100", fullPrd.prdId());
+        assertEquals("Q3 2026", fullPrd.releaseRoadmap());
+        assertEquals(now, fullPrd.createdAt());
+
+        // LocalPrivacyConfig
+        ChatDomain.LocalPrivacyConfig defaultPrivacy = new ChatDomain.LocalPrivacyConfig();
+        assertTrue(defaultPrivacy.localOnlyMode());
+        assertTrue(defaultPrivacy.telemetryDisabled());
+        assertEquals("http://localhost:11434", defaultPrivacy.localModelEndpoint());
+        assertEquals("llama3.3:latest", defaultPrivacy.selectedLocalModel());
+        assertEquals(8192, defaultPrivacy.maxVramAllocationMb());
+        assertTrue(defaultPrivacy.airGappedVerification());
+
+        ChatDomain.LocalPrivacyConfig customPrivacy = new ChatDomain.LocalPrivacyConfig(
+                false, false, "http://remote:11434", "deepseek-r1:latest", 16384, false
+        );
+        assertFalse(customPrivacy.localOnlyMode());
+        assertEquals("deepseek-r1:latest", customPrivacy.selectedLocalModel());
+
+        // Extended ArgonAutonomousGoalRequest
+        ChatDomain.ArgonAutonomousGoalRequest req = new ChatDomain.ArgonAutonomousGoalRequest("Goal 1");
+        assertTrue(req.localFirstMode());
+        assertTrue(req.multimodalAttachments().isEmpty());
+
+        ChatDomain.ArgonAutonomousGoalRequest reqWithAttachments = new ChatDomain.ArgonAutonomousGoalRequest(
+                "Goal 2", "repo-1", "user-1", true, true, List.of(), true, List.of(att)
+        );
+        assertEquals(1, reqWithAttachments.multimodalAttachments().size());
+        assertTrue(reqWithAttachments.localFirstMode());
+
+        // Extended ArgonAutonomousGoalResponse
+        ChatDomain.ArgonAutonomousGoalResponse resp = new ChatDomain.ArgonAutonomousGoalResponse(
+                "goal-1", "Goal 1", null, List.of(), List.of(), List.of(),
+                List.of(story), prd, defaultPrivacy, 0.99, "Finished successfully", now
+        );
+        assertEquals(1, resp.userStories().size());
+        assertEquals(prd, resp.prd());
+        assertEquals(defaultPrivacy, resp.privacyAudit());
+        assertEquals(0.99, resp.confidenceScore());
     }
 
     @Test

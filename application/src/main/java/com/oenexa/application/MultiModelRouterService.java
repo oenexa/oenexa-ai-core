@@ -18,7 +18,11 @@ public class MultiModelRouterService {
             return TaskType.FAST_CHAT;
         }
         String lower = message.toLowerCase();
-        if (lower.contains("architecture") || lower.contains("c4") || lower.contains("system context") || lower.contains("blueprint")) {
+        if (lower.contains("prd") || lower.contains("user story") || lower.contains("user stories") || lower.contains("product requirements") || lower.contains("acceptance criteria")) {
+            return TaskType.PRODUCT_MANAGEMENT;
+        } else if (lower.contains("image") || lower.contains("audio") || lower.contains("voice") || lower.contains("multimodal") || lower.contains("diagram upload") || lower.contains("screenshot")) {
+            return TaskType.MULTIMODAL_ANALYSIS;
+        } else if (lower.contains("architecture") || lower.contains("c4") || lower.contains("system context") || lower.contains("blueprint")) {
             return TaskType.ARCHITECTURE;
         } else if (lower.contains("security") || lower.contains("sast") || lower.contains("cve") || lower.contains("vulnerability") || lower.contains("owasp")) {
             return TaskType.SECURITY_AUDIT;
@@ -40,7 +44,11 @@ public class MultiModelRouterService {
         // Honor explicit user preference if supplied and known
         if (explicitPreference != null && !explicitPreference.isBlank() && !explicitPreference.equalsIgnoreCase("auto")) {
             String p = explicitPreference.toLowerCase();
-            if (p.contains("claude")) {
+            if (p.contains("ollama") || p.contains("local")) {
+                return new ModelRoutingDecision(ModelProvider.LOCAL_OLLAMA, "llama3.3:latest", taskType, "User explicitly selected local air-gapped Ollama inference.");
+            } else if (p.contains("private")) {
+                return new ModelRoutingDecision(ModelProvider.LOCAL_PRIVATE, "deepseek-r1:14b", taskType, "User explicitly selected local air-gapped private model.");
+            } else if (p.contains("claude")) {
                 return new ModelRoutingDecision(ModelProvider.ANTHROPIC_CLAUDE, "claude-3-5-sonnet", taskType, "User explicitly selected Anthropic Claude.");
             } else if (p.contains("gpt") || p.contains("openai")) {
                 return new ModelRoutingDecision(ModelProvider.OPENAI_GPT, "gpt-4o", taskType, "User explicitly selected OpenAI GPT-4o.");
@@ -59,6 +67,18 @@ public class MultiModelRouterService {
 
         // Autonomous optimal task-based routing
         return switch (taskType) {
+            case PRODUCT_MANAGEMENT -> new ModelRoutingDecision(
+                    ModelProvider.ANTHROPIC_CLAUDE,
+                    "claude-3-5-sonnet",
+                    TaskType.PRODUCT_MANAGEMENT,
+                    "Selected Anthropic Claude 3.5 Sonnet for structured Product Requirements Document and INVEST user story generation."
+            );
+            case MULTIMODAL_ANALYSIS -> new ModelRoutingDecision(
+                    ModelProvider.GEMINI,
+                    "gemini-2.5-flash",
+                    TaskType.MULTIMODAL_ANALYSIS,
+                    "Selected Google Gemini 2.5 Flash for high-fidelity native multimodal image, audio, and document reasoning."
+            );
             case CODING -> new ModelRoutingDecision(
                     ModelProvider.ANTHROPIC_CLAUDE,
                     "claude-3-5-sonnet",

@@ -33,12 +33,21 @@ class ArgonAgentControllerTest {
     private final Map<String, ArgonPlanStepEntity> planStepDb = new ConcurrentHashMap<>();
     private final Map<String, ArgonExecutionEventEntity> eventDb = new ConcurrentHashMap<>();
     private final Map<String, ArgonSelfHealingCycleEntity> healingDb = new ConcurrentHashMap<>();
+    private final Map<String, com.oenexa.infrastructure.persistence.entity.ProductRequirementsDocumentEntity> prdDb = new ConcurrentHashMap<>();
+    private final Map<String, com.oenexa.infrastructure.persistence.entity.UserStoryEntity> storyDb = new ConcurrentHashMap<>();
+    private final Map<String, com.oenexa.infrastructure.persistence.entity.MultimodalAttachmentEntity> attachmentDb = new ConcurrentHashMap<>();
+    private final Map<String, com.oenexa.infrastructure.persistence.entity.LocalAgentAuditLogEntity> auditDb = new ConcurrentHashMap<>();
 
     private ArgonAutonomousAgentEngine engine;
+    private CollaborativeAgentService agentService;
     private ArgonGoalRepository goalRepository;
     private ArgonPlanStepRepository planStepRepository;
     private ArgonExecutionEventRepository executionEventRepository;
     private ArgonSelfHealingCycleRepository selfHealingCycleRepository;
+    private com.oenexa.infrastructure.persistence.repository.ProductRequirementsDocumentRepository prdRepository;
+    private com.oenexa.infrastructure.persistence.repository.UserStoryRepository userStoryRepository;
+    private com.oenexa.infrastructure.persistence.repository.MultimodalAttachmentRepository multimodalAttachmentRepository;
+    private com.oenexa.infrastructure.persistence.repository.LocalAgentAuditLogRepository localAgentAuditLogRepository;
     private ArgonAgentController controller;
 
     @BeforeEach
@@ -47,8 +56,12 @@ class ArgonAgentControllerTest {
         planStepDb.clear();
         eventDb.clear();
         healingDb.clear();
+        prdDb.clear();
+        storyDb.clear();
+        attachmentDb.clear();
+        auditDb.clear();
 
-        CollaborativeAgentService agentService = new CollaborativeAgentService();
+        agentService = new CollaborativeAgentService();
         RepositoryKnowledgeService repositoryKnowledgeService = new RepositoryKnowledgeService();
         MemoryService memoryService = new MemoryService();
         engine = new ArgonAutonomousAgentEngine(agentService, repositoryKnowledgeService, memoryService);
@@ -105,12 +118,72 @@ class ArgonAgentControllerTest {
                 }
         );
 
+        prdRepository = (com.oenexa.infrastructure.persistence.repository.ProductRequirementsDocumentRepository) Proxy.newProxyInstance(
+                com.oenexa.infrastructure.persistence.repository.ProductRequirementsDocumentRepository.class.getClassLoader(),
+                new Class<?>[]{com.oenexa.infrastructure.persistence.repository.ProductRequirementsDocumentRepository.class},
+                (proxy, method, args) -> {
+                    if ("save".equals(method.getName())) {
+                        var e = (com.oenexa.infrastructure.persistence.entity.ProductRequirementsDocumentEntity) args[0];
+                        prdDb.put(e.getId(), e);
+                        return e;
+                    }
+                    return null;
+                }
+        );
+
+        userStoryRepository = (com.oenexa.infrastructure.persistence.repository.UserStoryRepository) Proxy.newProxyInstance(
+                com.oenexa.infrastructure.persistence.repository.UserStoryRepository.class.getClassLoader(),
+                new Class<?>[]{com.oenexa.infrastructure.persistence.repository.UserStoryRepository.class},
+                (proxy, method, args) -> {
+                    if ("save".equals(method.getName())) {
+                        var e = (com.oenexa.infrastructure.persistence.entity.UserStoryEntity) args[0];
+                        storyDb.put(e.getId(), e);
+                        return e;
+                    }
+                    return null;
+                }
+        );
+
+        multimodalAttachmentRepository = (com.oenexa.infrastructure.persistence.repository.MultimodalAttachmentRepository) Proxy.newProxyInstance(
+                com.oenexa.infrastructure.persistence.repository.MultimodalAttachmentRepository.class.getClassLoader(),
+                new Class<?>[]{com.oenexa.infrastructure.persistence.repository.MultimodalAttachmentRepository.class},
+                (proxy, method, args) -> {
+                    if ("save".equals(method.getName())) {
+                        var e = (com.oenexa.infrastructure.persistence.entity.MultimodalAttachmentEntity) args[0];
+                        attachmentDb.put(e.getId(), e);
+                        return e;
+                    }
+                    return null;
+                }
+        );
+
+        localAgentAuditLogRepository = (com.oenexa.infrastructure.persistence.repository.LocalAgentAuditLogRepository) Proxy.newProxyInstance(
+                com.oenexa.infrastructure.persistence.repository.LocalAgentAuditLogRepository.class.getClassLoader(),
+                new Class<?>[]{com.oenexa.infrastructure.persistence.repository.LocalAgentAuditLogRepository.class},
+                (proxy, method, args) -> {
+                    if ("save".equals(method.getName())) {
+                        var e = (com.oenexa.infrastructure.persistence.entity.LocalAgentAuditLogEntity) args[0];
+                        auditDb.put(e.getId(), e);
+                        return e;
+                    }
+                    if ("findTopByOrderByCreatedAtDesc".equals(method.getName())) {
+                        return auditDb.values().stream().findFirst();
+                    }
+                    return null;
+                }
+        );
+
         controller = new ArgonAgentController(
                 engine,
+                agentService,
                 goalRepository,
                 planStepRepository,
                 executionEventRepository,
-                selfHealingCycleRepository
+                selfHealingCycleRepository,
+                prdRepository,
+                userStoryRepository,
+                multimodalAttachmentRepository,
+                localAgentAuditLogRepository
         );
     }
 
@@ -251,5 +324,128 @@ class ArgonAgentControllerTest {
     void shouldEnforceConstructorInvariants() {
         assertThrows(NullPointerException.class, () -> new ArgonAgentController(null));
         assertThrows(NullPointerException.class, () -> new ArgonAgentController(null, goalRepository, planStepRepository, executionEventRepository, selfHealingCycleRepository));
+    }
+
+    @Test
+    @DisplayName("Should retrieve privacy status (default and from repository)")
+    void shouldRetrievePrivacyStatus() {
+        // Initial default
+        ResponseEntity<LocalPrivacyConfig> defaultResp = controller.getPrivacyStatus();
+        assertEquals(HttpStatus.OK, defaultResp.getStatusCode());
+        assertNotNull(defaultResp.getBody());
+        assertTrue(defaultResp.getBody().localOnlyMode());
+        assertTrue(defaultResp.getBody().airGappedVerification());
+
+        // Put an audit log into auditDb
+        auditDb.put("log-1", new com.oenexa.infrastructure.persistence.entity.LocalAgentAuditLogEntity(
+                "log-1", "goal-1", true, true, "http://localhost:11434", "llama3.3", 8192, true
+        ));
+        ResponseEntity<LocalPrivacyConfig> persistedResp = controller.getPrivacyStatus();
+        assertEquals(HttpStatus.OK, persistedResp.getStatusCode());
+        assertEquals("llama3.3", persistedResp.getBody().selectedLocalModel());
+
+        // Standalone without repository
+        ArgonAgentController standalone = new ArgonAgentController(engine);
+        ResponseEntity<LocalPrivacyConfig> standaloneResp = standalone.getPrivacyStatus();
+        assertEquals(HttpStatus.OK, standaloneResp.getStatusCode());
+        assertTrue(standaloneResp.getBody().localOnlyMode());
+    }
+
+    @Test
+    @DisplayName("Should generate PRD and persist user stories")
+    void shouldGeneratePrdAndPersist() {
+        var req = new ArgonAgentController.GeneratePrdRequest("Build Autonomous AI Platform", "Enterprise Teams");
+        ResponseEntity<ProductRequirementsDocument> resp = controller.generatePrd(req);
+
+        assertEquals(HttpStatus.OK, resp.getStatusCode());
+        assertNotNull(resp.getBody());
+        assertEquals("PRD: Build Autonomous AI Platform", resp.getBody().title());
+        assertEquals(2, resp.getBody().userStories().size());
+
+        // Verify persistence
+        assertEquals(1, prdDb.size());
+        assertEquals(2, storyDb.size());
+
+        // Invalid requests
+        assertEquals(HttpStatus.BAD_REQUEST, controller.generatePrd(null).getStatusCode());
+        assertEquals(HttpStatus.BAD_REQUEST, controller.generatePrd(new ArgonAgentController.GeneratePrdRequest(null, "Teams")).getStatusCode());
+        assertEquals(HttpStatus.BAD_REQUEST, controller.generatePrd(new ArgonAgentController.GeneratePrdRequest("  ", "Teams")).getStatusCode());
+
+        // Standalone controller without repository
+        ArgonAgentController standalone = new ArgonAgentController(engine);
+        ResponseEntity<ProductRequirementsDocument> standaloneResp = standalone.generatePrd(req);
+        assertEquals(HttpStatus.OK, standaloneResp.getStatusCode());
+    }
+
+    @Test
+    @DisplayName("Should upload multimodal attachments across image, voice, and document types")
+    void shouldUploadMultimodalAttachments() {
+        // IMAGE
+        var imgReq = new ArgonAgentController.MultimodalUploadRequest(
+                MultimodalType.IMAGE, "arch.png", "image/png", "base64-img"
+        );
+        ResponseEntity<MultimodalAttachment> imgResp = controller.uploadMultimodalAttachment(imgReq);
+        assertEquals(HttpStatus.OK, imgResp.getStatusCode());
+        assertTrue(imgResp.getBody().extractedTextOrTranscript().contains("Extracted visual diagram context"));
+
+        // AUDIO_VOICE
+        var voiceReq = new ArgonAgentController.MultimodalUploadRequest(
+                MultimodalType.AUDIO_VOICE, "directive.wav", null, null
+        );
+        ResponseEntity<MultimodalAttachment> voiceResp = controller.uploadMultimodalAttachment(voiceReq);
+        assertEquals(HttpStatus.OK, voiceResp.getStatusCode());
+        assertTrue(voiceResp.getBody().extractedTextOrTranscript().contains("Transcribed developer voice speech directive"));
+
+        // FILE_DOCUMENT
+        var docReq = new ArgonAgentController.MultimodalUploadRequest(
+                MultimodalType.FILE_DOCUMENT, "schema.sql", "text/plain", "CREATE TABLE ..."
+        );
+        ResponseEntity<MultimodalAttachment> docResp = controller.uploadMultimodalAttachment(docReq);
+        assertEquals(HttpStatus.OK, docResp.getStatusCode());
+        assertTrue(docResp.getBody().extractedTextOrTranscript().contains("Parsed document requirements"));
+
+        // Verify persistence in attachmentDb
+        assertEquals(3, attachmentDb.size());
+
+        // Invalid upload requests
+        assertEquals(HttpStatus.BAD_REQUEST, controller.uploadMultimodalAttachment(null).getStatusCode());
+        assertEquals(HttpStatus.BAD_REQUEST, controller.uploadMultimodalAttachment(new ArgonAgentController.MultimodalUploadRequest(null, "file", "text", "data")).getStatusCode());
+        assertEquals(HttpStatus.BAD_REQUEST, controller.uploadMultimodalAttachment(new ArgonAgentController.MultimodalUploadRequest(MultimodalType.IMAGE, null, "text", "data")).getStatusCode());
+        assertEquals(HttpStatus.BAD_REQUEST, controller.uploadMultimodalAttachment(new ArgonAgentController.MultimodalUploadRequest(MultimodalType.IMAGE, "  ", "text", "data")).getStatusCode());
+
+        // Standalone without repository
+        ArgonAgentController standalone = new ArgonAgentController(engine);
+        ResponseEntity<MultimodalAttachment> standaloneResp = standalone.uploadMultimodalAttachment(imgReq);
+        assertEquals(HttpStatus.OK, standaloneResp.getStatusCode());
+    }
+
+    @Test
+    @DisplayName("Should execute goal with multimodal attachments and persist all entities")
+    void shouldExecuteGoalWithMultimodalAttachmentsAndPersistAll() {
+        MultimodalAttachment att = new MultimodalAttachment(
+                MultimodalType.IMAGE, "c4_model.png", "image/png", "base64data", "C4 Model"
+        );
+
+        ArgonAutonomousGoalRequest request = new ArgonAutonomousGoalRequest(
+                "Build Event-Driven Order Processing Engine",
+                "repo-orders",
+                "user-orders",
+                true,
+                true,
+                List.of(),
+                true,
+                List.of(att)
+        );
+
+        ResponseEntity<ArgonAutonomousGoalResponse> response = controller.executeGoal(request);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+
+        // Verify PRD, user stories, audit logs, and attachments were persisted into DB
+        assertEquals(1, prdDb.size());
+        assertEquals(2, storyDb.size());
+        assertEquals(1, auditDb.size());
+        assertEquals(1, attachmentDb.size());
     }
 }
