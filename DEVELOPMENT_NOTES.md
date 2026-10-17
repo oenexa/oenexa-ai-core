@@ -516,9 +516,36 @@ In accordance with **Constitution Rule 1.0**, every implemented subsystem and ar
      - `POST /api/v1/agents/collaborate` & `GET /api/v1/agents/pipeline/{pipelineId}`
 - **WHY:** Transforms OENEXA into a complete AI Engineering Platform similar to Claude, ChatGPT, Gemini, Cursor AI, and Devin AI, completely eliminating static/canned responses and enabling live codebase reasoning.
 - **HOW:** Pure Java 25 domain records in `:domain`, Flyway migration & JPA repositories in `:infrastructure`, application use cases in `:application` (`MemoryService`, `MultiModelRouterService`, `RepositoryKnowledgeService`, `CollaborativeAgentService`, `IntelligentConversationService`), REST & SSE primary adapter in `:api`, and strictly zero-mock JUnit 5 test suites.
+---
+
+## 2.18 [ARGON] 🧬 Step 37: Google Gemini 4 & Argon Autonomous AI Agent Engine
+- **WHAT:** Architected, engineered, and verified the Google Gemini 4 Argon Autonomous AI Agent System across domain, infrastructure, application, and API tiers:
+  1. **Autonomous ReAct / Plan-Act-Observe-Reflect Execution Loop:**
+     - Decomposes developer goals into structured multi-stage execution phases: `PLANNING` ➔ `DECOMPOSITION` ➔ `TOOL_EXECUTION` ➔ `SELF_HEALING_VERIFICATION` ➔ `REFLECTION` ➔ `COMPLETED`.
+     - Maintains immutable execution plan DAGs (`ArgonAgentPlan`, `ArgonPlanStep`) across 7 specialized Argon personas (Architecture, Code, BugFix, Test, Security, DevOps, Documentation).
+  2. **Self-Healing Compilation & Test Reflection Loop:**
+     - Autonomous error detection, diagnosis, and patching mechanism (`ArgonSelfHealingCycle`).
+     - Detects compilation regressions or runtime discrepancies, analyzes root causes, synthesizes unified git patch diffs, applies them, and re-verifies invariants.
+     - Supports both autonomous in-flight self-healing and on-demand manual trigger endpoints (`POST /api/v1/argon/goals/{goalId}/heal`).
+  3. **Real-Time Trace Streaming:**
+     - Streams fine-grained execution events (`ArgonExecutionEvent`) including agent thought traces, active tool actions, and output snippets in real time over Server-Sent Events (SSE).
+  4. **PostgreSQL Relational Persistence & Schema Migration:**
+     - Added Flyway migration `V3__argon_autonomous_agent_schema.sql` defining `argon_goals`, `argon_plan_steps`, `argon_execution_events`, and `argon_self_healing_cycles` with cascading foreign keys and performance indexes.
+     - Implemented JPA entities (`ArgonGoalEntity`, `ArgonPlanStepEntity`, `ArgonExecutionEventEntity`, `ArgonSelfHealingCycleEntity`) and Spring Data repositories (`ArgonGoalRepository`, `ArgonPlanStepRepository`, `ArgonExecutionEventRepository`, `ArgonSelfHealingCycleRepository`).
+  5. **Enterprise Application Engine & REST / SSE Presentation Layer:**
+     - Created `ArgonAutonomousAgentEngine` use case orchestrator with thread-safe goal state and event tracking.
+     - Exposed `ArgonAgentController` at `/api/v1/argon` (`POST /goals`, `POST /goals/stream`, `GET /goals`, `GET /goals/{goalId}`, `GET /goals/{goalId}/events`, `GET /goals/{goalId}/healing-cycles`, `POST /goals/{goalId}/heal`).
+  6. **Strict Zero-Mock Test Verification:**
+     - Zero mocking frameworks used (no Mockito, no PowerMock, no `@MockBean`). All tests utilize real domain models, in-memory collections, and dynamic proxies.
+- **WHY:** Empowers OENEXA with cutting-edge autonomous reasoning comparable to Google Gemini 4 and Argon AI, capable of formulating multi-step engineering plans, driving specialized personas, generating code artifacts, and autonomously self-healing when compile or test errors arise.
+- **HOW:** Sealed domain records in `:domain`, Flyway V3 and JPA entities in `:infrastructure`, ReAct plan orchestrator in `:application`, REST & SSE endpoints in `:api`, and 100% line coverage JaCoCo verification across all modules.
 - **VERIFICATION:**
-  - **100% Line Coverage maintained across all 23 backend modules with 0 missed lines and 0 mock frameworks**.
-  - All 141 Gradle check tasks pass cleanly in `./gradlew.bat check`.
+  - **100% Line Coverage verified across all 23 backend modules with 0 missed lines and 0 mock frameworks**.
+  - `:domain:check`: 100% line coverage (0 missed lines).
+  - `:infrastructure:check`: 100% line coverage (0 missed lines).
+  - `:application:check`: 100% line coverage (0 missed lines).
+  - `:api:check`: 100% line coverage (0 missed lines).
+  - Full multi-project `./gradlew.bat check` (141 actionable tasks) passed cleanly.
 
 ---
 

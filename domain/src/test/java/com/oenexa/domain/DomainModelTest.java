@@ -516,4 +516,100 @@ class DomainModelTest {
         assertEquals(4, Workflow.INCIDENT_RESPONSE.steps().size());
         assertEquals(7, Workflow.FEATURE_DELIVERY.steps().size());
     }
+
+    @Test
+    void testArgonAutonomousDomainModels() {
+        assertEquals(7, ChatDomain.ArgonExecutionPhase.values().length);
+
+        // ArgonPlanStep
+        ChatDomain.ArgonPlanStep step = new ChatDomain.ArgonPlanStep(
+                "step-1", ChatDomain.SoftwareEngineerAgentType.ARCHITECTURE_AGENT,
+                "Design system", "architecture_diagram"
+        );
+        assertEquals("step-1", step.stepId());
+        assertEquals(ChatDomain.SoftwareEngineerAgentType.ARCHITECTURE_AGENT, step.agentPersona());
+        assertEquals("Design system", step.description());
+        assertEquals("architecture_diagram", step.toolToInvoke());
+        assertEquals("PENDING", step.status());
+        assertEquals("", step.output());
+        assertEquals(0, step.retryCount());
+
+        ChatDomain.ArgonPlanStep fullStep = new ChatDomain.ArgonPlanStep(
+                "step-2", ChatDomain.SoftwareEngineerAgentType.CODE_AGENT,
+                "Implement service", "code_generator", "COMPLETED", "Service created", 1
+        );
+        assertEquals("COMPLETED", fullStep.status());
+        assertEquals(1, fullStep.retryCount());
+
+        // ArgonExecutionEvent
+        Instant now = Instant.now();
+        ChatDomain.ArgonExecutionEvent event = new ChatDomain.ArgonExecutionEvent(
+                "goal-1", ChatDomain.ArgonExecutionPhase.PLANNING,
+                ChatDomain.SoftwareEngineerAgentType.ARCHITECTURE_AGENT,
+                "Decomposing goal into tasks", "goal_analyzer", "Created 6 steps"
+        );
+        assertNotNull(event.eventId());
+        assertEquals("goal-1", event.goalId());
+        assertEquals(ChatDomain.ArgonExecutionPhase.PLANNING, event.phase());
+        assertEquals("SUCCESS", event.status());
+
+        ChatDomain.ArgonExecutionEvent fullEvent = new ChatDomain.ArgonExecutionEvent(
+                "evt-1", "goal-1", ChatDomain.ArgonExecutionPhase.TOOL_EXECUTION,
+                ChatDomain.SoftwareEngineerAgentType.TEST_AGENT,
+                "Executing test runner", "test_runner", "Tests passed", "SUCCESS", now
+        );
+        assertEquals("evt-1", fullEvent.eventId());
+        assertEquals(now, fullEvent.timestamp());
+
+        // ArgonSelfHealingCycle
+        ChatDomain.ArgonSelfHealingCycle cycle = new ChatDomain.ArgonSelfHealingCycle(
+                "goal-1", "NullPointerException in AuthFilter", "Unchecked header", "--- diff +++ patch", true
+        );
+        assertNotNull(cycle.cycleId());
+        assertEquals("goal-1", cycle.goalId());
+        assertTrue(cycle.resolved());
+
+        ChatDomain.ArgonSelfHealingCycle fullCycle = new ChatDomain.ArgonSelfHealingCycle(
+                "cyc-1", "goal-1", "SyntaxError", "Missing semicolon", "patch", true, now
+        );
+        assertEquals("cyc-1", fullCycle.cycleId());
+        assertEquals(now, fullCycle.timestamp());
+
+        // ArgonAgentPlan
+        ChatDomain.ArgonAgentPlan plan = new ChatDomain.ArgonAgentPlan("plan-1", "goal-1", "Upgrade Auth", List.of(step, fullStep));
+        assertEquals("plan-1", plan.planId());
+        assertEquals("goal-1", plan.goalId());
+        assertEquals(ChatDomain.ArgonExecutionPhase.PLANNING, plan.currentPhase());
+        assertEquals(2, plan.steps().size());
+
+        ChatDomain.ArgonAgentPlan fullPlan = new ChatDomain.ArgonAgentPlan(
+                "plan-2", "goal-1", "Upgrade Auth", List.of(fullStep), ChatDomain.ArgonExecutionPhase.COMPLETED, now, now
+        );
+        assertEquals(ChatDomain.ArgonExecutionPhase.COMPLETED, fullPlan.currentPhase());
+
+        // ArgonAutonomousGoalRequest & ArgonAutonomousGoalResponse
+        ChatDomain.ArgonAutonomousGoalRequest req = new ChatDomain.ArgonAutonomousGoalRequest("Build OAuth2 Microservice");
+        assertEquals("Build OAuth2 Microservice", req.goal());
+        assertEquals("default-repo", req.repositoryId());
+        assertTrue(req.autonomousSelfHealing());
+        assertTrue(req.extendedThinking());
+
+        ChatDomain.ArgonAutonomousGoalRequest fullReq = new ChatDomain.ArgonAutonomousGoalRequest(
+                "Build OAuth2", "repo-x", "user-x", true, false, List.of()
+        );
+        assertEquals("user-x", fullReq.userId());
+        assertFalse(fullReq.extendedThinking());
+
+        ChatDomain.ArgonAutonomousGoalResponse resp = new ChatDomain.ArgonAutonomousGoalResponse(
+                "goal-1", "Build OAuth2", plan, List.of(event), List.of(cycle),
+                List.of(new ChatDomain.CodeArtifact("Auth.java", "src/Auth.java", "public class Auth {}")),
+                0.99, "Autonomous goal achieved with zero defects.", now
+        );
+        assertEquals("goal-1", resp.goalId());
+        assertEquals(0.99, resp.confidenceScore());
+        assertEquals(1, resp.events().size());
+        assertEquals(1, resp.selfHealingCycles().size());
+        assertEquals(1, resp.artifacts().size());
+        assertNotNull(resp.completedAt());
+    }
 }

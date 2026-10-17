@@ -246,5 +246,93 @@ public class ChatDomain {
             double rankingScore,
             double confidenceScore
     ) {}
+
+    public enum ArgonExecutionPhase {
+        PLANNING, DECOMPOSITION, TOOL_EXECUTION, SELF_HEALING_VERIFICATION, REFLECTION, COMPLETED, FAILED
+    }
+
+    public record ArgonPlanStep(
+            String stepId,
+            SoftwareEngineerAgentType agentPersona,
+            String description,
+            String toolToInvoke,
+            String status,
+            String output,
+            int retryCount
+    ) {
+        public ArgonPlanStep(String stepId, SoftwareEngineerAgentType agentPersona, String description, String toolToInvoke) {
+            this(stepId, agentPersona, description, toolToInvoke, "PENDING", "", 0);
+        }
+    }
+
+    public record ArgonExecutionEvent(
+            String eventId,
+            String goalId,
+            ArgonExecutionPhase phase,
+            SoftwareEngineerAgentType agentPersona,
+            String thoughtProcess,
+            String toolAction,
+            String outputSnippet,
+            String status,
+            Instant timestamp
+    ) {
+        public ArgonExecutionEvent(String goalId, ArgonExecutionPhase phase, SoftwareEngineerAgentType agentPersona, String thoughtProcess, String toolAction, String outputSnippet) {
+            this(java.util.UUID.randomUUID().toString(), goalId, phase, agentPersona, thoughtProcess, toolAction, outputSnippet, "SUCCESS", Instant.now());
+        }
+    }
+
+    public record ArgonSelfHealingCycle(
+            String cycleId,
+            String goalId,
+            String issueDetected,
+            String rootCause,
+            String patchDiff,
+            boolean resolved,
+            Instant timestamp
+    ) {
+        public ArgonSelfHealingCycle(String goalId, String issueDetected, String rootCause, String patchDiff, boolean resolved) {
+            this(java.util.UUID.randomUUID().toString(), goalId, issueDetected, rootCause, patchDiff, resolved, Instant.now());
+        }
+    }
+
+    public record ArgonAgentPlan(
+            String planId,
+            String goalId,
+            String goalDescription,
+            List<ArgonPlanStep> steps,
+            ArgonExecutionPhase currentPhase,
+            Instant createdAt,
+            Instant updatedAt
+    ) {
+        public ArgonAgentPlan(String planId, String goalId, String goalDescription, List<ArgonPlanStep> steps) {
+            this(planId, goalId, goalDescription, steps, ArgonExecutionPhase.PLANNING, Instant.now(), Instant.now());
+        }
+    }
+
+    public record ArgonAutonomousGoalRequest(
+            String goal,
+            String repositoryId,
+            String userId,
+            boolean autonomousSelfHealing,
+            boolean extendedThinking,
+            List<CodeContextAttachment> attachments
+    ) {
+        public ArgonAutonomousGoalRequest(String goal) {
+            this(goal, "default-repo", "default-user", true, true, List.of());
+        }
+    }
+
+    public record ArgonAutonomousGoalResponse(
+            String goalId,
+            String goalDescription,
+            ArgonAgentPlan plan,
+            List<ArgonExecutionEvent> events,
+            List<ArgonSelfHealingCycle> selfHealingCycles,
+            List<CodeArtifact> artifacts,
+            double confidenceScore,
+            String finalSummary,
+            Instant completedAt
+    ) {}
 }
+
 

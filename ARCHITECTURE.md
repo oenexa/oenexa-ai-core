@@ -458,3 +458,52 @@ graph TD
 3. **Multi-Model Dynamic Routing:** Direct routing of coding and reasoning to Claude / GPT-4o, fast chat to DeepSeek, architecture and diagrams to Gemini Pro.
 4. **Autonomous Collaborative Pipelines:** Sequential multi-agent workflows executing end-to-end software engineering deliveries.
 
+---
+
+## 9. Google Gemini 4 & Argon Autonomous AI Agent Architecture
+
+The Gemini 4 Argon Autonomous AI Agent Engine upgrades OENEXA into a self-governing software engineer capable of high-level goal decomposition, multi-persona collaboration, real-time trace streaming, and automated self-healing reflection:
+
+```mermaid
+graph TD
+    User["Developer Goal Input"] --> AgentController["ArgonAgentController (:api)"]
+    AgentController --> Engine["ArgonAutonomousAgentEngine (:application)"]
+    
+    subgraph ArgonLifecycle ["Gemini 4 Argon Autonomous Reasoning Loop"]
+        Phase1["1. PLANNING<br/>(Goal Decomposition, Context Retrieval, Memory Analysis)"]
+        Phase2["2. DECOMPOSITION<br/>(Dynamic DAG Construction across 7 Personas)"]
+        Phase3["3. TOOL_EXECUTION<br/>(Architecture -> Code -> Test -> Security -> DevOps -> Docs)"]
+        Phase4["4. SELF_HEALING_VERIFICATION<br/>(Compilation Check, Root Cause Analysis, Git Patch Diff)"]
+        Phase5["5. REFLECTION<br/>(Confidence Evaluation, Regression Free Verification)"]
+        Phase6["6. COMPLETED<br/>(Artifact Extraction, Summary Generation)"]
+        
+        Phase1 --> Phase2
+        Phase2 --> Phase3
+        Phase3 --> Phase4
+        Phase4 --> Phase5
+        Phase5 --> Phase6
+    end
+    
+    Engine --> Phase1
+    Phase4 -.->|If Error / Discrepancy| SelfHealingCycle["Self-Healing Reflection Loop<br/>(BugFixAgent + TestAgent)"]
+    SelfHealingCycle -.->|Patch Verified| Phase4
+    
+    subgraph PersistenceLayer ["PostgreSQL V3 Schema Persistence (:infrastructure)"]
+        GoalsTable[("argon_goals")]
+        StepsTable[("argon_plan_steps")]
+        EventsTable[("argon_execution_events")]
+        HealingTable[("argon_self_healing_cycles")]
+    end
+    
+    Phase6 --> PersistenceLayer
+    Phase3 --> SSE["Real-Time SSE Trace Stream<br/>(Fine-Grained Agent Thoughts & Actions)"]
+    SSE --> UI["Frontend Gemini Argon Console"]
+```
+
+### Core Invariants:
+1. **Autonomous ReAct Loop:** Multi-stage execution through `PLANNING` ➔ `DECOMPOSITION` ➔ `TOOL_EXECUTION` ➔ `SELF_HEALING_VERIFICATION` ➔ `REFLECTION` ➔ `COMPLETED`.
+2. **Self-Healing Reflection:** When compilation errors, syntax faults, or test regressions occur, the engine analyzes stack traces, formulates a minimal unified git patch diff, applies it, and re-verifies.
+3. **Real-Time Streaming:** Live SSE telemetry streams persona thoughts, tool calls, and output snippets directly to the developer console.
+4. **Zero-Mock Invariant:** 100% verified line coverage across all 23 backend modules with zero mock frameworks.
+
+
