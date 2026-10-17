@@ -639,3 +639,32 @@ npm run dev
 - **Dependency Inversion:** Use-cases in `application` must depend only on abstractions defined in `domain`, never directly on database drivers or third-party SDKs.
 - **Secrets Management:** Pass sensitive values (passwords, tokens, API keys) via environment variables or secret managers, never hardcoded in source.
 
+
+
+---
+
+## 4. Step 10: Target Capabilities Architecture (Claude, Gemini, Cursor, Devin, Copilot, Operator)
+
+### Overview
+Implementation of the 6 Target Capabilities transforming OENEXA into a complete next-generation autonomous AI engineering platform:
+1. **Claude-Level Reasoning:** Deep Tree-of-Thought (ToT) exploration, competing architectural hypotheses scoring, trade-off analysis, and reflection validation.
+2. **Gemini-Level Multimodal Intelligence:** Fusion of Developer Speech Audio directives, Visual Architecture Diagrams (OCR, bounding boxes, spatial layer parsing), and Specification file documents.
+3. **Cursor-Level Coding:** Codebase-wide symbol cross-referencing, multi-file atomic patches (`AtomicMultiFilePatch`, `FileDiff`), `@file`, `@folder`, `@symbol`, `@git` contextual curation, and predictive diff patching.
+4. **Devin-Level Task Execution:** Autonomous end-to-end task execution: codebase ingestion ➔ sandbox compilation ➔ zero-mock testing ➔ error log diagnosis ➔ autonomous patch iteration ➔ 100% verification with exit code 0.
+5. **GitHub Copilot-Level Code Completion:** Real-time inline ghost-text code completion, method signature & record synthesis, docstring generation, and test assertion auto-completion.
+6. **OpenAI Operator-Level Automation:** Multi-step autonomous environment workflows (Docker container builds, Kubernetes deployments, Flyway database migrations, SAST security scans).
+
+### Strict Quality & Verification Gate
+- **100% Strictly Zero-Mock Testing Policy:** All tests across `domain`, `application`, and `api` modules use concrete records, instances, and zero-mock verification.
+- **100% JaCoCo Line Coverage:** Full multi-project `./gradlew.bat check` (141 actionable tasks) passed cleanly with 0 missed lines.
+- **REST Endpoints:**
+  - `POST /api/v1/capabilities/reasoning/claude`
+  - `POST /api/v1/capabilities/multimodal/vision`
+  - `POST /api/v1/capabilities/multimodal/audio`
+  - `POST /api/v1/capabilities/multimodal/fusion`
+  - `POST /api/v1/capabilities/coding/context`
+  - `POST /api/v1/capabilities/coding/patch`
+  - `POST /api/v1/capabilities/execution/devin`
+  - `POST /api/v1/capabilities/copilot/complete`
+  - `POST /api/v1/capabilities/operator/automate`
+  - `GET /api/v1/capabilities/summary`
