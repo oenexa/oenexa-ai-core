@@ -259,6 +259,108 @@ class DomainModelTest {
     }
 
     @Test
+    void testPhase2AndPhase3DomainModels() {
+        // Enums
+        assertEquals(7, ChatDomain.ModelProvider.values().length);
+        assertEquals(7, ChatDomain.TaskType.values().length);
+        assertEquals(7, ChatDomain.ConversationCategory.values().length);
+        assertEquals(7, ChatDomain.SoftwareEngineerAgentType.values().length);
+
+        // UserMemoryRecord
+        ChatDomain.UserMemoryRecord memory = new ChatDomain.UserMemoryRecord("user-1", "preferred_style", "concise");
+        assertEquals("user-1", memory.userId());
+        assertEquals("preferred_style", memory.memoryKey());
+        assertEquals("concise", memory.memoryValue());
+        assertEquals("USER_PREFERENCE", memory.category());
+        assertEquals(0.95, memory.confidence());
+
+        Instant now = Instant.now();
+        ChatDomain.UserMemoryRecord fullMemory = new ChatDomain.UserMemoryRecord(
+                "mem-1", "user-1", "tenant-1", "key", "val", "CATEGORY", 0.99, now
+        );
+        assertEquals("mem-1", fullMemory.memoryId());
+        assertEquals("tenant-1", fullMemory.tenantId());
+
+        // ProjectKnowledgeChunk
+        ChatDomain.ProjectKnowledgeChunk chunk = new ChatDomain.ProjectKnowledgeChunk("repo-1", "src/Main.java", "java", "public class Main {}");
+        assertEquals("repo-1", chunk.repositoryId());
+        assertEquals("src/Main.java", chunk.filePath());
+        assertEquals("java", chunk.language());
+        assertEquals(0, chunk.chunkIndex());
+        assertEquals("public class Main {}", chunk.content());
+
+        ChatDomain.ProjectKnowledgeChunk fullChunk = new ChatDomain.ProjectKnowledgeChunk(
+                "c-1", "repo-1", "src/App.java", "java", 2, "class App {}", List.of(0.1, 0.2), Map.of("App", "class"), now
+        );
+        assertEquals("c-1", fullChunk.chunkId());
+        assertEquals(2, fullChunk.chunkIndex());
+        assertEquals(2, fullChunk.embedding().size());
+        assertEquals("class", fullChunk.symbols().get("App"));
+
+        // ModelRoutingDecision
+        ChatDomain.ModelRoutingDecision decision = new ChatDomain.ModelRoutingDecision(
+                ChatDomain.ModelProvider.ANTHROPIC_CLAUDE, "claude-3-7-sonnet", ChatDomain.TaskType.CODING, "High coding fidelity"
+        );
+        assertEquals(ChatDomain.ModelProvider.ANTHROPIC_CLAUDE, decision.provider());
+        assertEquals("claude-3-7-sonnet", decision.modelName());
+        assertEquals(ChatDomain.TaskType.CODING, decision.taskType());
+
+        // AgentCollaborationTask
+        ChatDomain.AgentCollaborationTask collab = new ChatDomain.AgentCollaborationTask(
+                ChatDomain.SoftwareEngineerAgentType.BUG_FIX_AGENT, "Fix null pointer in service"
+        );
+        assertEquals(ChatDomain.SoftwareEngineerAgentType.BUG_FIX_AGENT, collab.agentType());
+        assertEquals("Fix null pointer in service", collab.taskDescription());
+        assertEquals("PENDING", collab.status());
+
+        ChatDomain.AgentCollaborationTask fullCollab = new ChatDomain.AgentCollaborationTask(
+                "t-1", ChatDomain.SoftwareEngineerAgentType.TEST_AGENT, "Run tests", "input", "output", "COMPLETED", now
+        );
+        assertEquals("t-1", fullCollab.taskId());
+        assertEquals("COMPLETED", fullCollab.status());
+
+        // RepositoryKnowledgeMap
+        ChatDomain.RepositoryKnowledgeMap map = new ChatDomain.RepositoryKnowledgeMap("repo-1", "Java / Spring Boot");
+        assertEquals("repo-1", map.repositoryId());
+        assertEquals("Java / Spring Boot", map.primaryStack());
+        assertEquals(1, map.detectedTechnologies().size());
+
+        ChatDomain.RepositoryKnowledgeMap fullMap = new ChatDomain.RepositoryKnowledgeMap(
+                "repo-2", "Polyglot", List.of("Java", "React", "Docker", "Terraform"), List.of("backend", "frontend"),
+                List.of("src/", "package.json"), Map.of("Solution", "class"), 50
+        );
+        assertEquals(4, fullMap.detectedTechnologies().size());
+        assertEquals(2, fullMap.modules().size());
+        assertEquals(50, fullMap.vectorChunksCount());
+
+        // IntelligentChatRequest & IntelligentChatResponse
+        ChatDomain.IntelligentChatRequest req = new ChatDomain.IntelligentChatRequest("How to refactor?", "conv-1");
+        assertEquals("How to refactor?", req.message());
+        assertEquals("conv-1", req.conversationId());
+        assertEquals("default-user", req.userId());
+        assertTrue(req.includeThinking());
+
+        ChatDomain.IntelligentChatRequest fullReq = new ChatDomain.IntelligentChatRequest(
+                "Build API", "conv-2", "user-2", "repo-2", "claude-3-7-sonnet", true, List.of()
+        );
+        assertEquals("user-2", fullReq.userId());
+        assertEquals("claude-3-7-sonnet", fullReq.preferredModel());
+
+        ChatDomain.IntelligentChatResponse resp = new ChatDomain.IntelligentChatResponse(
+                "Here is the API", "conv-1", "claude-3-7-sonnet", ChatDomain.ModelProvider.ANTHROPIC_CLAUDE,
+                ChatDomain.TaskType.CODING, "<thought>Synthesize</thought>", "Summary",
+                List.of("snippet-1"), List.of(memory), List.of(chunk), List.of(), List.of(),
+                List.of("Add tests"), 0.98, 0.99
+        );
+        assertEquals("Here is the API", resp.reply());
+        assertEquals("claude-3-7-sonnet", resp.modelUsed());
+        assertEquals(0.98, resp.rankingScore());
+        assertEquals(0.99, resp.confidenceScore());
+        assertEquals(1, resp.relevantUserMemories().size());
+        assertEquals(1, resp.repositoryCitations().size());
+    }
+
+    @Test
     void testDomainEvent() {
         DomainEvent.StandardDomainEvent event = DomainEvent.StandardDomainEvent.of("USER_CREATED", "tenant-1", "payload-data");
         assertNotNull(event.eventId());

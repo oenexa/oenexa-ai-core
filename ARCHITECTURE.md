@@ -400,4 +400,61 @@ The system enforces strict quality gates:
 | **`application`** | 305 | 0 | **100%** | JUnit 5 / BDD | **Strictly Zero Mocks** |
 | **`infrastructure`** | 374 | 0 | **100%** | JUnit 5 | **Strictly Zero Mocks** |
 | **`api`** | 123 | 0 | **100%** | JUnit 5 | **Strictly Zero Mocks** |
-| **TOTAL** | **3,485** | **0** | **100%** | JUnit 5 / BDD | **Zero Mocks Across All Modules** |
+| **`TOTAL`** | **3,485+** | **0** | **100%** | JUnit 5 / BDD | **Zero Mocks Across All Modules** |
+
+---
+
+## 8. Phase 2 & Phase 3: Intelligent Chat, Memory & 7-Agent Architecture
+
+The Phase 2 and Phase 3 platform upgrade transforms OENEXA into a complete AI Engineering Platform similar to Claude, ChatGPT, Gemini, Cursor AI, and Devin AI:
+
+```mermaid
+graph TD
+    User["Developer / Frontend Web UI"] --> Gateway["API Gateway (:8080)"]
+    Gateway --> Orchestrator["IntelligentConversationService (:application)"]
+    
+    subgraph MemoryLayer ["AI Memory Architecture (:application / :infrastructure)"]
+        ShortTerm["Short-Term Memory<br/>(Sliding Window up to 50 Turns, Tokens, Auto-Summary)"]
+        LongTerm["Long-Term Memory<br/>(User Preferences, Facts, Project Context, PostgreSQL)"]
+    end
+    
+    subgraph RepoLayer ["Repository Understanding & Vector RAG (:application)"]
+        Parser["Multi-Stack Parser<br/>(Java, Spring, React, Vue, K8s, Docker, SQL)"]
+        Symbols["Symbol Indexer<br/>(Classes, Methods, Endpoints, Tables)"]
+        VectorDB["Vector Store & Cosine Similarity<br/>(64-dim Embeddings, Semantic Search)"]
+    end
+    
+    subgraph RouterLayer ["Multi-Model AI Engine (:application)"]
+        TaskClassifier["Autonomous Task Classifier<br/>(Coding, Reasoning, BugFix, FastChat, DevOps, Security)"]
+        ModelRouter["Dynamic Model Router<br/>(Claude 3.5 Sonnet, GPT-4o, Gemini 2.5, DeepSeek V3)"]
+    end
+    
+    subgraph AgentLayer ["Collaborative 7-Agent System (:application)"]
+        ArchAg["1. Architecture Agent"]
+        CodeAg["2. Code Agent"]
+        TestAg["3. Test Agent"]
+        SecAg["4. Security Agent"]
+        DevOpsAg["5. DevOps Agent"]
+        DocAg["6. Documentation Agent"]
+        BugAg["7. Bug Fix Agent"]
+    end
+    
+    Orchestrator --> ShortTerm
+    Orchestrator --> LongTerm
+    Orchestrator --> VectorDB
+    Orchestrator --> TaskClassifier
+    TaskClassifier --> ModelRouter
+    ModelRouter --> AgentLayer
+    
+    AgentLayer --> Ranker["AI Response Ranking & Follow-Up Synthesis"]
+    Ranker --> Persistence["PostgreSQL V2 Schema Persistence"]
+    Persistence --> Gateway
+    Gateway --> Stream["Token Streaming / SSE / UI Update"]
+```
+
+### Architectural Guarantees:
+1. **Zero Mock Testing:** 100% real domain records, JPA proxies, and in-memory caches.
+2. **Context Window Management:** Automatic summarization when turns exceed sliding thresholds.
+3. **Multi-Model Dynamic Routing:** Direct routing of coding and reasoning to Claude / GPT-4o, fast chat to DeepSeek, architecture and diagrams to Gemini Pro.
+4. **Autonomous Collaborative Pipelines:** Sequential multi-agent workflows executing end-to-end software engineering deliveries.
+

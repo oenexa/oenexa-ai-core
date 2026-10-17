@@ -132,5 +132,119 @@ public class ChatDomain {
             this(reply, conversationId, contextTokensUsed, thoughtProcess, model, intent, suggestedFollowUps, List.of(), List.of(), 0.95);
         }
     }
+
+    public enum ModelProvider {
+        OPENAI_GPT, ANTHROPIC_CLAUDE, GEMINI, DEEPSEEK, MISTRAL, LLAMA, OENEXA_CUSTOM
+    }
+
+    public enum TaskType {
+        CODING, REASONING, FAST_CHAT, REPO_ANALYSIS, BUG_FIX, SECURITY_AUDIT, ARCHITECTURE
+    }
+
+    public enum ConversationCategory {
+        GENERAL, ARCHITECTURE, CODE_ENGINEERING, BUG_FIXING, TESTING, DEVOPS, SECURITY
+    }
+
+    public enum SoftwareEngineerAgentType {
+        CODE_AGENT, BUG_FIX_AGENT, TEST_AGENT, DEVOPS_AGENT, DOCUMENTATION_AGENT, SECURITY_AGENT, ARCHITECTURE_AGENT
+    }
+
+    public record UserMemoryRecord(
+            String memoryId,
+            String userId,
+            String tenantId,
+            String memoryKey,
+            String memoryValue,
+            String category,
+            double confidence,
+            Instant learnedAt
+    ) {
+        public UserMemoryRecord(String userId, String memoryKey, String memoryValue) {
+            this(java.util.UUID.randomUUID().toString(), userId, "default-tenant", memoryKey, memoryValue, "USER_PREFERENCE", 0.95, Instant.now());
+        }
+    }
+
+    public record ProjectKnowledgeChunk(
+            String chunkId,
+            String repositoryId,
+            String filePath,
+            String language,
+            int chunkIndex,
+            String content,
+            List<Double> embedding,
+            Map<String, String> symbols,
+            Instant createdAt
+    ) {
+        public ProjectKnowledgeChunk(String repositoryId, String filePath, String language, String content) {
+            this(java.util.UUID.randomUUID().toString(), repositoryId, filePath, language, 0, content, List.of(), Map.of(), Instant.now());
+        }
+    }
+
+    public record ModelRoutingDecision(
+            ModelProvider provider,
+            String modelName,
+            TaskType taskType,
+            String rationale
+    ) {}
+
+    public record AgentCollaborationTask(
+            String taskId,
+            SoftwareEngineerAgentType agentType,
+            String taskDescription,
+            String inputPayload,
+            String outputResult,
+            String status,
+            Instant timestamp
+    ) {
+        public AgentCollaborationTask(SoftwareEngineerAgentType agentType, String taskDescription) {
+            this(java.util.UUID.randomUUID().toString(), agentType, taskDescription, "", "", "PENDING", Instant.now());
+        }
+    }
+
+    public record RepositoryKnowledgeMap(
+            String repositoryId,
+            String primaryStack,
+            List<String> detectedTechnologies,
+            List<String> modules,
+            List<String> fileTree,
+            Map<String, String> symbolIndex,
+            int vectorChunksCount
+    ) {
+        public RepositoryKnowledgeMap(String repositoryId, String primaryStack) {
+            this(repositoryId, primaryStack, List.of(primaryStack), List.of(), List.of(), Map.of(), 0);
+        }
+    }
+
+    public record IntelligentChatRequest(
+            String message,
+            String conversationId,
+            String userId,
+            String repositoryId,
+            String preferredModel,
+            boolean includeThinking,
+            List<CodeContextAttachment> attachments
+    ) {
+        public IntelligentChatRequest(String message, String conversationId) {
+            this(message, conversationId, "default-user", "default-repo", "auto", true, List.of());
+        }
+    }
+
+    public record IntelligentChatResponse(
+            String reply,
+            String conversationId,
+            String modelUsed,
+            ModelProvider provider,
+            TaskType taskType,
+            String thoughtProcess,
+            String contextSummary,
+            List<String> shortTermMemorySnippets,
+            List<UserMemoryRecord> relevantUserMemories,
+            List<ProjectKnowledgeChunk> repositoryCitations,
+            List<ToolCall> toolCalls,
+            List<CodeArtifact> artifacts,
+            List<String> followUps,
+            double rankingScore,
+            double confidenceScore
+    ) {}
 }
 
