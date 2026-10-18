@@ -31,6 +31,36 @@ public class ChatService {
         this.synthesisEngine = (synthesisEngine != null) ? synthesisEngine : new ChatResponseSynthesisEngine();
     }
 
+    public ChatResponse autoChatStep(AutoChatTurnRequest request) {
+        Objects.requireNonNull(request, "request must not be null");
+        String convId = (request.conversationId() != null && !request.conversationId().isBlank())
+                ? request.conversationId()
+                : UUID.randomUUID().toString();
+        List<Message> history = conversations.getOrDefault(convId, List.of());
+
+        String determinedPrompt;
+        if (request.contextCode() != null && !request.contextCode().isBlank() && history.stream().noneMatch(m -> m.content().contains("Test Synthesizer"))) {
+            determinedPrompt = "Synthesize zero-mock JUnit 5 test suite with 100% line coverage for the active code";
+        } else if (history.isEmpty() && (request.goal() != null && !request.goal().isBlank())) {
+            determinedPrompt = "Architect system design blueprint for: " + request.goal();
+        } else if (!history.isEmpty() && history.stream().noneMatch(m -> m.content().contains("Security Agent"))) {
+            determinedPrompt = "Perform SAST security scan and vulnerability audit on the codebase";
+        } else if (!history.isEmpty() && history.stream().noneMatch(m -> m.content().contains("DevOps & CI/CD"))) {
+            determinedPrompt = "Generate Docker and Kubernetes deployment pipeline for the container deployment";
+        } else {
+            determinedPrompt = (request.goal() != null && !request.goal().isBlank())
+                    ? "Refactor and optimize architecture for: " + request.goal()
+                    : "Refactor domain records to ensure strictly zero mocks and maximum maintainability";
+        }
+
+        List<CodeContextAttachment> attachments = new ArrayList<>();
+        if (request.contextCode() != null && !request.contextCode().isBlank()) {
+            attachments.add(new CodeContextAttachment("src/main/java/Solution.java", request.contextCode()));
+        }
+
+        return processMessage(convId, determinedPrompt, request.preferredModel(), request.includeThinking(), attachments);
+    }
+
     public ChatResponse processMessage(String conversationId, String messageText) {
         return processMessage(conversationId, messageText, "gemini-2.5-flash", true, List.of());
     }
@@ -232,20 +262,20 @@ public class ChatService {
 
     private String determineIntent(String input) {
         String lower = input.toLowerCase(Locale.ROOT);
-        if (lower.contains("architecture") || lower.contains("design") || lower.contains("system")) {
-            return "ARCHITECTURE_DESIGN";
-        } else if (lower.contains("scan") || lower.contains("security") || lower.contains("vulnerability") || lower.contains("owasp")) {
+        if (lower.contains("scan") || lower.contains("security") || lower.contains("vulnerability") || lower.contains("owasp") || lower.contains("sast")) {
             return "SECURITY_AUDIT";
+        } else if (lower.contains("test") || lower.contains("coverage") || lower.contains("junit") || lower.contains("bdd")) {
+            return "TESTING_SYNTHESIS";
+        } else if (lower.contains("devops") || lower.contains("docker") || lower.contains("k8s") || lower.contains("pipeline") || lower.contains("container")) {
+            return "DEVOPS_PIPELINE";
         } else if (lower.contains("fix") || lower.contains("bug") || lower.contains("exception") || lower.contains("error")) {
             return "BUG_FIX_ANALYSIS";
         } else if (lower.contains("refactor") || lower.contains("clean") || lower.contains("smell")) {
             return "CODE_REFACTORING";
-        } else if (lower.contains("devops") || lower.contains("docker") || lower.contains("k8s") || lower.contains("pipeline")) {
-            return "DEVOPS_PIPELINE";
-        } else if (lower.contains("test") || lower.contains("coverage") || lower.contains("junit") || lower.contains("bdd")) {
-            return "TESTING_SYNTHESIS";
         } else if (lower.contains("write") || lower.contains("generate") || lower.contains("create") || lower.contains("code")) {
             return "CODE_GENERATION";
+        } else if (lower.contains("architecture") || lower.contains("design") || lower.contains("system")) {
+            return "ARCHITECTURE_DESIGN";
         }
         return "GENERAL_ASSISTANT";
     }

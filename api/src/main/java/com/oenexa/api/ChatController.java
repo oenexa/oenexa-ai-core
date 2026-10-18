@@ -38,6 +38,14 @@ public class ChatController {
         return ResponseEntity.ok(response);
     }
 
+    @PostMapping("/auto-turn")
+    public ResponseEntity<ChatResponse> autoChatTurn(@RequestBody(required = false) AutoChatTurnRequest request) {
+        AutoChatTurnRequest safeReq = (request != null)
+                ? request
+                : new AutoChatTurnRequest(null, null, "Architect autonomous software engineering solution");
+        return ResponseEntity.ok(chatService.autoChatStep(safeReq));
+    }
+
     @GetMapping("/conversations")
     public ResponseEntity<List<ConversationMetadata>> listConversations(@RequestParam(defaultValue = "default-tenant") String tenantId) {
         return ResponseEntity.ok(chatService.listConversations(tenantId));

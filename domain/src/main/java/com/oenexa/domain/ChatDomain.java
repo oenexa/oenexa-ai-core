@@ -133,6 +133,18 @@ public class ChatDomain {
         }
     }
 
+    public record AutoChatTurnRequest(
+            String conversationId,
+            String contextCode,
+            String goal,
+            String preferredModel,
+            boolean includeThinking
+    ) {
+        public AutoChatTurnRequest(String conversationId, String contextCode, String goal) {
+            this(conversationId, contextCode, goal, "oenexa-neo-gpt-o3-max", true);
+        }
+    }
+
     public enum ModelProvider {
         OPENAI_GPT, ANTHROPIC_CLAUDE, GEMINI, DEEPSEEK, MISTRAL, LLAMA, OENEXA_CUSTOM, LOCAL_OLLAMA, LOCAL_PRIVATE
     }

@@ -113,5 +113,23 @@ class ChatControllerTest {
         var deleteResp = controller.deleteConversation(convId);
         assertEquals(HttpStatus.NO_CONTENT, deleteResp.getStatusCode());
     }
+
+    @Test
+    @DisplayName("Should handle auto-chat turn endpoint with real scenario execution")
+    void shouldHandleAutoChatTurnEndpoint() {
+        // With explicit request
+        AutoChatTurnRequest req = new AutoChatTurnRequest("conv-auto-endpoint", "public record Order() {}", "Build Order Microservice");
+        ResponseEntity<ChatResponse> response = controller.autoChatTurn(req);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals("conv-auto-endpoint", response.getBody().conversationId());
+        assertEquals("TESTING_SYNTHESIS", response.getBody().intent());
+
+        // With null request (uses default safe turn)
+        ResponseEntity<ChatResponse> defaultResp = controller.autoChatTurn(null);
+        assertEquals(HttpStatus.OK, defaultResp.getStatusCode());
+        assertNotNull(defaultResp.getBody());
+        assertEquals("ARCHITECTURE_DESIGN", defaultResp.getBody().intent());
+    }
 }
 

@@ -213,5 +213,58 @@ class ChatServiceTest {
         assertEquals("brand-new-conversation", freshMeta.conversationId());
         assertEquals("New Conversation", freshMeta.title());
     }
+
+    @Test
+    @DisplayName("Should execute auto-chat real scenario autonomous steps across full lifecycle")
+    void shouldExecuteAutoChatStepLifecycle() {
+        assertThrows(NullPointerException.class, () -> chatService.autoChatStep(null));
+
+        // Step 1: Initial empty history with goal -> Architecture
+        AutoChatTurnRequest req1 = new AutoChatTurnRequest("auto-conv-1", null, "Reactive Microservice");
+        ChatResponse resp1 = chatService.autoChatStep(req1);
+        assertNotNull(resp1);
+        assertEquals("ARCHITECTURE_DESIGN", resp1.intent());
+        assertTrue(resp1.reply().contains("OENEXA Architecture"));
+
+        // Step 2: Context code present, no tests yet -> Test Synthesis
+        AutoChatTurnRequest req2 = new AutoChatTurnRequest("auto-conv-1", "public record User(UUID id) {}", "Reactive Microservice");
+        ChatResponse resp2 = chatService.autoChatStep(req2);
+        assertNotNull(resp2);
+        assertEquals("TESTING_SYNTHESIS", resp2.intent());
+        assertTrue(resp2.reply().contains("Test Synthesizer Activated"));
+
+        // Step 3: Architecture and tests present, no security yet -> Security Audit
+        AutoChatTurnRequest req3 = new AutoChatTurnRequest("auto-conv-1", null, "Reactive Microservice");
+        ChatResponse resp3 = chatService.autoChatStep(req3);
+        assertNotNull(resp3);
+        assertEquals("SECURITY_AUDIT", resp3.intent());
+        assertTrue(resp3.reply().contains("Security Agent activated"));
+
+        // Step 4: Security present, no devops yet -> DevOps Pipeline
+        AutoChatTurnRequest req4 = new AutoChatTurnRequest("auto-conv-1", null, "Reactive Microservice");
+        ChatResponse resp4 = chatService.autoChatStep(req4);
+        assertNotNull(resp4);
+        assertEquals("DEVOPS_PIPELINE", resp4.intent());
+        assertTrue(resp4.reply().contains("DevOps & CI/CD Engine Activated"));
+
+        // Step 5: All phases present with goal -> Refactoring / Optimization
+        AutoChatTurnRequest req5 = new AutoChatTurnRequest("auto-conv-1", null, "Reactive Microservice");
+        ChatResponse resp5 = chatService.autoChatStep(req5);
+        assertNotNull(resp5);
+        assertEquals("CODE_REFACTORING", resp5.intent());
+        assertTrue(resp5.reply().contains("Refactoring Engine Activated"));
+
+        // Step 6: All phases present without goal -> General Refactoring
+        AutoChatTurnRequest req6 = new AutoChatTurnRequest("auto-conv-1", null, null);
+        ChatResponse resp6 = chatService.autoChatStep(req6);
+        assertNotNull(resp6);
+        assertEquals("CODE_REFACTORING", resp6.intent());
+
+        // Step 7: Blank convId auto-generates UUID
+        AutoChatTurnRequest req7 = new AutoChatTurnRequest("   ", null, "Fresh Goal");
+        ChatResponse resp7 = chatService.autoChatStep(req7);
+        assertNotNull(resp7);
+        assertFalse(resp7.conversationId().isBlank());
+    }
 }
 
