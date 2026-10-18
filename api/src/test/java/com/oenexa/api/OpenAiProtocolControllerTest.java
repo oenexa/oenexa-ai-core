@@ -100,11 +100,32 @@ class OpenAiProtocolControllerTest {
     }
 
     @Test
-    @DisplayName("Should list files")
-    void testListFiles() {
+    @DisplayName("Should list and get files")
+    void testListAndGetFiles() {
         var filesResp = controller.listFiles();
         assertEquals(HttpStatus.OK, filesResp.getStatusCode());
         assertTrue(filesResp.getBody().data().size() >= 2);
+
+        var fileResp = controller.getFile("file-oenexa-spec");
+        assertEquals(HttpStatus.OK, fileResp.getStatusCode());
+        assertEquals("file-oenexa-spec", fileResp.getBody().id());
+
+        assertEquals(HttpStatus.BAD_REQUEST, controller.getFile(null).getStatusCode());
+        assertEquals(HttpStatus.BAD_REQUEST, controller.getFile("   ").getStatusCode());
+    }
+
+    @Test
+    @DisplayName("Should create responses using OpenAI Responses API")
+    void testCreateResponse() {
+        var req = new OpenAiResponsesRequest("oenexa-neo-gpt-o1", "Synthesize domain model", List.of(), "high");
+        var resp = controller.createResponse(req);
+        assertEquals(HttpStatus.OK, resp.getStatusCode());
+        assertNotNull(resp.getBody());
+        assertEquals("response", resp.getBody().object());
+        assertFalse(resp.getBody().output().isEmpty());
+
+        assertEquals(HttpStatus.BAD_REQUEST, controller.createResponse(null).getStatusCode());
+        assertEquals(HttpStatus.BAD_REQUEST, controller.createResponse(new OpenAiResponsesRequest("m", "", List.of(), "low")).getStatusCode());
     }
 
     @Test

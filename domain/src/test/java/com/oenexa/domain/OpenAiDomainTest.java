@@ -221,5 +221,24 @@ class OpenAiDomainTest {
         assertEquals("exec-001", goalResp.executionId());
         assertEquals("COMPLETED", goalResp.status());
         assertEquals(1, goalResp.executedSteps().size());
+
+        OpenAiResponsesRequest respReq = new OpenAiResponsesRequest(null, null, null, null);
+        assertEquals("oenexa-neo-gpt-o1", respReq.model());
+        assertEquals("", respReq.input());
+        assertTrue(respReq.tools().isEmpty());
+        assertEquals("high", respReq.reasoningEffort());
+
+        OpenAiResponseOutputItem outputItem = new OpenAiResponseOutputItem(null, null, null);
+        assertEquals("message", outputItem.type());
+        assertEquals("assistant", outputItem.role());
+        assertEquals("", outputItem.content());
+
+        OpenAiResponsesResponse responsesResp = new OpenAiResponsesResponse(
+                "resp-1", null, 1700000000L, null, List.of(outputItem), null, new OpenAiUsage(10, 10, 0, 20)
+        );
+        assertEquals("resp-1", responsesResp.id());
+        assertEquals("response", responsesResp.object());
+        assertEquals("completed", responsesResp.status());
+        assertEquals(1, responsesResp.output().size());
     }
 }

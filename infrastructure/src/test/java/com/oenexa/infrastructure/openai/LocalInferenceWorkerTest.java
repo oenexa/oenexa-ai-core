@@ -81,9 +81,25 @@ class LocalInferenceWorkerTest {
     }
 
     @Test
+    @DisplayName("Should create OpenAI Responses API output with o3 deliberative reasoning")
+    void testCreateResponse() {
+        var req = new OpenAiResponsesRequest("oenexa-neo-gpt-o1", "Design reactive microservice", List.of(), "high");
+        var res = worker.createResponse(req);
+
+        assertNotNull(res);
+        assertTrue(res.id().startsWith("resp-oenexa-"));
+        assertEquals("response", res.object());
+        assertEquals("completed", res.status());
+        assertFalse(res.output().isEmpty());
+        assertNotNull(res.output().get(0).content());
+        assertTrue(res.usage().totalTokens() > 0);
+    }
+
+    @Test
     @DisplayName("Should validate null checks and properties")
     void testNullGuardsAndProperties() {
         assertThrows(NullPointerException.class, () -> worker.completeChat(null));
+        assertThrows(NullPointerException.class, () -> worker.createResponse(null));
         assertThrows(NullPointerException.class, () -> worker.generateEmbeddings(null));
         assertThrows(NullPointerException.class, () -> worker.transcribeAudio(null, "f.wav"));
         assertThrows(NullPointerException.class, () -> worker.generateImage(null, "1024x1024"));

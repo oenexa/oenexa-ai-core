@@ -112,6 +112,30 @@ public class LocalInferenceWorker {
         );
     }
 
+    public OpenAiResponsesResponse createResponse(OpenAiResponsesRequest request) {
+        Objects.requireNonNull(request, "request must not be null");
+        String effectiveModel = routeModel(request.model(), request.input());
+        var deliberativeResult = deliberativeReasoningEngine.reason(request.input(), request.reasoningEffort());
+
+        String content = deliberativeResult.finalSynthesis();
+        String reasoning = deliberativeResult.reasoningTraceMarkdown();
+
+        OpenAiUsage usage = OpenAiUsage.compute(request.input(), content, reasoning);
+        List<OpenAiResponseOutputItem> outputList = List.of(
+                new OpenAiResponseOutputItem("message", "assistant", content)
+        );
+
+        return new OpenAiResponsesResponse(
+                "resp-oenexa-" + UUID.randomUUID(),
+                "response",
+                Instant.now().getEpochSecond(),
+                effectiveModel,
+                outputList,
+                "completed",
+                usage
+        );
+    }
+
     public OpenAiEmbeddingResponse generateEmbeddings(OpenAiEmbeddingRequest request) {
         Objects.requireNonNull(request, "request must not be null");
         List<OpenAiEmbeddingData> dataList = new ArrayList<>();

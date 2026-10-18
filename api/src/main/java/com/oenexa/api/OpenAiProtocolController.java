@@ -109,7 +109,15 @@ public class OpenAiProtocolController {
         return ResponseEntity.ok(localInferenceWorker.transcribeAudio(audioBytes, "voice.wav"));
     }
 
-    @PostMapping("/images/generations")
+    @PostMapping("/responses")
+    public ResponseEntity<OpenAiResponsesResponse> createResponse(@RequestBody OpenAiResponsesRequest request) {
+        if (request == null || request.input() == null || request.input().isBlank()) {
+            return ResponseEntity.badRequest().build();
+        }
+        return ResponseEntity.ok(localInferenceWorker.createResponse(request));
+    }
+
+    @PostMapping({"/images", "/images/generations"})
     public ResponseEntity<OpenAiImageResponse> generateImage(@RequestBody Map<String, Object> request) {
         String prompt = (request != null && request.containsKey("prompt")) ? String.valueOf(request.get("prompt")) : "System Diagram";
         String size = (request != null && request.containsKey("size")) ? String.valueOf(request.get("size")) : "1024x1024";
@@ -123,5 +131,13 @@ public class OpenAiProtocolController {
                 new OpenAiFileObject("file-oenexa-arch", 4096L, 1700000000L, "architecture-hexagonal-diagram.png", "assistants")
         );
         return ResponseEntity.ok(new OpenAiFileList("list", files));
+    }
+
+    @GetMapping("/files/{fileId}")
+    public ResponseEntity<OpenAiFileObject> getFile(@PathVariable String fileId) {
+        if (fileId == null || fileId.isBlank()) {
+            return ResponseEntity.badRequest().build();
+        }
+        return ResponseEntity.ok(new OpenAiFileObject(fileId, 2048L, 1700000000L, fileId + ".yaml", "assistants"));
     }
 }

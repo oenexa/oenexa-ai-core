@@ -1,5 +1,6 @@
 package com.oenexa.application;
 
+import com.oenexa.application.openai.DeliberativeReasoningEngine;
 import com.oenexa.domain.ChatDomain.*;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +17,15 @@ public class ChatService {
 
     private final Map<String, List<Message>> conversations = new ConcurrentHashMap<>();
     private final Map<String, ConversationMetadata> metadataMap = new ConcurrentHashMap<>();
+    private final DeliberativeReasoningEngine deliberativeReasoningEngine;
+
+    public ChatService() {
+        this(new DeliberativeReasoningEngine());
+    }
+
+    public ChatService(DeliberativeReasoningEngine deliberativeReasoningEngine) {
+        this.deliberativeReasoningEngine = (deliberativeReasoningEngine != null) ? deliberativeReasoningEngine : new DeliberativeReasoningEngine();
+    }
 
     public ChatResponse processMessage(String conversationId, String messageText) {
         return processMessage(conversationId, messageText, "gemini-2.5-flash", true, List.of());
@@ -306,8 +316,10 @@ public class ChatService {
                     "### 💻 Code Synthesizer Activated\n\n" +
                     "- **Language Standard:** Java 25 Standard Edition with modern records, switch expressions, and virtual threads.\n" +
                     "- **Output Quality:** Fully type-safe, validated constructors, and clean documentation.";
-            default ->
-                    "OENEXA AI Engineer: Request received. Ready to assist with coding, testing, architecture, and deployment.";
+            default -> {
+                String synthesis = deliberativeReasoningEngine.reason(input, "medium").finalSynthesis();
+                yield "OENEXA AI Engineer: Request received. Ready to assist with coding, testing, architecture, and deployment.\n\n" + synthesis;
+            }
         };
     }
 

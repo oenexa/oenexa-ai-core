@@ -286,6 +286,51 @@ public final class OpenAiDomain {
         }
     }
 
+    public record OpenAiResponsesRequest(
+            String model,
+            String input,
+            List<OpenAiToolDefinition> tools,
+            String reasoningEffort
+    ) {
+        public OpenAiResponsesRequest {
+            model = (model != null && !model.isBlank()) ? model : "oenexa-neo-gpt-o1";
+            input = (input != null) ? input : "";
+            tools = (tools != null) ? List.copyOf(tools) : List.of();
+            reasoningEffort = (reasoningEffort != null && !reasoningEffort.isBlank()) ? reasoningEffort : "high";
+        }
+    }
+
+    public record OpenAiResponseOutputItem(
+            String type,
+            String role,
+            String content
+    ) {
+        public OpenAiResponseOutputItem {
+            type = (type != null) ? type : "message";
+            role = (role != null) ? role : "assistant";
+            content = (content != null) ? content : "";
+        }
+    }
+
+    public record OpenAiResponsesResponse(
+            String id,
+            String object,
+            long createdAt,
+            String model,
+            List<OpenAiResponseOutputItem> output,
+            String status,
+            OpenAiUsage usage
+    ) {
+        public OpenAiResponsesResponse {
+            Objects.requireNonNull(id, "id must not be null");
+            object = (object != null) ? object : "response";
+            model = (model != null) ? model : "oenexa-neo-gpt-o1";
+            output = (output != null) ? List.copyOf(output) : List.of();
+            status = (status != null) ? status : "completed";
+            Objects.requireNonNull(usage, "usage must not be null");
+        }
+    }
+
     // =========================================================================
     // 4. Multimodal & Audio/Files Specification
     // =========================================================================
