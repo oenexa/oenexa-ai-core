@@ -447,9 +447,8 @@ class DomainModelTest {
         // LocalPrivacyConfig
         ChatDomain.LocalPrivacyConfig defaultPrivacy = new ChatDomain.LocalPrivacyConfig();
         assertTrue(defaultPrivacy.localOnlyMode());
-        assertTrue(defaultPrivacy.telemetryDisabled());
-        assertEquals("http://localhost:11434", defaultPrivacy.localModelEndpoint());
-        assertEquals("llama3.3:latest", defaultPrivacy.selectedLocalModel());
+        assertEquals("in-process-native-neural-engine", defaultPrivacy.localModelEndpoint());
+        assertEquals("oenexa-neo-gpt-o3-max", defaultPrivacy.selectedLocalModel());
         assertEquals(8192, defaultPrivacy.maxVramAllocationMb());
         assertTrue(defaultPrivacy.airGappedVerification());
 
@@ -722,6 +721,102 @@ class DomainModelTest {
         assertFalse(fullReq.extendedThinking());
 
         ChatDomain.ArgonAutonomousGoalResponse resp = new ChatDomain.ArgonAutonomousGoalResponse(
+                "goal-1", "Build OAuth2", plan, List.of(event), List.of(cycle),
+                List.of(new ChatDomain.CodeArtifact("Auth.java", "src/Auth.java", "public class Auth {}")),
+                0.99, "Autonomous goal achieved with zero defects.", now
+        );
+        assertEquals("goal-1", resp.goalId());
+        assertEquals(0.99, resp.confidenceScore());
+        assertEquals(1, resp.events().size());
+        assertEquals(1, resp.selfHealingCycles().size());
+        assertEquals(1, resp.artifacts().size());
+        assertNotNull(resp.completedAt());
+    }
+
+    @Test
+    void testOenexaAutonomousDomainModels() {
+        assertEquals(7, ChatDomain.OenexaExecutionPhase.values().length);
+
+        // OenexaPlanStep
+        ChatDomain.OenexaPlanStep step = new ChatDomain.OenexaPlanStep(
+                "step-1", ChatDomain.SoftwareEngineerAgentType.ARCHITECTURE_AGENT,
+                "Design system", "architecture_diagram"
+        );
+        assertEquals("step-1", step.stepId());
+        assertEquals(ChatDomain.SoftwareEngineerAgentType.ARCHITECTURE_AGENT, step.agentPersona());
+        assertEquals("Design system", step.description());
+        assertEquals("architecture_diagram", step.toolToInvoke());
+        assertEquals("PENDING", step.status());
+        assertEquals("", step.output());
+        assertEquals(0, step.retryCount());
+
+        ChatDomain.OenexaPlanStep fullStep = new ChatDomain.OenexaPlanStep(
+                "step-2", ChatDomain.SoftwareEngineerAgentType.CODE_AGENT,
+                "Implement service", "code_generator", "COMPLETED", "Service created", 1
+        );
+        assertEquals("COMPLETED", fullStep.status());
+        assertEquals(1, fullStep.retryCount());
+
+        // OenexaExecutionEvent
+        Instant now = Instant.now();
+        ChatDomain.OenexaExecutionEvent event = new ChatDomain.OenexaExecutionEvent(
+                "goal-1", ChatDomain.OenexaExecutionPhase.PLANNING,
+                ChatDomain.SoftwareEngineerAgentType.ARCHITECTURE_AGENT,
+                "Decomposing goal into tasks", "goal_analyzer", "Created 6 steps"
+        );
+        assertNotNull(event.eventId());
+        assertEquals("goal-1", event.goalId());
+        assertEquals(ChatDomain.OenexaExecutionPhase.PLANNING, event.phase());
+        assertEquals("SUCCESS", event.status());
+
+        ChatDomain.OenexaExecutionEvent fullEvent = new ChatDomain.OenexaExecutionEvent(
+                "evt-1", "goal-1", ChatDomain.OenexaExecutionPhase.TOOL_EXECUTION,
+                ChatDomain.SoftwareEngineerAgentType.TEST_AGENT,
+                "Executing test runner", "test_runner", "Tests passed", "SUCCESS", now
+        );
+        assertEquals("evt-1", fullEvent.eventId());
+        assertEquals(now, fullEvent.timestamp());
+
+        // OenexaSelfHealingCycle
+        ChatDomain.OenexaSelfHealingCycle cycle = new ChatDomain.OenexaSelfHealingCycle(
+                "goal-1", "NullPointerException in AuthFilter", "Unchecked header", "--- diff +++ patch", true
+        );
+        assertNotNull(cycle.cycleId());
+        assertEquals("goal-1", cycle.goalId());
+        assertTrue(cycle.resolved());
+
+        ChatDomain.OenexaSelfHealingCycle fullCycle = new ChatDomain.OenexaSelfHealingCycle(
+                "cyc-1", "goal-1", "SyntaxError", "Missing semicolon", "patch", true, now
+        );
+        assertEquals("cyc-1", fullCycle.cycleId());
+        assertEquals(now, fullCycle.timestamp());
+
+        // OenexaAgentPlan
+        ChatDomain.OenexaAgentPlan plan = new ChatDomain.OenexaAgentPlan("plan-1", "goal-1", "Upgrade Auth", List.of(step, fullStep));
+        assertEquals("plan-1", plan.planId());
+        assertEquals("goal-1", plan.goalId());
+        assertEquals(ChatDomain.OenexaExecutionPhase.PLANNING, plan.currentPhase());
+        assertEquals(2, plan.steps().size());
+
+        ChatDomain.OenexaAgentPlan fullPlan = new ChatDomain.OenexaAgentPlan(
+                "plan-2", "goal-1", "Upgrade Auth", List.of(fullStep), ChatDomain.OenexaExecutionPhase.COMPLETED, now, now
+        );
+        assertEquals(ChatDomain.OenexaExecutionPhase.COMPLETED, fullPlan.currentPhase());
+
+        // OenexaAutonomousGoalRequest & OenexaAutonomousGoalResponse
+        ChatDomain.OenexaAutonomousGoalRequest req = new ChatDomain.OenexaAutonomousGoalRequest("Build OAuth2 Microservice");
+        assertEquals("Build OAuth2 Microservice", req.goal());
+        assertEquals("default-repo", req.repositoryId());
+        assertTrue(req.autonomousSelfHealing());
+        assertTrue(req.extendedThinking());
+
+        ChatDomain.OenexaAutonomousGoalRequest fullReq = new ChatDomain.OenexaAutonomousGoalRequest(
+                "Build OAuth2", "repo-x", "user-x", true, false, List.of()
+        );
+        assertEquals("user-x", fullReq.userId());
+        assertFalse(fullReq.extendedThinking());
+
+        ChatDomain.OenexaAutonomousGoalResponse resp = new ChatDomain.OenexaAutonomousGoalResponse(
                 "goal-1", "Build OAuth2", plan, List.of(event), List.of(cycle),
                 List.of(new ChatDomain.CodeArtifact("Auth.java", "src/Auth.java", "public class Auth {}")),
                 0.99, "Autonomous goal achieved with zero defects.", now

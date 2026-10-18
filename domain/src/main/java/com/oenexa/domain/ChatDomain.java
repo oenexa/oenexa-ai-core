@@ -247,6 +247,69 @@ public class ChatDomain {
             double confidenceScore
     ) {}
 
+    public enum OenexaExecutionPhase {
+        PLANNING, DECOMPOSITION, TOOL_EXECUTION, SELF_HEALING_VERIFICATION, REFLECTION, COMPLETED, FAILED
+    }
+
+    public record OenexaPlanStep(
+            String stepId,
+            SoftwareEngineerAgentType agentPersona,
+            String description,
+            String toolToInvoke,
+            String status,
+            String output,
+            int retryCount
+    ) {
+        public OenexaPlanStep(String stepId, SoftwareEngineerAgentType agentPersona, String description, String toolToInvoke) {
+            this(stepId, agentPersona, description, toolToInvoke, "PENDING", "", 0);
+        }
+    }
+
+    public record OenexaExecutionEvent(
+            String eventId,
+            String goalId,
+            OenexaExecutionPhase phase,
+            SoftwareEngineerAgentType agentPersona,
+            String thoughtProcess,
+            String toolAction,
+            String outputSnippet,
+            String status,
+            Instant timestamp
+    ) {
+        public OenexaExecutionEvent(String goalId, OenexaExecutionPhase phase, SoftwareEngineerAgentType agentPersona, String thoughtProcess, String toolAction, String outputSnippet) {
+            this(java.util.UUID.randomUUID().toString(), goalId, phase, agentPersona, thoughtProcess, toolAction, outputSnippet, "SUCCESS", Instant.now());
+        }
+    }
+
+    public record OenexaSelfHealingCycle(
+            String cycleId,
+            String goalId,
+            String issueDetected,
+            String rootCause,
+            String patchDiff,
+            boolean resolved,
+            Instant timestamp
+    ) {
+        public OenexaSelfHealingCycle(String goalId, String issueDetected, String rootCause, String patchDiff, boolean resolved) {
+            this(java.util.UUID.randomUUID().toString(), goalId, issueDetected, rootCause, patchDiff, resolved, Instant.now());
+        }
+    }
+
+    public record OenexaAgentPlan(
+            String planId,
+            String goalId,
+            String goalDescription,
+            List<OenexaPlanStep> steps,
+            OenexaExecutionPhase currentPhase,
+            Instant createdAt,
+            Instant updatedAt
+    ) {
+        public OenexaAgentPlan(String planId, String goalId, String goalDescription, List<OenexaPlanStep> steps) {
+            this(planId, goalId, goalDescription, steps, OenexaExecutionPhase.PLANNING, Instant.now(), Instant.now());
+        }
+    }
+
+    // Deprecated legacy aliases maintained for zero-breaking migration
     public enum ArgonExecutionPhase {
         PLANNING, DECOMPOSITION, TOOL_EXECUTION, SELF_HEALING_VERIFICATION, REFLECTION, COMPLETED, FAILED
     }
@@ -262,6 +325,10 @@ public class ChatDomain {
     ) {
         public ArgonPlanStep(String stepId, SoftwareEngineerAgentType agentPersona, String description, String toolToInvoke) {
             this(stepId, agentPersona, description, toolToInvoke, "PENDING", "", 0);
+        }
+
+        public OenexaPlanStep toOenexaPlanStep() {
+            return new OenexaPlanStep(stepId, agentPersona, description, toolToInvoke, status, output, retryCount);
         }
     }
 
@@ -367,7 +434,62 @@ public class ChatDomain {
             boolean airGappedVerification
     ) {
         public LocalPrivacyConfig() {
-            this(true, true, "http://localhost:11434", "llama3.3:latest", 8192, true);
+            this(true, true, "in-process-native-neural-engine", "oenexa-neo-gpt-o3-max", 8192, true);
+        }
+    }
+
+    public record OenexaAutonomousGoalRequest(
+            String goal,
+            String repositoryId,
+            String userId,
+            boolean autonomousSelfHealing,
+            boolean extendedThinking,
+            List<CodeContextAttachment> attachments,
+            boolean localFirstMode,
+            List<MultimodalAttachment> multimodalAttachments
+    ) {
+        public OenexaAutonomousGoalRequest(
+                String goal,
+                String repositoryId,
+                String userId,
+                boolean autonomousSelfHealing,
+                boolean extendedThinking,
+                List<CodeContextAttachment> attachments
+        ) {
+            this(goal, repositoryId, userId, autonomousSelfHealing, extendedThinking, attachments, true, List.of());
+        }
+
+        public OenexaAutonomousGoalRequest(String goal) {
+            this(goal, "default-repo", "default-user", true, true, List.of(), true, List.of());
+        }
+    }
+
+    public record OenexaAutonomousGoalResponse(
+            String goalId,
+            String goalDescription,
+            OenexaAgentPlan plan,
+            List<OenexaExecutionEvent> events,
+            List<OenexaSelfHealingCycle> selfHealingCycles,
+            List<CodeArtifact> artifacts,
+            List<UserStory> userStories,
+            ProductRequirementsDocument prd,
+            LocalPrivacyConfig privacyAudit,
+            double confidenceScore,
+            String finalSummary,
+            Instant completedAt
+    ) {
+        public OenexaAutonomousGoalResponse(
+                String goalId,
+                String goalDescription,
+                OenexaAgentPlan plan,
+                List<OenexaExecutionEvent> events,
+                List<OenexaSelfHealingCycle> selfHealingCycles,
+                List<CodeArtifact> artifacts,
+                double confidenceScore,
+                String finalSummary,
+                Instant completedAt
+        ) {
+            this(goalId, goalDescription, plan, events, selfHealingCycles, artifacts, List.of(), null, new LocalPrivacyConfig(), confidenceScore, finalSummary, completedAt);
         }
     }
 

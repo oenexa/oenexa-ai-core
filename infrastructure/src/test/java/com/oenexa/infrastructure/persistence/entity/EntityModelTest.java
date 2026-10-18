@@ -853,4 +853,172 @@ class EntityModelTest {
         assertFalse(entity.isAirGappedVerification());
         assertEquals(now, entity.getCreatedAt());
     }
+
+    @Test
+    @DisplayName("OenexaGoalEntity getters and setters")
+    void testOenexaGoalEntity() {
+        OenexaGoalEntity goal = new OenexaGoalEntity("goal-1", "user-1", "repo-1", "Build autonomous agent");
+        OenexaGoalEntity noArg = new OenexaGoalEntity();
+        assertNotNull(noArg);
+
+        assertEquals("goal-1", goal.getId());
+        assertEquals("user-1", goal.getUserId());
+        assertEquals("repo-1", goal.getRepositoryId());
+        assertEquals("Build autonomous agent", goal.getGoalDescription());
+        assertEquals("PLANNING", goal.getCurrentPhase());
+        assertTrue(goal.isAutonomousSelfHealing());
+        assertTrue(goal.isExtendedThinking());
+        assertEquals(1.0, goal.getConfidenceScore(), 0.001);
+        assertNull(goal.getFinalSummary());
+        assertEquals("RUNNING", goal.getStatus());
+        assertNotNull(goal.getCreatedAt());
+        assertNull(goal.getCompletedAt());
+
+        goal.setId("goal-2");
+        goal.setUserId("user-2");
+        goal.setRepositoryId("repo-2");
+        goal.setGoalDescription("Refactor database");
+        goal.setCurrentPhase("COMPLETED");
+        goal.setAutonomousSelfHealing(false);
+        goal.setExtendedThinking(false);
+        goal.setConfidenceScore(0.95);
+        goal.setFinalSummary("Refactored successfully");
+        goal.setStatus("SUCCESS");
+        Instant now = Instant.now();
+        goal.setCreatedAt(now);
+        goal.setCompletedAt(now);
+
+        assertEquals("goal-2", goal.getId());
+        assertEquals("user-2", goal.getUserId());
+        assertEquals("repo-2", goal.getRepositoryId());
+        assertEquals("Refactor database", goal.getGoalDescription());
+        assertEquals("COMPLETED", goal.getCurrentPhase());
+        assertFalse(goal.isAutonomousSelfHealing());
+        assertFalse(goal.isExtendedThinking());
+        assertEquals(0.95, goal.getConfidenceScore(), 0.001);
+        assertEquals("Refactored successfully", goal.getFinalSummary());
+        assertEquals("SUCCESS", goal.getStatus());
+        assertEquals(now, goal.getCreatedAt());
+        assertEquals(now, goal.getCompletedAt());
+    }
+
+    @Test
+    @DisplayName("OenexaPlanStepEntity getters and setters")
+    void testOenexaPlanStepEntity() {
+        OenexaPlanStepEntity step = new OenexaPlanStepEntity("step-1", "goal-1", 1, "ARCHITECTURE_AGENT", "Design DAG", "DESIGN_TOOL");
+        OenexaPlanStepEntity noArg = new OenexaPlanStepEntity();
+        assertNotNull(noArg);
+
+        assertEquals("step-1", step.getId());
+        assertEquals("goal-1", step.getGoalId());
+        assertEquals(1, step.getStepIndex());
+        assertEquals("ARCHITECTURE_AGENT", step.getAgentPersona());
+        assertEquals("Design DAG", step.getDescription());
+        assertEquals("DESIGN_TOOL", step.getToolToInvoke());
+        assertEquals("PENDING", step.getStatus());
+        assertNull(step.getOutput());
+        assertEquals(0, step.getRetryCount());
+        assertNotNull(step.getCreatedAt());
+
+        step.setId("step-2");
+        step.setGoalId("goal-2");
+        step.setStepIndex(2);
+        step.setAgentPersona("CODE_AGENT");
+        step.setDescription("Write code");
+        step.setToolToInvoke("CODE_TOOL");
+        step.setStatus("COMPLETED");
+        step.setOutput("Code generated");
+        step.setRetryCount(1);
+        Instant now = Instant.now();
+        step.setCreatedAt(now);
+
+        assertEquals("step-2", step.getId());
+        assertEquals("goal-2", step.getGoalId());
+        assertEquals(2, step.getStepIndex());
+        assertEquals("CODE_AGENT", step.getAgentPersona());
+        assertEquals("Write code", step.getDescription());
+        assertEquals("CODE_TOOL", step.getToolToInvoke());
+        assertEquals("COMPLETED", step.getStatus());
+        assertEquals("Code generated", step.getOutput());
+        assertEquals(1, step.getRetryCount());
+        assertEquals(now, step.getCreatedAt());
+    }
+
+    @Test
+    @DisplayName("OenexaExecutionEventEntity getters and setters")
+    void testOenexaExecutionEventEntity() {
+        OenexaExecutionEventEntity event = new OenexaExecutionEventEntity(
+                "evt-1", "goal-1", "TOOL_EXECUTION", "CODE_AGENT",
+                "Analyzing syntax error", "COMPILE_TEST", "Exit code 1", "SUCCESS"
+        );
+        OenexaExecutionEventEntity noArg = new OenexaExecutionEventEntity();
+        assertNotNull(noArg);
+
+        assertEquals("evt-1", event.getId());
+        assertEquals("goal-1", event.getGoalId());
+        assertEquals("TOOL_EXECUTION", event.getPhase());
+        assertEquals("CODE_AGENT", event.getAgentPersona());
+        assertEquals("Analyzing syntax error", event.getThoughtProcess());
+        assertEquals("COMPILE_TEST", event.getToolAction());
+        assertEquals("Exit code 1", event.getOutputSnippet());
+        assertEquals("SUCCESS", event.getStatus());
+        assertNotNull(event.getTimestamp());
+
+        event.setId("evt-2");
+        event.setGoalId("goal-2");
+        event.setPhase("SELF_HEALING");
+        event.setAgentPersona("BUG_FIX_AGENT");
+        event.setThoughtProcess("Patch applied");
+        event.setToolAction("APPLY_PATCH");
+        event.setOutputSnippet("Fixed");
+        event.setStatus("RESOLVED");
+        Instant now = Instant.now();
+        event.setTimestamp(now);
+
+        assertEquals("evt-2", event.getId());
+        assertEquals("goal-2", event.getGoalId());
+        assertEquals("SELF_HEALING", event.getPhase());
+        assertEquals("BUG_FIX_AGENT", event.getAgentPersona());
+        assertEquals("Patch applied", event.getThoughtProcess());
+        assertEquals("APPLY_PATCH", event.getToolAction());
+        assertEquals("Fixed", event.getOutputSnippet());
+        assertEquals("RESOLVED", event.getStatus());
+        assertEquals(now, event.getTimestamp());
+    }
+
+    @Test
+    @DisplayName("OenexaSelfHealingCycleEntity getters and setters")
+    void testOenexaSelfHealingCycleEntity() {
+        OenexaSelfHealingCycleEntity cycle = new OenexaSelfHealingCycleEntity(
+                "cycle-1", "goal-1", "NullPointerException at line 42",
+                "Unchecked optional dereference", "+ if (opt.isPresent()) ...", true
+        );
+        OenexaSelfHealingCycleEntity noArg = new OenexaSelfHealingCycleEntity();
+        assertNotNull(noArg);
+
+        assertEquals("cycle-1", cycle.getId());
+        assertEquals("goal-1", cycle.getGoalId());
+        assertEquals("NullPointerException at line 42", cycle.getIssueDetected());
+        assertEquals("Unchecked optional dereference", cycle.getRootCause());
+        assertEquals("+ if (opt.isPresent()) ...", cycle.getPatchDiff());
+        assertTrue(cycle.isResolved());
+        assertNotNull(cycle.getTimestamp());
+
+        cycle.setId("cycle-2");
+        cycle.setGoalId("goal-2");
+        cycle.setIssueDetected("Compilation failure");
+        cycle.setRootCause("Missing import");
+        cycle.setPatchDiff("+ import java.util.List;");
+        cycle.setResolved(false);
+        Instant now = Instant.now();
+        cycle.setTimestamp(now);
+
+        assertEquals("cycle-2", cycle.getId());
+        assertEquals("goal-2", cycle.getGoalId());
+        assertEquals("Compilation failure", cycle.getIssueDetected());
+        assertEquals("Missing import", cycle.getRootCause());
+        assertEquals("+ import java.util.List;", cycle.getPatchDiff());
+        assertFalse(cycle.isResolved());
+        assertEquals(now, cycle.getTimestamp());
+    }
 }
