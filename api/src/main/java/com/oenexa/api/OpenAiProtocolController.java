@@ -78,11 +78,11 @@ public class OpenAiProtocolController {
     @GetMapping("/models")
     public ResponseEntity<OpenAiModelList> listModels() {
         List<OpenAiModel> models = List.of(
-                new OpenAiModel("oenexa-neo-gpt-o1", "model", 1700000000L, "oenexa-system"),
-                new OpenAiModel("qwen2.5-coder:32b", "model", 1700000000L, "alibaba"),
-                new OpenAiModel("deepseek-r1:14b", "model", 1700000000L, "deepseek"),
-                new OpenAiModel("llama3.3:70b", "model", 1700000000L, "meta"),
-                new OpenAiModel("gpt-4o", "model", 1700000000L, "openai-compatible")
+                new OpenAiModel("oenexa-neo-gpt-o3-max", "model", 1700000000L, "oenexa-neural"),
+                new OpenAiModel("oenexa-neo-gpt-o1", "model", 1700000000L, "oenexa-neural"),
+                new OpenAiModel("oenexa-neo-gpt-coder-32b", "model", 1700000000L, "oenexa-neural"),
+                new OpenAiModel("oenexa-neo-gpt-deepseek-arch", "model", 1700000000L, "oenexa-neural"),
+                new OpenAiModel("oenexa-neo-gpt-mini", "model", 1700000000L, "oenexa-neural")
         );
         return ResponseEntity.ok(new OpenAiModelList("list", models));
     }

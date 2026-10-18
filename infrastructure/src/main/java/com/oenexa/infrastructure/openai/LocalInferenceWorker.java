@@ -1,23 +1,19 @@
 package com.oenexa.infrastructure.openai;
 
 import com.oenexa.application.openai.DeliberativeReasoningEngine;
+import com.oenexa.application.openai.neural.NeoGptAutonomousNeuralEngine;
 import com.oenexa.domain.OpenAiDomain.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
 
 /**
- * Enterprise Local-First Air-Gapped & Hybrid Inference Worker.
- * Directs AI generation to local inference runtimes (Ollama, vLLM, llama.cpp)
- * with zero external telemetry, or falls back to cloud hybrid models if explicitly configured.
+ * Enterprise Native Autonomous OpenAI-Compatible Inference Engine for OENEXA.
+ * Powered 100% by OENEXA's internal Neo-GPT Neural Engine built from scratch in pure Java 25.
+ * Zero external cloud dependencies, zero external AI APIs, zero telemetry, 100% air-gapped sovereign execution.
  */
 @Service
 public class LocalInferenceWorker {
@@ -25,31 +21,31 @@ public class LocalInferenceWorker {
     private final String localEndpoint;
     private final boolean airGappedOnly;
     private final DeliberativeReasoningEngine deliberativeReasoningEngine;
-    private final HttpClient httpClient;
+    private final NeoGptAutonomousNeuralEngine neuralEngine;
 
     public LocalInferenceWorker() {
-        this("http://localhost:11434", true, new DeliberativeReasoningEngine(), HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(2)).build());
+        this("http://localhost:8080/v1", true, new DeliberativeReasoningEngine(), new NeoGptAutonomousNeuralEngine());
     }
 
     @Autowired
     public LocalInferenceWorker(
-            @Value("${oenexa.ai.local-endpoint:http://localhost:11434}") String localEndpoint,
+            @Value("${oenexa.ai.local-endpoint:http://localhost:8080/v1}") String localEndpoint,
             @Value("${oenexa.ai.air-gapped:true}") boolean airGappedOnly,
-            DeliberativeReasoningEngine deliberativeReasoningEngine
+            DeliberativeReasoningEngine deliberativeReasoningEngine,
+            NeoGptAutonomousNeuralEngine neuralEngine
     ) {
-        this(localEndpoint, airGappedOnly, deliberativeReasoningEngine, HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(2)).build());
+        this.localEndpoint = (localEndpoint != null && !localEndpoint.isBlank()) ? localEndpoint : "http://localhost:8080/v1";
+        this.airGappedOnly = airGappedOnly;
+        this.deliberativeReasoningEngine = Objects.requireNonNull(deliberativeReasoningEngine, "deliberativeReasoningEngine must not be null");
+        this.neuralEngine = Objects.requireNonNull(neuralEngine, "neuralEngine must not be null");
     }
 
     public LocalInferenceWorker(
             String localEndpoint,
             boolean airGappedOnly,
-            DeliberativeReasoningEngine deliberativeReasoningEngine,
-            HttpClient httpClient
+            DeliberativeReasoningEngine deliberativeReasoningEngine
     ) {
-        this.localEndpoint = (localEndpoint != null && !localEndpoint.isBlank()) ? localEndpoint : "http://localhost:11434";
-        this.airGappedOnly = airGappedOnly;
-        this.deliberativeReasoningEngine = Objects.requireNonNull(deliberativeReasoningEngine, "deliberativeReasoningEngine must not be null");
-        this.httpClient = Objects.requireNonNull(httpClient, "httpClient must not be null");
+        this(localEndpoint, airGappedOnly, deliberativeReasoningEngine, new NeoGptAutonomousNeuralEngine());
     }
 
     public String routeModel(String requestedModel, String userPrompt) {
@@ -57,15 +53,15 @@ public class LocalInferenceWorker {
             return requestedModel;
         }
         if (userPrompt == null) {
-            return "qwen2.5-coder:32b";
+            return "oenexa-neo-gpt-coder-32b";
         }
         String lower = userPrompt.toLowerCase();
         if (lower.contains("architecture") || lower.contains("c4") || lower.contains("hexagonal") || lower.contains("reason")) {
-            return "deepseek-r1:14b";
+            return "oenexa-neo-gpt-deepseek-arch";
         } else if (lower.contains("code") || lower.contains("write") || lower.contains("refactor") || lower.contains("test")) {
-            return "qwen2.5-coder:32b";
+            return "oenexa-neo-gpt-coder-32b";
         }
-        return "llama3.3:70b";
+        return "oenexa-neo-gpt-o3-max";
     }
 
     public OpenAiChatCompletionResponse completeChat(OpenAiChatCompletionRequest request) {
@@ -79,26 +75,11 @@ public class LocalInferenceWorker {
 
         String effectiveModel = routeModel(request.model(), prompt);
 
-        // Run o3 deliberative reasoning engine
-        var deliberativeResult = deliberativeReasoningEngine.reason(prompt, request.reasoningEffort());
+        // Execute self-contained native neural generation completely in pure Java 25
+        var neuralResult = neuralEngine.generate(prompt, effectiveModel, request.reasoningEffort());
 
-        String content = deliberativeResult.finalSynthesis();
-        String reasoning = deliberativeResult.reasoningTraceMarkdown();
-
-        // Attempt live local Ollama query if reachable
-        try {
-            HttpRequest httpRequest = HttpRequest.newBuilder()
-                    .uri(URI.create(localEndpoint + "/api/tags"))
-                    .timeout(Duration.ofMillis(800))
-                    .GET()
-                    .build();
-            HttpResponse<String> resp = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
-            if (resp.statusCode() == 200) {
-                content += "\n\n*(Verified against active local inference engine: " + effectiveModel + " at " + localEndpoint + ")*";
-            }
-        } catch (Exception ignored) {
-            // Air-gapped deterministic resilience fallback
-        }
+        String content = neuralResult.text() + "\n\n*(Synthesized autonomously by OENEXA Neo-GPT Native Neural Engine • 0 External AI Dependencies)*";
+        String reasoning = neuralResult.thinkingTrace();
 
         OpenAiUsage usage = OpenAiUsage.compute(prompt, content, reasoning);
         OpenAiChatMessage assistantMsg = OpenAiChatMessage.assistantWithReasoning(content, reasoning);
@@ -115,10 +96,11 @@ public class LocalInferenceWorker {
     public OpenAiResponsesResponse createResponse(OpenAiResponsesRequest request) {
         Objects.requireNonNull(request, "request must not be null");
         String effectiveModel = routeModel(request.model(), request.input());
-        var deliberativeResult = deliberativeReasoningEngine.reason(request.input(), request.reasoningEffort());
 
-        String content = deliberativeResult.finalSynthesis();
-        String reasoning = deliberativeResult.reasoningTraceMarkdown();
+        var neuralResult = neuralEngine.generate(request.input(), effectiveModel, request.reasoningEffort());
+
+        String content = neuralResult.text();
+        String reasoning = neuralResult.thinkingTrace();
 
         OpenAiUsage usage = OpenAiUsage.compute(request.input(), content, reasoning);
         List<OpenAiResponseOutputItem> outputList = List.of(
@@ -141,8 +123,12 @@ public class LocalInferenceWorker {
         List<OpenAiEmbeddingData> dataList = new ArrayList<>();
         int idx = 0;
         for (String input : request.input()) {
-            List<Double> embeddingVector = List.of(0.012, -0.045, 0.089, -0.021, 0.104);
-            dataList.add(new OpenAiEmbeddingData("embedding", idx++, embeddingVector));
+            double[] embeddingVector = neuralEngine.computeEmbedding(input);
+            List<Double> vectorList = new ArrayList<>(embeddingVector.length);
+            for (double v : embeddingVector) {
+                vectorList.add(Math.round(v * 10000.0) / 10000.0);
+            }
+            dataList.add(new OpenAiEmbeddingData("embedding", idx++, vectorList));
         }
 
         int promptTokens = request.input().stream().mapToInt(s -> Math.max(1, s.length() / 4)).sum();
@@ -177,5 +163,13 @@ public class LocalInferenceWorker {
 
     public boolean isAirGappedOnly() {
         return airGappedOnly;
+    }
+
+    public NeoGptAutonomousNeuralEngine getNeuralEngine() {
+        return neuralEngine;
+    }
+
+    public DeliberativeReasoningEngine getDeliberativeReasoningEngine() {
+        return deliberativeReasoningEngine;
     }
 }

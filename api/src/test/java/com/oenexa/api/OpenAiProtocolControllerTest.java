@@ -22,7 +22,7 @@ class OpenAiProtocolControllerTest {
     @Test
     @DisplayName("Should create chat completion in non-streaming mode")
     void testCreateChatCompletionNonStreaming() {
-        var req = OpenAiChatCompletionRequest.of("qwen2.5-coder:32b", "Write a reactive service");
+        var req = OpenAiChatCompletionRequest.of("oenexa-neo-gpt-coder-32b", "Write a reactive service");
         Object result = controller.createChatCompletion(req);
 
         assertTrue(result instanceof ResponseEntity<?>);
@@ -31,7 +31,7 @@ class OpenAiProtocolControllerTest {
         assertTrue(resp.getBody() instanceof OpenAiChatCompletionResponse);
 
         OpenAiChatCompletionResponse body = (OpenAiChatCompletionResponse) resp.getBody();
-        assertEquals("qwen2.5-coder:32b", body.model());
+        assertEquals("oenexa-neo-gpt-coder-32b", body.model());
         assertEquals(1, body.choices().size());
         assertNotNull(body.choices().get(0).message().content());
     }
@@ -40,7 +40,7 @@ class OpenAiProtocolControllerTest {
     @DisplayName("Should create chat completion in streaming mode returning SseEmitter")
     void testCreateChatCompletionStreaming() {
         var req = new OpenAiChatCompletionRequest(
-                "qwen2.5-coder:32b",
+                "oenexa-neo-gpt-coder-32b",
                 List.of(OpenAiChatMessage.user("Write a test")),
                 0.7, 1.0, 1, true, List.of(), 500, null, null, Map.of(), "user-1",
                 null, null, List.of(), "auto", "low"
@@ -65,9 +65,9 @@ class OpenAiProtocolControllerTest {
         assertNotNull(listResp.getBody());
         assertTrue(listResp.getBody().data().size() >= 4);
 
-        var modelResp = controller.getModel("qwen2.5-coder:32b");
+        var modelResp = controller.getModel("oenexa-neo-gpt-coder-32b");
         assertEquals(HttpStatus.OK, modelResp.getStatusCode());
-        assertEquals("qwen2.5-coder:32b", modelResp.getBody().id());
+        assertEquals("oenexa-neo-gpt-coder-32b", modelResp.getBody().id());
 
         assertEquals(HttpStatus.BAD_REQUEST, controller.getModel(null).getStatusCode());
         assertEquals(HttpStatus.BAD_REQUEST, controller.getModel("   ").getStatusCode());

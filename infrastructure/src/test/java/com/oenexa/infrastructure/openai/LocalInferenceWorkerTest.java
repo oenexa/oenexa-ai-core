@@ -18,29 +18,31 @@ class LocalInferenceWorkerTest {
     @DisplayName("Should route models intelligently based on prompt contents")
     void testModelRouting() {
         assertEquals("gpt-4o", worker.routeModel("gpt-4o", "hi"));
-        assertEquals("deepseek-r1:14b", worker.routeModel("auto", "Explain hexagonal architecture and C4 diagram"));
-        assertEquals("qwen2.5-coder:32b", worker.routeModel("auto", "Write zero-mock unit test for controller"));
-        assertEquals("llama3.3:70b", worker.routeModel("auto", "Summarize user stories"));
-        assertEquals("qwen2.5-coder:32b", worker.routeModel(null, null));
+        assertEquals("oenexa-neo-gpt-deepseek-arch", worker.routeModel("auto", "Explain hexagonal architecture and C4 diagram"));
+        assertEquals("oenexa-neo-gpt-coder-32b", worker.routeModel("auto", "Write zero-mock unit test for controller"));
+        assertEquals("oenexa-neo-gpt-o3-max", worker.routeModel("auto", "Summarize user stories"));
+        assertEquals("oenexa-neo-gpt-coder-32b", worker.routeModel(null, null));
     }
 
     @Test
     @DisplayName("Should complete chat request with o3 deliberative reasoning trace")
     void testCompleteChat() {
-        var req = OpenAiChatCompletionRequest.of("qwen2.5-coder:32b", "Write reactive Spring service");
+        var req = OpenAiChatCompletionRequest.of("oenexa-neo-gpt-coder-32b", "Write reactive Spring service");
         var res = worker.completeChat(req);
 
         assertNotNull(res);
         assertTrue(res.id().startsWith("chatcmpl-oenexa-"));
-        assertEquals("qwen2.5-coder:32b", res.model());
+        assertEquals("oenexa-neo-gpt-coder-32b", res.model());
         assertEquals(1, res.choices().size());
 
         var msg = res.choices().get(0).message();
         assertEquals("assistant", msg.role());
         assertNotNull(msg.content());
         assertNotNull(msg.reasoningContent());
-        assertTrue(msg.reasoningContent().contains("o3 Deliberative Reasoning Trace"));
+        assertTrue(msg.reasoningContent().contains("Deliberative Reasoning"));
         assertTrue(res.usage().totalTokens() > 0);
+        assertNotNull(worker.getNeuralEngine());
+        assertNotNull(worker.getDeliberativeReasoningEngine());
     }
 
     @Test
@@ -52,7 +54,7 @@ class LocalInferenceWorkerTest {
         assertNotNull(res);
         assertEquals(2, res.data().size());
         assertEquals("embedding", res.data().get(0).object());
-        assertEquals(5, res.data().get(0).embedding().size());
+        assertEquals(worker.getNeuralEngine().getWeights().getHiddenDim(), res.data().get(0).embedding().size());
         assertTrue(res.usage().promptTokens() > 0);
     }
 
