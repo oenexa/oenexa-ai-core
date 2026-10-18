@@ -17,7 +17,8 @@ import java.util.concurrent.Executors;
  * enabling direct integration with Cursor, VS Code, LangChain, Spring AI, and OpenAI SDKs.
  */
 @RestController
-@RequestMapping("/v1")
+@RequestMapping({"/v1", "/api/v1/cognitive", "/api/v1/oenexa/cognitive"})
+@CrossOrigin(origins = "*")
 public class OpenAiProtocolController {
 
     private final LocalInferenceWorker localInferenceWorker;

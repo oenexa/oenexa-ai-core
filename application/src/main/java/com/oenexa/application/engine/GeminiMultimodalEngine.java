@@ -20,10 +20,10 @@ public class GeminiMultimodalEngine {
         List<String> detectedLayers = List.of("API / Inbound Web", "Domain Core (Sealed Records)", "Infrastructure / Postgres pgvector");
 
         DetectedComponent compController = new DetectedComponent(
-                UUID.randomUUID().toString(), "ArgonAgentController", "API_REST", "x:50,y:100,w:220,h:80", List.of("ArgonAutonomousAgentEngine")
+                UUID.randomUUID().toString(), "OenexaAutonomousAgentController", "API_REST", "x:50,y:100,w:220,h:80", List.of("OenexaAutonomousAgentEngine")
         );
         DetectedComponent compEngine = new DetectedComponent(
-                UUID.randomUUID().toString(), "ArgonAutonomousAgentEngine", "APPLICATION_USE_CASE", "x:320,y:100,w:260,h:100", List.of("ChatDomainRepository")
+                UUID.randomUUID().toString(), "OenexaAutonomousAgentEngine", "APPLICATION_USE_CASE", "x:320,y:100,w:260,h:100", List.of("ChatDomainRepository")
         );
         DetectedComponent compRepo = new DetectedComponent(
                 UUID.randomUUID().toString(), "ChatDomainRepository", "INFRASTRUCTURE_PORT", "x:630,y:100,w:240,h:80", List.of("PostgreSQL_pgvector")
@@ -32,9 +32,9 @@ public class GeminiMultimodalEngine {
         List<DetectedComponent> components = List.of(compController, compEngine, compRepo);
 
         String mermaid = "graph TD\n" +
-                "  A[API: ArgonAgentController] -->|Execute Goal| B[Application: ArgonAutonomousAgentEngine]\n" +
+                "  A[API: OenexaAutonomousAgentController] -->|Execute Goal| B[Application: OenexaAutonomousAgentEngine]\n" +
                 "  B -->|Persist Artifacts| C[Infrastructure: Postgres pgvector]\n" +
-                "  B -->|Local Inference| D[Local Ollama: llama3.3:latest]";
+                "  B -->|Sovereign Neural Pass| D[OENEXA Neo-GPT Native Engine: o3-max]";
 
         String ddl = "-- Extracted from Architecture Visuals\n" +
                 "CREATE TABLE IF NOT EXISTS visual_architecture_nodes (\n" +
