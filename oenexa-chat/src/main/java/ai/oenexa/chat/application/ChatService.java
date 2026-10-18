@@ -29,7 +29,7 @@ public class ChatService {
 
     /** Streams the assistant reply; persists the user turn first and the full assistant turn on completion. */
     public Flux<String> reply(UUID tenantId, UUID conversationId, String userText) {
-        return reply(tenantId, conversationId, userText, "gemini-2.5-flash", true, List.of());
+        return reply(tenantId, conversationId, userText, "oenexa-reasoning-v1", true, List.of());
     }
 
     public Flux<String> reply(
@@ -44,7 +44,7 @@ public class ChatService {
                 ChatMessage.Role.USER,
                 userText,
                 null,
-                (model != null && !model.isBlank()) ? model : "gemini-2.5-flash",
+                (model != null && !model.isBlank()) ? model : "oenexa-reasoning-v1",
                 (attachments != null) ? attachments : List.of(),
                 List.of(),
                 List.of(),
@@ -85,16 +85,16 @@ public class ChatService {
     }
 
     /** Synchronous turn completion returning full reasoning turn and persisting conversation turns. */
-    public Mono<GeminiReasoningEngine.TurnResult> complete(
+    public Mono<OenexaReasoningEngine.TurnResult> complete(
             UUID tenantId,
             UUID conversationId,
             String userText,
             String model,
             boolean includeThinking,
             List<CodeContextAttachment> attachments,
-            GeminiReasoningEngine engine
+            OenexaReasoningEngine engine
     ) {
-        String activeModel = (model != null && !model.isBlank()) ? model : "gemini-2.5-flash";
+        String activeModel = (model != null && !model.isBlank()) ? model : "oenexa-reasoning-v1";
         ChatMessage user = ChatMessage.of(
                 ChatMessage.Role.USER,
                 userText,
@@ -106,8 +106,8 @@ public class ChatService {
                 List.of()
         );
 
-        GeminiReasoningEngine reasoningEngine = (engine != null) ? engine : new GeminiReasoningEngine();
-        GeminiReasoningEngine.TurnResult turn = reasoningEngine.process(userText, activeModel, includeThinking, attachments);
+        OenexaReasoningEngine reasoningEngine = (engine != null) ? engine : new OenexaReasoningEngine();
+        OenexaReasoningEngine.TurnResult turn = reasoningEngine.process(userText, activeModel, includeThinking, attachments);
 
         ChatMessage assistant = ChatMessage.of(
                 ChatMessage.Role.ASSISTANT,

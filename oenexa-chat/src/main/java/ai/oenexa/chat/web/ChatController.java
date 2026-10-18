@@ -3,7 +3,7 @@ package ai.oenexa.chat.web;
 import ai.oenexa.auth.token.JwtService.TokenClaims;
 import ai.oenexa.chat.application.ChatService;
 import ai.oenexa.chat.application.ChatService.ChatStreamEvent;
-import ai.oenexa.chat.application.GeminiReasoningEngine;
+import ai.oenexa.chat.application.OenexaReasoningEngine;
 import ai.oenexa.chat.domain.ChatMessage;
 import ai.oenexa.chat.domain.ChatTool;
 import ai.oenexa.chat.domain.CodeContextAttachment;
@@ -42,7 +42,7 @@ public class ChatController {
             List<CodeContextAttachment> attachments
     ) {
         public SendMessage(String content) {
-            this(content, "gemini-2.5-flash", true, List.of());
+            this(content, "oenexa-reasoning-v1", true, List.of());
         }
 
         public SendMessage(String content, String model, Boolean includeThinking) {
@@ -57,16 +57,16 @@ public class ChatController {
     public record ForkRequest(UUID newConversationId, Integer upToMessageIndex) {}
 
     private final ChatService service;
-    private final GeminiReasoningEngine reasoningEngine;
+    private final OenexaReasoningEngine reasoningEngine;
 
     @Autowired
-    public ChatController(ChatService service, GeminiReasoningEngine reasoningEngine) {
+    public ChatController(ChatService service, OenexaReasoningEngine reasoningEngine) {
         this.service = service;
-        this.reasoningEngine = (reasoningEngine != null) ? reasoningEngine : new GeminiReasoningEngine();
+        this.reasoningEngine = (reasoningEngine != null) ? reasoningEngine : new OenexaReasoningEngine();
     }
 
     public ChatController(ChatService service) {
-        this(service, new GeminiReasoningEngine());
+        this(service, new OenexaReasoningEngine());
     }
 
     /** Server-sent events: one event per streamed token chunk. */
@@ -105,7 +105,7 @@ public class ChatController {
 
     /** Synchronous turn completion returning full reasoning turn, tool calls, and artifacts. */
     @PostMapping("/{conversationId}/completions")
-    public Mono<GeminiReasoningEngine.TurnResult> complete(
+    public Mono<OenexaReasoningEngine.TurnResult> complete(
             Principal auth,
             @PathVariable UUID conversationId,
             @Valid @RequestBody SendMessage body
@@ -137,7 +137,7 @@ public class ChatController {
             @RequestBody(required = false) CreateConversation body
     ) {
         String title = (body != null) ? body.title() : "New Conversation";
-        String model = (body != null) ? body.model() : "gemini-2.5-flash";
+        String model = (body != null) ? body.model() : "oenexa-reasoning-v1";
         return service.createConversation(tenantOf(auth), UUID.randomUUID(), title, model);
     }
 

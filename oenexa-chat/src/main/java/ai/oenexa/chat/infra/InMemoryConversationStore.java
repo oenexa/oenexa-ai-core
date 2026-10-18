@@ -65,7 +65,7 @@ public class InMemoryConversationStore implements ConversationStore {
         return Mono.fromSupplier(() -> {
             Key key = new Key(tenantId, conversationId);
             return metadataMap.computeIfAbsent(key, k ->
-                    new ConversationMetadata(conversationId, tenantId, "New Conversation", "gemini-2.5-flash", Instant.now(), Instant.now(), 0, false)
+                    new ConversationMetadata(conversationId, tenantId, "New Conversation", "oenexa-reasoning-v1", Instant.now(), Instant.now(), 0, false)
             );
         });
     }
@@ -75,7 +75,7 @@ public class InMemoryConversationStore implements ConversationStore {
         return Mono.fromSupplier(() -> {
             Key key = new Key(tenantId, conversationId);
             String safeTitle = (title != null && !title.isBlank()) ? title.trim() : "New Conversation";
-            String safeModel = (model != null && !model.isBlank()) ? model.trim() : "gemini-2.5-flash";
+            String safeModel = (model != null && !model.isBlank()) ? model.trim() : "oenexa-reasoning-v1";
             ConversationMetadata meta = new ConversationMetadata(conversationId, tenantId, safeTitle, safeModel, Instant.now(), Instant.now(), 0, false);
             metadataMap.put(key, meta);
             data.put(key, new CopyOnWriteArrayList<>());
@@ -89,7 +89,7 @@ public class InMemoryConversationStore implements ConversationStore {
             Key key = new Key(tenantId, conversationId);
             ConversationMetadata meta = metadataMap.get(key);
             if (meta == null) {
-                meta = new ConversationMetadata(conversationId, tenantId, newTitle, "gemini-2.5-flash", Instant.now(), Instant.now(), 0, false);
+                meta = new ConversationMetadata(conversationId, tenantId, newTitle, "oenexa-reasoning-v1", Instant.now(), Instant.now(), 0, false);
             } else {
                 meta = meta.withTitle(newTitle);
             }
@@ -104,7 +104,7 @@ public class InMemoryConversationStore implements ConversationStore {
             Key key = new Key(tenantId, conversationId);
             ConversationMetadata meta = metadataMap.get(key);
             if (meta == null) {
-                meta = new ConversationMetadata(conversationId, tenantId, "New Conversation", "gemini-2.5-flash", Instant.now(), Instant.now(), 0, pinned);
+                meta = new ConversationMetadata(conversationId, tenantId, "New Conversation", "oenexa-reasoning-v1", Instant.now(), Instant.now(), 0, pinned);
             } else {
                 meta = meta.withPinned(pinned);
             }
@@ -138,7 +138,7 @@ public class InMemoryConversationStore implements ConversationStore {
 
             ConversationMetadata sourceMeta = metadataMap.get(sourceKey);
             String title = (sourceMeta != null) ? "Fork of " + sourceMeta.title() : "Forked Conversation";
-            String model = (sourceMeta != null) ? sourceMeta.model() : "gemini-2.5-flash";
+            String model = (sourceMeta != null) ? sourceMeta.model() : "oenexa-reasoning-v1";
             ConversationMetadata newMeta = new ConversationMetadata(
                     newConversationId,
                     tenantId,

@@ -7,11 +7,12 @@ import org.springframework.stereotype.Component;
 import java.util.*;
 
 /**
+ * Sovereign OENEXA Multimodal Processing Engine.
  * Single Responsibility: Multimodal vision diagram OCR and spatial layout parsing,
  * developer audio directives transcription, and cross-modal context fusion.
  */
 @Component
-public class GeminiMultimodalEngine {
+public class OenexaMultimodalEngine {
 
     public MultimodalVisionAnalysis analyzeVisualDiagram(String diagramName, String mimeType, String imageBase64) {
         Objects.requireNonNull(diagramName, "diagramName must not be null");
@@ -77,7 +78,7 @@ public class GeminiMultimodalEngine {
         String safeTitle = title != null ? title : "Unified Engineering Directive";
 
         String brief = String.format(
-                "### 🌐 Gemini Unified Multimodal Engineering Context: %s\n" +
+                "### 🌐 OENEXA Unified Multimodal Engineering Context: %s\n" +
                 "- **Audio Speech Directive**: \"%s\" (Intent: %s)\n" +
                 "- **Visual Architecture Analysis**: Diagram %s with %d detected components across %s.\n" +
                 "- **Corroborating Document Attachments**: %d specification artifacts ingested into vector RAG memory.\n" +

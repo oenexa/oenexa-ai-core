@@ -180,33 +180,33 @@ class TargetCapabilitiesServiceTest {
     @Test
     void testConstructorInvariantsAndGetters() {
         assertNotNull(service.getClaudeReasoningEngine());
-        assertNotNull(service.getGeminiMultimodalEngine());
+        assertNotNull(service.getOenexaMultimodalEngine());
         assertNotNull(service.getCursorCodingEngine());
         assertNotNull(service.getDevinExecutionEngine());
         assertNotNull(service.getCopilotCompletionEngine());
         assertNotNull(service.getOperatorWorkflowEngine());
 
         var claude = service.getClaudeReasoningEngine();
-        var gemini = service.getGeminiMultimodalEngine();
+        var oenexa = service.getOenexaMultimodalEngine();
         var cursor = service.getCursorCodingEngine();
         var devin = service.getDevinExecutionEngine();
         var copilot = service.getCopilotCompletionEngine();
         var operator = service.getOperatorWorkflowEngine();
 
-        TargetCapabilitiesService customService = new TargetCapabilitiesService(claude, gemini, cursor, devin, copilot, operator);
+        TargetCapabilitiesService customService = new TargetCapabilitiesService(claude, oenexa, cursor, devin, copilot, operator);
         assertSame(claude, customService.getClaudeReasoningEngine());
-        assertSame(gemini, customService.getGeminiMultimodalEngine());
+        assertSame(oenexa, customService.getOenexaMultimodalEngine());
         assertSame(cursor, customService.getCursorCodingEngine());
         assertSame(devin, customService.getDevinExecutionEngine());
         assertSame(copilot, customService.getCopilotCompletionEngine());
         assertSame(operator, customService.getOperatorWorkflowEngine());
 
-        assertThrows(NullPointerException.class, () -> new TargetCapabilitiesService(null, gemini, cursor, devin, copilot, operator));
+        assertThrows(NullPointerException.class, () -> new TargetCapabilitiesService(null, oenexa, cursor, devin, copilot, operator));
         assertThrows(NullPointerException.class, () -> new TargetCapabilitiesService(claude, null, cursor, devin, copilot, operator));
-        assertThrows(NullPointerException.class, () -> new TargetCapabilitiesService(claude, gemini, null, devin, copilot, operator));
-        assertThrows(NullPointerException.class, () -> new TargetCapabilitiesService(claude, gemini, cursor, null, copilot, operator));
-        assertThrows(NullPointerException.class, () -> new TargetCapabilitiesService(claude, gemini, cursor, devin, null, operator));
-        assertThrows(NullPointerException.class, () -> new TargetCapabilitiesService(claude, gemini, cursor, devin, copilot, null));
+        assertThrows(NullPointerException.class, () -> new TargetCapabilitiesService(claude, oenexa, null, devin, copilot, operator));
+        assertThrows(NullPointerException.class, () -> new TargetCapabilitiesService(claude, oenexa, cursor, null, copilot, operator));
+        assertThrows(NullPointerException.class, () -> new TargetCapabilitiesService(claude, oenexa, cursor, devin, null, operator));
+        assertThrows(NullPointerException.class, () -> new TargetCapabilitiesService(claude, oenexa, cursor, devin, copilot, null));
     }
 }
 

@@ -2,7 +2,7 @@ package ai.oenexa.chat;
 
 import ai.oenexa.chat.application.ArtifactExtractor;
 import ai.oenexa.chat.application.ChatService;
-import ai.oenexa.chat.application.GeminiReasoningEngine;
+import ai.oenexa.chat.application.OenexaReasoningEngine;
 import ai.oenexa.chat.application.ToolRegistry;
 import ai.oenexa.chat.domain.ChatMessage;
 import ai.oenexa.chat.domain.ChatTool;
@@ -169,7 +169,7 @@ class ProChatFeaturesTest {
         assertThat(fullAtt.endLine()).isEqualTo(15);
 
         ConversationMetadata meta = new ConversationMetadata(UUID.randomUUID(), UUID.randomUUID(), "Title");
-        assertThat(meta.model()).isEqualTo("gemini-2.5-flash");
+        assertThat(meta.model()).isEqualTo("oenexa-reasoning-v1");
         assertThat(meta.messageCount()).isZero();
         assertThat(meta.pinned()).isFalse();
 
@@ -237,8 +237,8 @@ class ProChatFeaturesTest {
                 .verifyComplete();
 
         // Complete turn synchronously
-        GeminiReasoningEngine engine = new GeminiReasoningEngine();
-        StepVerifier.create(service.complete(tenantId, convId, "Synthesize test coverage", "gemini-2.5-pro", true, List.of(attachment), engine))
+        OenexaReasoningEngine engine = new OenexaReasoningEngine();
+        StepVerifier.create(service.complete(tenantId, convId, "Synthesize test coverage", "oenexa-neo-gpt-o3-max", true, List.of(attachment), engine))
                 .assertNext(turn -> {
                     assertThat(turn.intent()).isEqualTo("TESTING_SYNTHESIS");
                     assertThat(turn.toolCalls()).isNotEmpty();
@@ -288,16 +288,16 @@ class ProChatFeaturesTest {
     }
 
     @Test
-    void testGeminiReasoningEngineProFeatures() {
+    void testOenexaReasoningEngineProFeatures() {
         ToolRegistry registry = new ToolRegistry();
         ArtifactExtractor extractor = new ArtifactExtractor();
-        GeminiReasoningEngine engine = new GeminiReasoningEngine(registry, extractor);
+        OenexaReasoningEngine engine = new OenexaReasoningEngine(registry, extractor);
 
         assertThat(engine.toolRegistry()).isSameAs(registry);
         assertThat(engine.artifactExtractor()).isSameAs(extractor);
 
         // TurnResult legacy constructor
-        var legacyTurn = new GeminiReasoningEngine.TurnResult("thought", "response", "intent", List.of("follow-up"));
+        var legacyTurn = new OenexaReasoningEngine.TurnResult("thought", "response", "intent", List.of("follow-up"));
         assertThat(legacyTurn.confidenceScore()).isEqualTo(0.95);
         assertThat(legacyTurn.toolCalls()).isEmpty();
 
@@ -397,7 +397,7 @@ class ProChatFeaturesTest {
         StepVerifier.create(store.createConversation(tenantId, convId3, "   ", "   "))
                 .assertNext(m -> {
                     assertThat(m.title()).isEqualTo("New Conversation");
-                    assertThat(m.model()).isEqualTo("gemini-2.5-flash");
+                    assertThat(m.model()).isEqualTo("oenexa-reasoning-v1");
                 })
                 .verifyComplete();
 
@@ -417,7 +417,7 @@ class ProChatFeaturesTest {
         StepVerifier.create(store.forkConversation(tenantId, UUID.randomUUID(), forkedId, -1))
                 .assertNext(m -> {
                     assertThat(m.title()).isEqualTo("Forked Conversation");
-                    assertThat(m.model()).isEqualTo("gemini-2.5-flash");
+                    assertThat(m.model()).isEqualTo("oenexa-reasoning-v1");
                 })
                 .verifyComplete();
     }
@@ -425,16 +425,16 @@ class ProChatFeaturesTest {
     @Test
     void testReasoningEngineConstructorsAndErrorConfidence() {
         // Constructor with nulls
-        GeminiReasoningEngine engine = new GeminiReasoningEngine(null, null);
+        OenexaReasoningEngine engine = new OenexaReasoningEngine(null, null);
         assertThat(engine.toolRegistry()).isNotNull();
         assertThat(engine.artifactExtractor()).isNotNull();
 
         // Null input
-        var turnNull = engine.process(null, "gemini-2.5-flash", false, List.of());
+        var turnNull = engine.process(null, "oenexa-reasoning-v1", false, List.of());
         assertThat(turnNull.response()).isNotNull();
 
         // Refactoring intent
-        var turnRefactor = engine.process("Refactor this method", "gemini-2.5-flash", true, List.of());
+        var turnRefactor = engine.process("Refactor this method", "oenexa-reasoning-v1", true, List.of());
         assertThat(turnRefactor.toolCalls()).isNotEmpty();
         assertThat(turnRefactor.toolCalls().get(0).toolName()).isEqualTo("code_refactoring");
 
@@ -455,15 +455,15 @@ class ProChatFeaturesTest {
         ToolResult execResult = customRegistry.execute(new ToolCall("id-1", "ast_analyzer", Map.of()));
         assertThat(execResult.isError()).isTrue();
 
-        GeminiReasoningEngine failingEngine = new GeminiReasoningEngine(customRegistry, new ArtifactExtractor());
-        var failTurn = failingEngine.process("Generate code for model", "gemini-2.5-flash", true, List.of());
+        OenexaReasoningEngine failingEngine = new OenexaReasoningEngine(customRegistry, new ArtifactExtractor());
+        var failTurn = failingEngine.process("Generate code for model", "oenexa-reasoning-v1", true, List.of());
         assertThat(failTurn.confidenceScore()).isEqualTo(0.70);
     }
 
     @Test
     void testSpringAiAdapterAndChatMessageConstructors() {
         // Spring AI Tool role conversion
-        ChatMessage toolMsg = new ChatMessage(ChatMessage.Role.TOOL, "tool output", Instant.now(), null, "gemini-2.5-flash");
+        ChatMessage toolMsg = new ChatMessage(ChatMessage.Role.TOOL, "tool output", Instant.now(), null, "oenexa-reasoning-v1");
         var springAiMsg = ai.oenexa.chat.infra.SpringAiLlmAdapter.toSpringAi(toolMsg);
         assertThat(springAiMsg).isNotNull();
         assertThat(springAiMsg.getText()).contains("Tool Output: tool output");
@@ -471,6 +471,6 @@ class ProChatFeaturesTest {
         // ChatMessage 3-arg constructor
         ChatMessage userMsg = new ChatMessage(ChatMessage.Role.USER, "hello", Instant.now());
         assertThat(userMsg.role()).isEqualTo(ChatMessage.Role.USER);
-        assertThat(userMsg.model()).isEqualTo("gemini-2.5-flash");
+        assertThat(userMsg.model()).isEqualTo("oenexa-reasoning-v1");
     }
 }

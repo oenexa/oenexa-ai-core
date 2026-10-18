@@ -11,7 +11,7 @@ import java.util.Objects;
 /**
  * Enterprise GoF Facade orchestrating the 6 Target Capabilities engines:
  * 1. ClaudeReasoningEngine: Deep Tree-of-Thought (ToT) exploration, Trade-off analysis, Reflection
- * 2. GeminiMultimodalEngine: Speech audio directives, Architecture diagram OCR & vision, Spec fusion
+ * 2. OenexaMultimodalEngine: Speech audio directives, Architecture diagram OCR & vision, Spec fusion
  * 3. CursorCodingEngine: Codebase-wide symbol cross-referencing, atomic multi-file patching, @context curation
  * 4. DevinExecutionEngine: Autonomous goal decomposition, sandbox compilation & zero-mock self-healing loops
  * 5. CopilotCompletionEngine: Inline ghost-text prediction, method signature & test assertion synthesis
@@ -21,7 +21,7 @@ import java.util.Objects;
 public class TargetCapabilitiesService {
 
     private final ClaudeReasoningEngine claudeReasoningEngine;
-    private final GeminiMultimodalEngine geminiMultimodalEngine;
+    private final OenexaMultimodalEngine oenexaMultimodalEngine;
     private final CursorCodingEngine cursorCodingEngine;
     private final DevinExecutionEngine devinExecutionEngine;
     private final CopilotCompletionEngine copilotCompletionEngine;
@@ -29,14 +29,14 @@ public class TargetCapabilitiesService {
 
     public TargetCapabilitiesService(
             ClaudeReasoningEngine claudeReasoningEngine,
-            GeminiMultimodalEngine geminiMultimodalEngine,
+            OenexaMultimodalEngine oenexaMultimodalEngine,
             CursorCodingEngine cursorCodingEngine,
             DevinExecutionEngine devinExecutionEngine,
             CopilotCompletionEngine copilotCompletionEngine,
             OperatorWorkflowEngine operatorWorkflowEngine
     ) {
         this.claudeReasoningEngine = Objects.requireNonNull(claudeReasoningEngine, "claudeReasoningEngine must not be null");
-        this.geminiMultimodalEngine = Objects.requireNonNull(geminiMultimodalEngine, "geminiMultimodalEngine must not be null");
+        this.oenexaMultimodalEngine = Objects.requireNonNull(oenexaMultimodalEngine, "oenexaMultimodalEngine must not be null");
         this.cursorCodingEngine = Objects.requireNonNull(cursorCodingEngine, "cursorCodingEngine must not be null");
         this.devinExecutionEngine = Objects.requireNonNull(devinExecutionEngine, "devinExecutionEngine must not be null");
         this.copilotCompletionEngine = Objects.requireNonNull(copilotCompletionEngine, "copilotCompletionEngine must not be null");
@@ -46,7 +46,7 @@ public class TargetCapabilitiesService {
     public TargetCapabilitiesService() {
         this(
                 new ClaudeReasoningEngine(),
-                new GeminiMultimodalEngine(),
+                new OenexaMultimodalEngine(),
                 new CursorCodingEngine(),
                 new DevinExecutionEngine(),
                 new CopilotCompletionEngine(),
@@ -59,11 +59,11 @@ public class TargetCapabilitiesService {
     }
 
     public MultimodalVisionAnalysis analyzeVisualDiagram(String diagramName, String mimeType, String imageBase64) {
-        return geminiMultimodalEngine.analyzeVisualDiagram(diagramName, mimeType, imageBase64);
+        return oenexaMultimodalEngine.analyzeVisualDiagram(diagramName, mimeType, imageBase64);
     }
 
     public MultimodalAudioAnalysis transcribeAndExtractDirectives(String audioFileName, String audioBase64) {
-        return geminiMultimodalEngine.transcribeAndExtractDirectives(audioFileName, audioBase64);
+        return oenexaMultimodalEngine.transcribeAndExtractDirectives(audioFileName, audioBase64);
     }
 
     public MultimodalUnifiedContext fuseMultimodalContext(
@@ -72,7 +72,7 @@ public class TargetCapabilitiesService {
             List<MultimodalAttachment> docs,
             String title
     ) {
-        return geminiMultimodalEngine.fuseMultimodalContext(audio, vision, docs, title);
+        return oenexaMultimodalEngine.fuseMultimodalContext(audio, vision, docs, title);
     }
 
     public List<CursorContextReference> curateCursorContext(String query, String repositoryId) {
@@ -103,8 +103,8 @@ public class TargetCapabilitiesService {
         return claudeReasoningEngine;
     }
 
-    public GeminiMultimodalEngine getGeminiMultimodalEngine() {
-        return geminiMultimodalEngine;
+    public OenexaMultimodalEngine getOenexaMultimodalEngine() {
+        return oenexaMultimodalEngine;
     }
 
     public CursorCodingEngine getCursorCodingEngine() {

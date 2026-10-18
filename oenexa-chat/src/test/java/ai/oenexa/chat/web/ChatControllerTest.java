@@ -52,9 +52,9 @@ class ChatControllerTest {
                 })
                 .verifyComplete();
 
-        var customBody = new ChatController.SendMessage("Custom message", "gemini-2.5-pro", false);
+        var customBody = new ChatController.SendMessage("Custom message", "oenexa-neo-gpt-o3-max", false);
         assertThat(customBody.content()).isEqualTo("Custom message");
-        assertThat(customBody.model()).isEqualTo("gemini-2.5-pro");
+        assertThat(customBody.model()).isEqualTo("oenexa-neo-gpt-o3-max");
         assertThat(customBody.includeThinking()).isFalse();
     }
 
@@ -86,7 +86,7 @@ class ChatControllerTest {
     void streamEventsAndCompletionsFlow() {
         UUID conversationId = UUID.randomUUID();
         var attachment = new ai.oenexa.chat.domain.CodeContextAttachment("src/Main.java", "public class Main {}");
-        var body = new ChatController.SendMessage("Perform security audit", "gemini-2.5-pro", true, List.of(attachment));
+        var body = new ChatController.SendMessage("Perform security audit", "oenexa-neo-gpt-o3-max", true, List.of(attachment));
 
         StepVerifier.create(controller.streamEvents(auth, conversationId, body))
                 .assertNext(event -> {
@@ -115,10 +115,10 @@ class ChatControllerTest {
     @Test
     void conversationManagementEndpoints() {
         // Create conversation
-        StepVerifier.create(controller.createConversation(auth, new ChatController.CreateConversation("Sprint Planning", "gemini-2.5-pro")))
+        StepVerifier.create(controller.createConversation(auth, new ChatController.CreateConversation("Sprint Planning", "oenexa-neo-gpt-o3-max")))
                 .assertNext(meta -> {
                     assertThat(meta.title()).isEqualTo("Sprint Planning");
-                    assertThat(meta.model()).isEqualTo("gemini-2.5-pro");
+                    assertThat(meta.model()).isEqualTo("oenexa-neo-gpt-o3-max");
                 })
                 .verifyComplete();
 

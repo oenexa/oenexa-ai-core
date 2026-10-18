@@ -1,12 +1,12 @@
 package ai.oenexa.chat;
 
 import ai.oenexa.chat.application.ChatService;
-import ai.oenexa.chat.application.GeminiReasoningEngine;
+import ai.oenexa.chat.application.OenexaReasoningEngine;
 import ai.oenexa.chat.domain.ConversationStore;
 import ai.oenexa.chat.domain.LlmPort;
 import ai.oenexa.chat.infra.EchoLlmAdapter;
-import ai.oenexa.chat.infra.GeminiLlmAdapter;
 import ai.oenexa.chat.infra.InMemoryConversationStore;
+import ai.oenexa.chat.infra.OenexaLocalLlmAdapter;
 import ai.oenexa.chat.infra.SpringAiLlmAdapter;
 import ai.oenexa.chat.web.ChatController;
 import ai.oenexa.common.module.PlatformModule;
@@ -30,22 +30,22 @@ public class ChatModule implements PlatformModule {
     }
 
     @Bean
-    @ConditionalOnMissingBean(GeminiReasoningEngine.class)
-    GeminiReasoningEngine geminiReasoningEngine() {
-        return new GeminiReasoningEngine();
+    @ConditionalOnMissingBean(OenexaReasoningEngine.class)
+    OenexaReasoningEngine oenexaReasoningEngine() {
+        return new OenexaReasoningEngine();
     }
 
     /**
-     * Advanced LLM Port: Defaults to Gemini 2.5 provider with autonomous offline fallback.
+     * Advanced LLM Port: Defaults to OENEXA local-first provider with autonomous offline reasoning fallback.
      * Also supports spring-ai and echo providers.
      */
     @Bean
     @ConditionalOnMissingBean(LlmPort.class)
     LlmPort llmPort(ObjectProvider<ChatClient.Builder> builder,
-                    GeminiReasoningEngine reasoningEngine,
-                    @Value("${oenexa.chat.provider:gemini}") String provider,
-                    @Value("${oenexa.chat.gemini.api-key:${GEMINI_API_KEY:}}") String apiKey,
-                    @Value("${oenexa.chat.gemini.model:gemini-2.5-flash}") String model) {
+                    OenexaReasoningEngine reasoningEngine,
+                    @Value("${oenexa.chat.provider:oenexa}") String provider,
+                    @Value("${oenexa.chat.local.api-key:${OENEXA_API_KEY:}}") String apiKey,
+                    @Value("${oenexa.chat.local.model:oenexa-reasoning-v1}") String model) {
         if ("spring-ai".equalsIgnoreCase(provider)) {
             ChatClient.Builder b = builder.getIfAvailable();
             if (b != null) {
@@ -54,12 +54,12 @@ public class ChatModule implements PlatformModule {
         } else if ("echo".equalsIgnoreCase(provider)) {
             return new EchoLlmAdapter();
         }
-        return new GeminiLlmAdapter(apiKey, model, reasoningEngine);
+        return new OenexaLocalLlmAdapter(apiKey, model, reasoningEngine);
     }
 
     @Bean
     ChatService chatService(ConversationStore store, LlmPort llm,
-                            @Value("${oenexa.chat.system-prompt:You are OENEXA AI, a precise Gemini-grade engineering assistant.}")
+                            @Value("${oenexa.chat.system-prompt:You are OENEXA AI, an autonomous software engineering assistant.}")
                             String systemPrompt,
                             @Value("${oenexa.chat.token-budget:32000}") int tokenBudget) {
         return new ChatService(store, llm, systemPrompt, tokenBudget);
@@ -77,12 +77,12 @@ public class ChatModule implements PlatformModule {
 
     @Override
     public String description() {
-        return "Gemini-grade multi-turn streaming conversations with Chain-of-Thought reasoning and long-context compaction.";
+        return "OENEXA multi-turn streaming conversations with Chain-of-Thought deliberative reasoning and long-context compaction.";
     }
 
     @Override
     public List<String> capabilities() {
-        return List.of("gemini-2.5-flash", "gemini-2.5-pro", "chain-of-thought", "streaming", "multi-turn", "context-compaction", "tenant-isolated-history");
+        return List.of("oenexa-reasoning-v1", "oenexa-neo-gpt-o3-max", "chain-of-thought", "streaming", "multi-turn", "context-compaction", "tenant-isolated-history");
     }
 
     @Override

@@ -22,15 +22,15 @@ public record ChatMessage(
     }
 
     public ChatMessage(Role role, String content, Instant createdAt) {
-        this(role, content, createdAt, null, "gemini-2.5-flash", List.of(), List.of(), List.of(), List.of());
+        this(role, content, createdAt, null, "oenexa-reasoning-v1", List.of(), List.of(), List.of(), List.of());
     }
 
     public static ChatMessage of(Role role, String content) {
-        return new ChatMessage(role, content, Instant.now(), null, "gemini-2.5-flash", List.of(), List.of(), List.of(), List.of());
+        return new ChatMessage(role, content, Instant.now(), null, "oenexa-reasoning-v1", List.of(), List.of(), List.of(), List.of());
     }
 
     public static ChatMessage of(Role role, String content, String thoughtProcess) {
-        return new ChatMessage(role, content, Instant.now(), thoughtProcess, "gemini-2.5-flash", List.of(), List.of(), List.of(), List.of());
+        return new ChatMessage(role, content, Instant.now(), thoughtProcess, "oenexa-reasoning-v1", List.of(), List.of(), List.of(), List.of());
     }
 
     public static ChatMessage of(Role role, String content, String thoughtProcess, String model) {

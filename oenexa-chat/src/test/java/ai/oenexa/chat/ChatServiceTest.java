@@ -133,14 +133,14 @@ class ChatServiceTest {
         var module = new ChatModule();
         assertThat(module.id()).isEqualTo("chat");
         assertThat(module.displayName()).isEqualTo("OENEXA Chat");
-        assertThat(module.description()).contains("Gemini-grade");
-        assertThat(module.capabilities()).contains("gemini-2.5-flash", "chain-of-thought", "streaming", "multi-turn", "tenant-isolated-history");
+        assertThat(module.description()).contains("OENEXA");
+        assertThat(module.capabilities()).contains("oenexa-reasoning-v1", "chain-of-thought", "streaming", "multi-turn", "tenant-isolated-history");
         assertThat(module.status()).isEqualTo(ai.oenexa.common.module.PlatformModule.ModuleStatus.ACTIVE);
 
         var store = module.conversationStore();
         assertThat(store).isInstanceOf(InMemoryConversationStore.class);
 
-        var engine = module.geminiReasoningEngine();
+        var engine = module.oenexaReasoningEngine();
         assertThat(engine).isNotNull();
 
         org.springframework.beans.factory.ObjectProvider<org.springframework.ai.chat.client.ChatClient.Builder> emptyProvider =
@@ -151,14 +151,14 @@ class ChatServiceTest {
                     @Override public org.springframework.ai.chat.client.ChatClient.Builder getObject() { return null; }
                 };
 
-        var geminiLlm = module.llmPort(emptyProvider, engine, "gemini", "", "gemini-2.5-flash");
-        assertThat(geminiLlm).isInstanceOf(ai.oenexa.chat.infra.GeminiLlmAdapter.class);
+        var oenexaLlm = module.llmPort(emptyProvider, engine, "oenexa", "", "oenexa-reasoning-v1");
+        assertThat(oenexaLlm).isInstanceOf(ai.oenexa.chat.infra.OenexaLocalLlmAdapter.class);
 
-        var echoLlm = module.llmPort(emptyProvider, engine, "echo", "", "gemini-2.5-flash");
+        var echoLlm = module.llmPort(emptyProvider, engine, "echo", "", "oenexa-reasoning-v1");
         assertThat(echoLlm).isInstanceOf(EchoLlmAdapter.class);
 
-        var defaultFallbackLlm = module.llmPort(emptyProvider, engine, "spring-ai", "", "gemini-2.5-flash");
-        assertThat(defaultFallbackLlm).isInstanceOf(ai.oenexa.chat.infra.GeminiLlmAdapter.class);
+        var defaultFallbackLlm = module.llmPort(emptyProvider, engine, "spring-ai", "", "oenexa-reasoning-v1");
+        assertThat(defaultFallbackLlm).isInstanceOf(ai.oenexa.chat.infra.OenexaLocalLlmAdapter.class);
 
         org.springframework.ai.chat.model.ChatModel stubModel = prompt -> null;
         var validBuilder = org.springframework.ai.chat.client.ChatClient.builder(stubModel);
@@ -170,10 +170,10 @@ class ChatServiceTest {
                     @Override public org.springframework.ai.chat.client.ChatClient.Builder getObject() { return validBuilder; }
                 };
 
-        var springAiLlm = module.llmPort(validProvider, engine, "spring-ai", "", "gemini-2.5-flash");
+        var springAiLlm = module.llmPort(validProvider, engine, "spring-ai", "", "oenexa-reasoning-v1");
         assertThat(springAiLlm).isInstanceOf(SpringAiLlmAdapter.class);
 
-        var chatService = module.chatService(store, geminiLlm, "Custom prompt", 32000);
+        var chatService = module.chatService(store, oenexaLlm, "Custom prompt", 32000);
         assertThat(chatService).isNotNull();
     }
 
@@ -186,21 +186,21 @@ class ChatServiceTest {
         }
         List<ChatMessage> compacted = ContextWindow.fitWithCompaction(msgs, 40);
         assertThat(compacted.size()).isLessThan(msgs.size());
-        assertThat(compacted.stream().anyMatch(m -> m.content().contains("Gemini Long-Context Compactor"))).isTrue();
+        assertThat(compacted.stream().anyMatch(m -> m.content().contains("OENEXA Long-Context Compactor"))).isTrue();
     }
 
     @Test
     void chatMessageAdvancedConstructorsAndTokenEstimation() {
         var legacyMsg = new ChatMessage(Role.USER, "legacy", java.time.Instant.now());
         assertThat(legacyMsg.thoughtProcess()).isNull();
-        assertThat(legacyMsg.model()).isEqualTo("gemini-2.5-flash");
+        assertThat(legacyMsg.model()).isEqualTo("oenexa-reasoning-v1");
 
         var msgWithThought = ChatMessage.of(Role.ASSISTANT, "content", "thinking");
         assertThat(msgWithThought.thoughtProcess()).isEqualTo("thinking");
-        assertThat(msgWithThought.model()).isEqualTo("gemini-2.5-flash");
+        assertThat(msgWithThought.model()).isEqualTo("oenexa-reasoning-v1");
         assertThat(msgWithThought.estimatedTokens()).isGreaterThan(msgWithThought.content().length() / 4);
 
-        var fullMsg = ChatMessage.of(Role.ASSISTANT, "code", "thought", "gemini-2.5-pro");
-        assertThat(fullMsg.model()).isEqualTo("gemini-2.5-pro");
+        var fullMsg = ChatMessage.of(Role.ASSISTANT, "code", "thought", "oenexa-neo-gpt-o3-max");
+        assertThat(fullMsg.model()).isEqualTo("oenexa-neo-gpt-o3-max");
     }
 }

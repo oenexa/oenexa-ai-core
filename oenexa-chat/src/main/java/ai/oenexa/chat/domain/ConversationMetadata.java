@@ -14,7 +14,7 @@ public record ConversationMetadata(
         boolean pinned
 ) {
     public ConversationMetadata(UUID conversationId, UUID tenantId, String title) {
-        this(conversationId, tenantId, title, "gemini-2.5-flash", Instant.now(), Instant.now(), 0, false);
+        this(conversationId, tenantId, title, "oenexa-reasoning-v1", Instant.now(), Instant.now(), 0, false);
     }
 
     public ConversationMetadata withIncrementedCount() {

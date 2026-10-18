@@ -13,10 +13,11 @@ import java.util.UUID;
 import reactor.core.publisher.Flux;
 
 /**
- * Advanced Gemini-Grade Autonomous Software Engineering Reasoning Engine.
- * Why: Chain-of-Thought (CoT) reasoning, technical intent routing, tool calling, and rich code/architecture synthesis.
+ * Sovereign OENEXA Autonomous Software Engineering Reasoning Engine.
+ * Single Responsibility: Chain-of-Thought (CoT) deliberative reasoning, technical intent routing,
+ * tool calling, and rich code/architecture synthesis with zero external dependencies.
  */
-public class GeminiReasoningEngine {
+public class OenexaReasoningEngine {
 
     public record TurnResult(
             String thought,
@@ -36,11 +37,11 @@ public class GeminiReasoningEngine {
     private final ToolRegistry toolRegistry;
     private final ArtifactExtractor artifactExtractor;
 
-    public GeminiReasoningEngine() {
+    public OenexaReasoningEngine() {
         this(new ToolRegistry(), new ArtifactExtractor());
     }
 
-    public GeminiReasoningEngine(ToolRegistry toolRegistry, ArtifactExtractor artifactExtractor) {
+    public OenexaReasoningEngine(ToolRegistry toolRegistry, ArtifactExtractor artifactExtractor) {
         this.toolRegistry = (toolRegistry != null) ? toolRegistry : new ToolRegistry();
         this.artifactExtractor = (artifactExtractor != null) ? artifactExtractor : new ArtifactExtractor();
     }
@@ -77,7 +78,7 @@ public class GeminiReasoningEngine {
     }
 
     public String generateThought(String intent, String input, String model) {
-        String activeModel = (model != null && !model.isBlank()) ? model : "gemini-2.5-flash";
+        String activeModel = (model != null && !model.isBlank()) ? model : "oenexa-reasoning-v1";
         return switch (intent) {
             case "ARCHITECTURE_DESIGN" ->
                     "<thought>\n" +
@@ -124,7 +125,7 @@ public class GeminiReasoningEngine {
             default ->
                     "<thought>\n" +
                     "1. Intent Analysis: General software engineering assistance query.\n" +
-                    "2. Context Bounds: Model " + activeModel + " configured with Gemini AI software engineer persona.\n" +
+                    "2. Context Bounds: Model " + activeModel + " configured with OENEXA AI software engineer persona.\n" +
                     "3. Execution Plan: Deliver structured, accurate engineering response with actionable next steps.\n" +
                     "</thought>\n\n";
         };
@@ -133,7 +134,7 @@ public class GeminiReasoningEngine {
     public String generateResponse(String intent, String input) {
         return switch (intent) {
             case "ARCHITECTURE_DESIGN" ->
-                    "### 🏛️ Gemini System Architecture: Polyrepo / Hexagonal Modular Monolith\n\n" +
+                    "### 🏛️ OENEXA System Architecture: Polyrepo / Hexagonal Modular Monolith\n\n" +
                     "```mermaid\n" +
                     "graph TD\n" +
                     "    Client[Web UI / CLI] --> Gateway[Modular Gateway :8080]\n" +
@@ -147,36 +148,36 @@ public class GeminiReasoningEngine {
                     "- **Infrastructure:** PostgreSQL persistence via Spring Data JPA, Redis session caching, Flyway DDL.\n" +
                     "- **API Tier:** Spring MVC REST controllers, RFC 7807 problem details, and SSE streaming.";
             case "SECURITY_AUDIT" ->
-                    "### 🛡️ Gemini Security Audit: SAST, Secrets & OWASP Protection\n\n" +
+                    "### 🛡️ OENEXA Security Audit: SAST, Secrets & OWASP Protection\n\n" +
                     "- **Zero-Secret Policy:** Active pattern recognition identifies exposed AWS tokens, GitHub PATs, and SSH keys.\n" +
                     "- **RBAC Security:** Constant-time password hashing and cryptographic JJWT HS256 authentication.\n" +
                     "- **Vulnerability Shield:** Comprehensive detection of injection vectors, SSRF, and deserialization flaws.";
             case "BUG_FIX_ANALYSIS" ->
-                    "### 🐞 Gemini Defect Remediation & Root Cause Diagnosis\n\n" +
+                    "### 🐞 OENEXA Defect Remediation & Root Cause Diagnosis\n\n" +
                     "- **Root Cause Analysis:** Stack frame decomposition isolates precondition failures and concurrency deadlocks.\n" +
                     "- **Defensive Remediation:** Synthesized zero-regression patch with explicit `Objects.requireNonNull()` assertions.\n" +
                     "- **Verification Gate:** Verified against JUnit 5 test harness with zero mocking frameworks.";
             case "CODE_REFACTORING" ->
-                    "### 🧹 Gemini Refactoring Engine: Cyclomatic Complexity Optimization\n\n" +
+                    "### 🧹 OENEXA Refactoring Engine: Cyclomatic Complexity Optimization\n\n" +
                     "- **Pattern:** Extract Method and Parameter Object via Java 25 record structures.\n" +
                     "- **Principles:** SOLID compliance, elimination of duplicate code paths, and strict single-responsibility decoupling.\n" +
                     "- **Safety:** Verified with 100% line and branch test coverage.";
             case "DEVOPS_PIPELINE" ->
-                    "### 🐳 Gemini DevOps & Cloud-Native Delivery\n\n" +
+                    "### 🐳 OENEXA DevOps & Cloud-Native Delivery\n\n" +
                     "- **Container Architecture:** Multi-stage `eclipse-temurin:25-jre` packaging with Generational ZGC.\n" +
                     "- **Orchestration:** Kubernetes manifests with readiness/liveness probes and non-root security contexts.\n" +
                     "- **CI/CD Automation:** Automated GitHub Actions pipeline verifying compilation, linting, and coverage gates.";
             case "TESTING_SYNTHESIS" ->
-                    "### 🧪 Gemini Test Synthesizer: Zero-Mock Testing Suite\n\n" +
+                    "### 🧪 OENEXA Test Synthesizer: Zero-Mock Testing Suite\n\n" +
                     "- **Testing Philosophy:** Strictly Zero-Mock Policy — real state transitions and in-memory proxies.\n" +
                     "- **Coverage Standard:** 100% JaCoCo instruction, line, and branch coverage validation.\n" +
                     "- **BDD Integration:** Cucumber-JVM feature execution testing end-to-end user journeys.";
             case "CODE_GENERATION" ->
-                    "### 💻 Gemini Code Synthesizer: Modern Java 25 Engineering\n\n" +
+                    "### 💻 OENEXA Code Synthesizer: Modern Java 25 Engineering\n\n" +
                     "- **Language Idioms:** Records, sealed interfaces, pattern matching switch expressions, and virtual threads.\n" +
                     "- **Clean Architecture:** Type-safe immutable data transfers with RFC 7807 error envelopes.";
             default ->
-                    "OENEXA AI Engineer: Request received. Gemini-grade reasoning engine active and ready to assist.";
+                    "OENEXA AI Engineer: Request received. OENEXA deliberative reasoning engine active and ready to assist.";
         };
     }
 
@@ -321,7 +322,6 @@ public class GeminiReasoningEngine {
     }
 
     public Flux<String> stream(List<ChatMessage> prompt) {
-        return stream(prompt, "gemini-2.5-flash");
+        return stream(prompt, "oenexa-reasoning-v1");
     }
 }
-

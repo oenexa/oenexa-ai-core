@@ -11,10 +11,10 @@ import reactor.test.StepVerifier;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@DisplayName("GeminiReasoningEngine Zero-Mock Unit Tests")
-class GeminiReasoningEngineTest {
+@DisplayName("OenexaReasoningEngine Zero-Mock Unit Tests")
+class OenexaReasoningEngineTest {
 
-    private final GeminiReasoningEngine engine = new GeminiReasoningEngine();
+    private final OenexaReasoningEngine engine = new OenexaReasoningEngine();
 
     @ParameterizedTest(name = "Should determine intent {1} for input: {0}")
     @CsvSource({
@@ -46,13 +46,13 @@ class GeminiReasoningEngineTest {
         };
 
         for (String intent : intents) {
-            String thought = engine.generateThought(intent, "Sample query", "gemini-2.5-pro");
+            String thought = engine.generateThought(intent, "Sample query", "oenexa-neo-gpt-o3-max");
             assertThat(thought).startsWith("<thought>").endsWith("</thought>\n\n");
-            assertThat(thought).contains("gemini-2.5-pro");
+            assertThat(thought).contains("oenexa-neo-gpt-o3-max");
 
             // Test with null / blank model fallback
             String defaultThought = engine.generateThought(intent, "Sample query", null);
-            assertThat(defaultThought).contains("gemini-2.5-flash");
+            assertThat(defaultThought).contains("oenexa-reasoning-v1");
         }
     }
 
@@ -86,13 +86,13 @@ class GeminiReasoningEngineTest {
 
     @Test
     void shouldProcessTurnResultWithAndWithoutThinking() {
-        var withThinking = engine.process("Check architecture", "gemini-2.5-flash", true);
+        var withThinking = engine.process("Check architecture", "oenexa-reasoning-v1", true);
         assertThat(withThinking.intent()).isEqualTo("ARCHITECTURE_DESIGN");
         assertThat(withThinking.thought()).isNotBlank();
         assertThat(withThinking.response()).contains("Polyrepo / Hexagonal");
         assertThat(withThinking.followUps()).isNotEmpty();
 
-        var withoutThinking = engine.process("Check architecture", "gemini-2.5-flash", false);
+        var withoutThinking = engine.process("Check architecture", "oenexa-reasoning-v1", false);
         assertThat(withoutThinking.thought()).isEmpty();
     }
 
@@ -103,7 +103,7 @@ class GeminiReasoningEngineTest {
                 ChatMessage.of(Role.USER, "How to fix this bug?")
         );
 
-        StepVerifier.create(engine.stream(messages, "gemini-2.5-pro"))
+        StepVerifier.create(engine.stream(messages, "oenexa-neo-gpt-o3-max"))
                 .thenConsumeWhile(chunk -> !chunk.isEmpty())
                 .verifyComplete();
 

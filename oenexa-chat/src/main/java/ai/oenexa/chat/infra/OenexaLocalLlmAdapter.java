@@ -1,6 +1,6 @@
 package ai.oenexa.chat.infra;
 
-import ai.oenexa.chat.application.GeminiReasoningEngine;
+import ai.oenexa.chat.application.OenexaReasoningEngine;
 import ai.oenexa.chat.domain.ChatMessage;
 import ai.oenexa.chat.domain.LlmPort;
 import java.net.URI;
@@ -15,46 +15,46 @@ import java.util.regex.Pattern;
 import reactor.core.publisher.Flux;
 
 /**
- * Enterprise Google Gemini LLM Adapter.
- * Why: Real Gemini 2.5 API connectivity with autonomous offline reasoning fallback.
+ * Enterprise OENEXA Local-First LLM Adapter.
+ * Single Responsibility: High-throughput local model execution with autonomous offline reasoning fallback.
  */
-public class GeminiLlmAdapter implements LlmPort {
+public class OenexaLocalLlmAdapter implements LlmPort {
 
-    private static final String DEFAULT_ENDPOINT = "https://generativelanguage.googleapis.com/v1beta/models/";
-    private static final Pattern TEXT_PATTERN = Pattern.compile("\"text\":\\s*\"((?:[^\"\\\\]|\\\\.)*)\"");
+    private static final String DEFAULT_ENDPOINT = "http://localhost:11434/api/";
+    private static final Pattern TEXT_PATTERN = Pattern.compile("\"response\":\\s*\"((?:[^\"\\\\]|\\\\.)*)\"|\"text\":\\s*\"((?:[^\"\\\\]|\\\\.)*)\"");
 
     private final String apiKey;
     private final String model;
     private final String endpointUrl;
     private final HttpClient httpClient;
-    private final GeminiReasoningEngine reasoningEngine;
+    private final OenexaReasoningEngine reasoningEngine;
 
-    public GeminiLlmAdapter(GeminiReasoningEngine reasoningEngine) {
-        this("", "gemini-2.5-flash", DEFAULT_ENDPOINT, null, reasoningEngine);
+    public OenexaLocalLlmAdapter(OenexaReasoningEngine reasoningEngine) {
+        this("", "oenexa-reasoning-v1", DEFAULT_ENDPOINT, null, reasoningEngine);
     }
 
-    public GeminiLlmAdapter(String apiKey, String model, GeminiReasoningEngine reasoningEngine) {
+    public OenexaLocalLlmAdapter(String apiKey, String model, OenexaReasoningEngine reasoningEngine) {
         this(
                 apiKey,
-                (model != null && !model.isBlank()) ? model : "gemini-2.5-flash",
+                (model != null && !model.isBlank()) ? model : "oenexa-reasoning-v1",
                 DEFAULT_ENDPOINT,
                 (apiKey != null && !apiKey.isBlank()) ? HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(5)).build() : null,
                 reasoningEngine
         );
     }
 
-    public GeminiLlmAdapter(
+    public OenexaLocalLlmAdapter(
             String apiKey,
             String model,
             String endpointUrl,
             HttpClient httpClient,
-            GeminiReasoningEngine reasoningEngine
+            OenexaReasoningEngine reasoningEngine
     ) {
         this.apiKey = (apiKey != null) ? apiKey.trim() : "";
-        this.model = (model != null && !model.isBlank()) ? model.trim() : "gemini-2.5-flash";
+        this.model = (model != null && !model.isBlank()) ? model.trim() : "oenexa-reasoning-v1";
         this.endpointUrl = (endpointUrl != null && !endpointUrl.isBlank()) ? endpointUrl : DEFAULT_ENDPOINT;
         this.httpClient = httpClient;
-        this.reasoningEngine = (reasoningEngine != null) ? reasoningEngine : new GeminiReasoningEngine();
+        this.reasoningEngine = (reasoningEngine != null) ? reasoningEngine : new OenexaReasoningEngine();
     }
 
     public String apiKey() {
@@ -71,13 +71,13 @@ public class GeminiLlmAdapter implements LlmPort {
 
     @Override
     public Flux<String> stream(List<ChatMessage> prompt) {
-        if (apiKey.isBlank() || httpClient == null || endpointUrl.startsWith("offline://")) {
+        if (httpClient == null || endpointUrl.startsWith("offline://")) {
             return reasoningEngine.stream(prompt, model);
         }
 
         try {
-            String requestBody = buildGeminiJsonPayload(prompt);
-            String targetUrl = endpointUrl + model + ":generateContent?key=" + apiKey;
+            String requestBody = buildLocalJsonPayload(prompt);
+            String targetUrl = endpointUrl.endsWith("/") ? endpointUrl + "generate" : endpointUrl + "/generate";
 
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(targetUrl))
@@ -88,54 +88,36 @@ public class GeminiLlmAdapter implements LlmPort {
 
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
             if (response.statusCode() == 200 && response.body() != null && !response.body().isBlank()) {
-                List<String> chunks = extractTextFromGeminiResponse(response.body());
+                List<String> chunks = extractTextFromLocalResponse(response.body());
                 if (!chunks.isEmpty()) {
                     return Flux.fromIterable(chunks);
                 }
             }
         } catch (Exception e) {
-            // Graceful fallback to offline Gemini reasoning engine
+            // Graceful fallback to offline OENEXA sovereign reasoning engine
         }
         return reasoningEngine.stream(prompt, model);
     }
 
-    public String buildGeminiJsonPayload(List<ChatMessage> prompt) {
+    public String buildLocalJsonPayload(List<ChatMessage> prompt) {
         StringBuilder sb = new StringBuilder();
-        sb.append("{\"contents\":[");
-        boolean first = true;
+        sb.append("{\"model\":\"").append(model).append("\",\"prompt\":\"");
         for (ChatMessage msg : prompt) {
-            if (msg.role() == ChatMessage.Role.SYSTEM) {
-                continue;
-            }
-            if (!first) {
-                sb.append(",");
-            }
-            first = false;
-            String role = (msg.role() == ChatMessage.Role.USER) ? "user" : "model";
-            sb.append("{\"role\":\"").append(role).append("\",\"parts\":[{\"text\":\"")
-                    .append(escapeJson(msg.content())).append("\"}]}");
+            sb.append("[").append(msg.role()).append("] ")
+              .append(escapeJson(msg.content())).append("\\n");
         }
-        sb.append("]");
-
-        // Extract system prompt if present
-        for (ChatMessage msg : prompt) {
-            if (msg.role() == ChatMessage.Role.SYSTEM) {
-                sb.append(",\"system_instruction\":{\"parts\":[{\"text\":\"")
-                        .append(escapeJson(msg.content())).append("\"}]}");
-                break;
-            }
-        }
-
-        sb.append(",\"generationConfig\":{\"temperature\":0.2,\"topP\":0.95}}");
+        sb.append("\",\"stream\":false}");
         return sb.toString();
     }
 
-    public static List<String> extractTextFromGeminiResponse(String json) {
+    public static List<String> extractTextFromLocalResponse(String json) {
         List<String> parts = new ArrayList<>();
         Matcher matcher = TEXT_PATTERN.matcher(json);
         while (matcher.find()) {
-            String unescaped = unescapeJson(matcher.group(1));
-            parts.add(unescaped);
+            String val = matcher.group(1) != null ? matcher.group(1) : matcher.group(2);
+            if (val != null) {
+                parts.add(unescapeJson(val));
+            }
         }
         return parts;
     }

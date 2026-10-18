@@ -48,7 +48,7 @@ public final class ContextWindow {
         if (compact && droppedCount > 0) {
             result.add(ChatMessage.of(
                     ChatMessage.Role.SYSTEM,
-                    "[Gemini Long-Context Compactor: Compressed " + droppedCount + " earlier conversation turns into active working memory]"
+                    "[OENEXA Long-Context Compactor: Compressed " + droppedCount + " earlier conversation turns into active working memory]"
             ));
         }
         result.addAll(recent);
