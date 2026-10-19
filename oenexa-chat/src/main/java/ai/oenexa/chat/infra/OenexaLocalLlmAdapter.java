@@ -30,7 +30,7 @@ public class OenexaLocalLlmAdapter implements LlmPort {
     private final OenexaReasoningEngine reasoningEngine;
 
     public OenexaLocalLlmAdapter(OenexaReasoningEngine reasoningEngine) {
-        this("", "oenexa-reasoning-v1", DEFAULT_ENDPOINT, null, reasoningEngine);
+        this("", "oenexa-reasoning-v1", DEFAULT_ENDPOINT, HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(5)).build(), reasoningEngine);
     }
 
     public OenexaLocalLlmAdapter(String apiKey, String model, OenexaReasoningEngine reasoningEngine) {
@@ -38,7 +38,7 @@ public class OenexaLocalLlmAdapter implements LlmPort {
                 apiKey,
                 (model != null && !model.isBlank()) ? model : "oenexa-reasoning-v1",
                 DEFAULT_ENDPOINT,
-                (apiKey != null && !apiKey.isBlank()) ? HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(5)).build() : null,
+                HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(5)).build(),
                 reasoningEngine
         );
     }
