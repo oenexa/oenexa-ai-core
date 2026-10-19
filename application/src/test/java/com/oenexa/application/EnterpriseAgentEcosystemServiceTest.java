@@ -20,18 +20,22 @@ class EnterpriseAgentEcosystemServiceTest {
     }
 
     @Test
-    @DisplayName("Should list all 8 enterprise agent profiles")
+    @DisplayName("Should list all enterprise agent profiles")
     void shouldListAllEightAgents() {
         List<AgentProfile> agents = service.listAgents();
-        assertEquals(8, agents.size());
+        assertEquals(12, agents.size());
         assertTrue(agents.stream().anyMatch(a -> a.type() == EnterpriseAgentType.SOFTWARE_ENGINEER));
+        assertTrue(agents.stream().anyMatch(a -> a.type() == EnterpriseAgentType.ARCHITECT));
         assertTrue(agents.stream().anyMatch(a -> a.type() == EnterpriseAgentType.DEVOPS));
         assertTrue(agents.stream().anyMatch(a -> a.type() == EnterpriseAgentType.SECURITY));
-        assertTrue(agents.stream().anyMatch(a -> a.type() == EnterpriseAgentType.FINANCE));
         assertTrue(agents.stream().anyMatch(a -> a.type() == EnterpriseAgentType.RESEARCH));
+        assertTrue(agents.stream().anyMatch(a -> a.type() == EnterpriseAgentType.PRODUCT_MANAGER));
+        assertTrue(agents.stream().anyMatch(a -> a.type() == EnterpriseAgentType.DATA_ENGINEER));
+        assertTrue(agents.stream().anyMatch(a -> a.type() == EnterpriseAgentType.QA));
+        assertTrue(agents.stream().anyMatch(a -> a.type() == EnterpriseAgentType.FINANCE));
+        assertTrue(agents.stream().anyMatch(a -> a.type() == EnterpriseAgentType.CUSTOMER_SUPPORT));
         assertTrue(agents.stream().anyMatch(a -> a.type() == EnterpriseAgentType.MARKETING));
         assertTrue(agents.stream().anyMatch(a -> a.type() == EnterpriseAgentType.LEGAL_ASSISTANT));
-        assertTrue(agents.stream().anyMatch(a -> a.type() == EnterpriseAgentType.CUSTOMER_SUPPORT));
     }
 
     @Test
@@ -44,7 +48,7 @@ class EnterpriseAgentEcosystemServiceTest {
         );
 
         assertNotNull(plan);
-        assertEquals(8, plan.steps().size());
+        assertEquals(10, plan.steps().size());
         assertEquals("PLANNING_COMPLETE", plan.currentPhase());
         assertFalse(plan.completed());
     }
@@ -58,9 +62,9 @@ class EnterpriseAgentEcosystemServiceTest {
         assertNotNull(completedPlan);
         assertTrue(completedPlan.completed());
         assertEquals("COMPLETED", completedPlan.currentPhase());
-        assertEquals(8, completedPlan.steps().size());
-        assertEquals(7, completedPlan.collaborationLog().size());
-        assertEquals(8, completedPlan.learnedMemories().size());
+        assertEquals(10, completedPlan.steps().size());
+        assertEquals(9, completedPlan.collaborationLog().size());
+        assertEquals(10, completedPlan.learnedMemories().size());
 
         // Verify each step has self-reflection
         for (AgentPlanStep step : completedPlan.steps()) {

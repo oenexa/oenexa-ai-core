@@ -13,13 +13,17 @@ public class AutonomousAgentEcosystemDomain {
 
     public enum EnterpriseAgentType {
         SOFTWARE_ENGINEER,
+        ARCHITECT,
         DEVOPS,
         SECURITY,
-        FINANCE,
         RESEARCH,
+        PRODUCT_MANAGER,
+        DATA_ENGINEER,
+        QA,
+        FINANCE,
+        CUSTOMER_SUPPORT,
         MARKETING,
-        LEGAL_ASSISTANT,
-        CUSTOMER_SUPPORT
+        LEGAL_ASSISTANT
     }
 
     public enum ExecutionStatus {

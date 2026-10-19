@@ -12,17 +12,21 @@ import static org.junit.jupiter.api.Assertions.*;
 class AutonomousAgentEcosystemDomainTest {
 
     @Test
-    @DisplayName("Should verify all 8 Enterprise Agent types exist")
+    @DisplayName("Should verify all Enterprise Agent types exist")
     void shouldVerifyEightAgentTypes() {
-        assertEquals(8, EnterpriseAgentType.values().length);
+        assertEquals(12, EnterpriseAgentType.values().length);
         assertNotNull(EnterpriseAgentType.valueOf("SOFTWARE_ENGINEER"));
+        assertNotNull(EnterpriseAgentType.valueOf("ARCHITECT"));
         assertNotNull(EnterpriseAgentType.valueOf("DEVOPS"));
         assertNotNull(EnterpriseAgentType.valueOf("SECURITY"));
-        assertNotNull(EnterpriseAgentType.valueOf("FINANCE"));
         assertNotNull(EnterpriseAgentType.valueOf("RESEARCH"));
+        assertNotNull(EnterpriseAgentType.valueOf("PRODUCT_MANAGER"));
+        assertNotNull(EnterpriseAgentType.valueOf("DATA_ENGINEER"));
+        assertNotNull(EnterpriseAgentType.valueOf("QA"));
+        assertNotNull(EnterpriseAgentType.valueOf("FINANCE"));
+        assertNotNull(EnterpriseAgentType.valueOf("CUSTOMER_SUPPORT"));
         assertNotNull(EnterpriseAgentType.valueOf("MARKETING"));
         assertNotNull(EnterpriseAgentType.valueOf("LEGAL_ASSISTANT"));
-        assertNotNull(EnterpriseAgentType.valueOf("CUSTOMER_SUPPORT"));
     }
 
     @Test

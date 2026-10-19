@@ -23,12 +23,12 @@ class EnterpriseAgentEcosystemControllerTest {
     }
 
     @Test
-    @DisplayName("Should list all 8 agents via REST endpoint")
+    @DisplayName("Should list all agents via REST endpoint")
     void shouldListAgents() {
         ResponseEntity<List<AgentProfile>> response = controller.listAgents();
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
-        assertEquals(8, response.getBody().size());
+        assertEquals(12, response.getBody().size());
     }
 
     @Test
@@ -39,7 +39,7 @@ class EnterpriseAgentEcosystemControllerTest {
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
-        assertEquals(8, response.getBody().steps().size());
+        assertEquals(10, response.getBody().steps().size());
         assertEquals("PLANNING_COMPLETE", response.getBody().currentPhase());
     }
 
