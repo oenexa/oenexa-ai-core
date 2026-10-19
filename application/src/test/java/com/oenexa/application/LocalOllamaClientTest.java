@@ -127,4 +127,18 @@ class LocalOllamaClientTest {
             server.stop(0);
         }
     }
+
+    @Test
+    void shouldResolveCloudAndLocalEndpointsCorrectly() {
+        assertEquals("http://localhost:11434/api/", LocalOllamaClient.resolveDefaultEndpoint(null, null));
+        assertEquals("http://localhost:11434/api/", LocalOllamaClient.resolveDefaultEndpoint("", ""));
+
+        // Direct endpoint override
+        assertEquals("https://cloud.oenexa.ai/api/", LocalOllamaClient.resolveDefaultEndpoint("https://cloud.oenexa.ai/api", null));
+        assertEquals("https://cloud.oenexa.ai/api/", LocalOllamaClient.resolveDefaultEndpoint("https://cloud.oenexa.ai/api/", ""));
+
+        // OLLAMA_HOST formatting
+        assertEquals("http://ollama-service:11434/api/", LocalOllamaClient.resolveDefaultEndpoint(null, "ollama-service:11434"));
+        assertEquals("https://remote-gpu.internal:11434/api/", LocalOllamaClient.resolveDefaultEndpoint("", "https://remote-gpu.internal:11434"));
+    }
 }

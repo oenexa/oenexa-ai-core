@@ -31,14 +31,14 @@ public class OenexaLocalLlmAdapter implements LlmPort {
     private final OenexaReasoningEngine reasoningEngine;
 
     public OenexaLocalLlmAdapter(OenexaReasoningEngine reasoningEngine) {
-        this("", "oenexa-reasoning-v1", DEFAULT_ENDPOINT, HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(5)).build(), reasoningEngine);
+        this("", "oenexa-reasoning-v1", resolveDefaultEndpoint(), HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(5)).build(), reasoningEngine);
     }
 
     public OenexaLocalLlmAdapter(String apiKey, String model, OenexaReasoningEngine reasoningEngine) {
         this(
                 apiKey,
                 (model != null && !model.isBlank()) ? model : "oenexa-reasoning-v1",
-                DEFAULT_ENDPOINT,
+                resolveDefaultEndpoint(),
                 HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(5)).build(),
                 reasoningEngine
         );
@@ -53,9 +53,34 @@ public class OenexaLocalLlmAdapter implements LlmPort {
     ) {
         this.apiKey = (apiKey != null) ? apiKey.trim() : "";
         this.model = (model != null && !model.isBlank()) ? model.trim() : "oenexa-reasoning-v1";
-        this.endpointUrl = (endpointUrl != null && !endpointUrl.isBlank()) ? endpointUrl : DEFAULT_ENDPOINT;
+        this.endpointUrl = (endpointUrl != null && !endpointUrl.isBlank()) ? endpointUrl : resolveDefaultEndpoint();
         this.httpClient = httpClient;
         this.reasoningEngine = (reasoningEngine != null) ? reasoningEngine : new OenexaReasoningEngine();
+    }
+
+    public static String resolveDefaultEndpoint() {
+        return resolveDefaultEndpoint(System.getenv("OENEXA_AI_ENDPOINT"), System.getenv("OLLAMA_HOST"));
+    }
+
+    public static String resolveDefaultEndpoint(String envEndpoint, String envHost) {
+        if (envEndpoint != null && !envEndpoint.isBlank()) {
+            String ep = envEndpoint.trim();
+            return ep.endsWith("/") ? ep : ep + "/";
+        }
+        if (envHost != null && !envHost.isBlank()) {
+            String host = envHost.trim();
+            if (!host.startsWith("http://") && !host.startsWith("https://")) {
+                host = "http://" + host;
+            }
+            if (!host.endsWith("/")) {
+                host = host + "/";
+            }
+            if (!host.endsWith("api/")) {
+                host = host + "api/";
+            }
+            return host;
+        }
+        return DEFAULT_ENDPOINT;
     }
 
     public String apiKey() {

@@ -216,4 +216,13 @@ class OenexaLocalLlmAdapterTest {
         var adapter = new OenexaLocalLlmAdapter("test-key", "deepseek-r1:8b", "http://localhost:11434/api/", client, engine);
         assertThat(adapter.discoverOrResolveModel()).isEqualTo("deepseek-r1:8b");
     }
+
+    @Test
+    void shouldResolveDefaultEndpointCorrectly() {
+        assertThat(OenexaLocalLlmAdapter.resolveDefaultEndpoint(null, null)).isEqualTo("http://localhost:11434/api/");
+        assertThat(OenexaLocalLlmAdapter.resolveDefaultEndpoint("", "")).isEqualTo("http://localhost:11434/api/");
+        assertThat(OenexaLocalLlmAdapter.resolveDefaultEndpoint("https://cloud.oenexa.ai/api", null)).isEqualTo("https://cloud.oenexa.ai/api/");
+        assertThat(OenexaLocalLlmAdapter.resolveDefaultEndpoint(null, "ollama-cluster:11434")).isEqualTo("http://ollama-cluster:11434/api/");
+        assertThat(OenexaLocalLlmAdapter.resolveDefaultEndpoint("", "https://secure-gpu.cloud:11434")).isEqualTo("https://secure-gpu.cloud:11434/api/");
+    }
 }

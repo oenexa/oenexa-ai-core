@@ -26,12 +26,37 @@ public class LocalOllamaClient {
     private final HttpClient httpClient;
 
     public LocalOllamaClient() {
-        this(DEFAULT_ENDPOINT, HttpClient.newBuilder().connectTimeout(Duration.ofMillis(800)).build());
+        this(resolveDefaultEndpoint(), HttpClient.newBuilder().connectTimeout(Duration.ofMillis(800)).build());
     }
 
     public LocalOllamaClient(String endpointUrl, HttpClient httpClient) {
-        this.endpointUrl = (endpointUrl != null && !endpointUrl.isBlank()) ? endpointUrl : DEFAULT_ENDPOINT;
+        this.endpointUrl = (endpointUrl != null && !endpointUrl.isBlank()) ? endpointUrl : resolveDefaultEndpoint();
         this.httpClient = httpClient;
+    }
+
+    public static String resolveDefaultEndpoint() {
+        return resolveDefaultEndpoint(System.getenv("OENEXA_AI_ENDPOINT"), System.getenv("OLLAMA_HOST"));
+    }
+
+    public static String resolveDefaultEndpoint(String envEndpoint, String envHost) {
+        if (envEndpoint != null && !envEndpoint.isBlank()) {
+            String ep = envEndpoint.trim();
+            return ep.endsWith("/") ? ep : ep + "/";
+        }
+        if (envHost != null && !envHost.isBlank()) {
+            String host = envHost.trim();
+            if (!host.startsWith("http://") && !host.startsWith("https://")) {
+                host = "http://" + host;
+            }
+            if (!host.endsWith("/")) {
+                host = host + "/";
+            }
+            if (!host.endsWith("api/")) {
+                host = host + "api/";
+            }
+            return host;
+        }
+        return DEFAULT_ENDPOINT;
     }
 
     public GenerationResult generate(String prompt, String preferredModel) {
