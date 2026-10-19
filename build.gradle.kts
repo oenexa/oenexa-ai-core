@@ -40,34 +40,7 @@ subprojects {
         "testRuntimeOnly"("org.junit.platform:junit-platform-launcher")
     }
 
-    dependencies {
-        if (name != "oenexa-common" && name !in listOf("domain", "application", "infrastructure", "api")) {
-            "api"(project(":oenexa-common"))
-        }
-        when (name) {
-            "oenexa-common" -> {
-                "api"("org.springframework.boot:spring-boot-starter-webflux")
-                "api"("org.springframework.boot:spring-boot-starter-validation")
-            }
-            "oenexa-auth" -> {
-                "api"("org.springframework.boot:spring-boot-starter-security")
-                "api"(rootProject.libs.jjwt.api)
-                "runtimeOnly"(rootProject.libs.jjwt.impl)
-                "runtimeOnly"(rootProject.libs.jjwt.jackson)
-            }
-            "oenexa-chat" -> {
-                "api"(project(":oenexa-auth"))
-                "api"("org.springframework.ai:spring-ai-client-chat")
-            }
-            "oenexa-agent", "oenexa-rag" -> "api"(project(":oenexa-auth"))
-            "oenexa-core" -> {
-                "api"("org.springframework.boot:spring-boot-starter-data-jpa")
-                "api"("org.flywaydb:flyway-core")
-                "runtimeOnly"("org.flywaydb:flyway-database-postgresql")
-                "runtimeOnly"("org.postgresql:postgresql")
-            }
-        }
-    }
+    // Core Hexagonal dependencies are defined directly within each module build.gradle.kts
 
     tasks.withType<JavaCompile>().configureEach {
         options.compilerArgs.addAll(listOf("-parameters", "-Xlint:all,-processing"))

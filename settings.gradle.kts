@@ -8,11 +8,3 @@ include(
     "infrastructure",
     "api"
 )
-
-// Enterprise Oenexa Platform Modules
-val platformModules = listOf(
-    "gateway", "auth", "core", "common", "chat", "code", "agent", "rag", "search",
-    "security", "documentation", "review", "testing", "devops", "pipeline",
-    "observability", "repository", "workspace", "admin"
-)
-platformModules.forEach { include("oenexa-$it") }
