@@ -69,7 +69,7 @@ public class OenexaAutonomousAgentController {
         this(engine, agentService, null, null, null, null, null, null, null, null);
     }
 
-    @GetMapping({"/agent/privacy", "/oenexa/privacy", "/argon/privacy"})
+    @GetMapping({"/agent/privacy", "/oenexa/privacy"})
     public ResponseEntity<LocalPrivacyConfig> getPrivacyConfig() {
         if (localAgentAuditLogRepository != null) {
             var latestLog = localAgentAuditLogRepository.findTopByOrderByCreatedAtDesc();
@@ -88,7 +88,7 @@ public class OenexaAutonomousAgentController {
         return ResponseEntity.ok(new LocalPrivacyConfig());
     }
 
-    @PostMapping({"/agent/prd", "/oenexa/prd", "/argon/prd"})
+    @PostMapping({"/agent/prd", "/oenexa/prd"})
     public ResponseEntity<ProductRequirementsDocument> generatePrd(@RequestBody GeneratePrdRequest request) {
         if (request == null || request.goal() == null || request.goal().isBlank()) {
             return ResponseEntity.badRequest().build();
@@ -126,7 +126,7 @@ public class OenexaAutonomousAgentController {
         return ResponseEntity.ok(prd);
     }
 
-    @PostMapping({"/agent/multimodal/upload", "/oenexa/multimodal/upload", "/argon/multimodal/upload"})
+    @PostMapping({"/agent/multimodal/upload", "/oenexa/multimodal/upload"})
     public ResponseEntity<MultimodalAttachment> uploadMultimodalAttachment(@RequestBody MultimodalUploadRequest request) {
         if (request == null || request.type() == null || request.fileName() == null || request.fileName().isBlank()) {
             return ResponseEntity.badRequest().build();
@@ -160,7 +160,7 @@ public class OenexaAutonomousAgentController {
         return ResponseEntity.ok(attachment);
     }
 
-    @PostMapping({"/agent/goals", "/oenexa/goals", "/argon/goals"})
+    @PostMapping({"/agent/goals", "/oenexa/goals"})
     public ResponseEntity<OenexaAutonomousGoalResponse> executeGoal(@RequestBody OenexaAutonomousGoalRequest request) {
         if (request == null || request.goal() == null || request.goal().isBlank()) {
             return ResponseEntity.badRequest().build();
@@ -170,7 +170,7 @@ public class OenexaAutonomousAgentController {
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping(value = {"/agent/goals/stream", "/oenexa/goals/stream", "/argon/goals/stream"}, produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    @PostMapping(value = {"/agent/goals/stream", "/oenexa/goals/stream"}, produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public SseEmitter streamGoal(@RequestBody OenexaAutonomousGoalRequest request) {
         SseEmitter emitter = new SseEmitter(120_000L);
         if (request == null || request.goal() == null || request.goal().isBlank()) {
@@ -195,29 +195,29 @@ public class OenexaAutonomousAgentController {
         return emitter;
     }
 
-    @GetMapping({"/agent/goals", "/oenexa/goals", "/argon/goals"})
+    @GetMapping({"/agent/goals", "/oenexa/goals"})
     public ResponseEntity<List<OenexaAutonomousGoalResponse>> getAllGoals() {
         return ResponseEntity.ok(engine.getAllGoals());
     }
 
-    @GetMapping({"/agent/goals/{goalId}", "/oenexa/goals/{goalId}", "/argon/goals/{goalId}"})
+    @GetMapping({"/agent/goals/{goalId}", "/oenexa/goals/{goalId}"})
     public ResponseEntity<OenexaAutonomousGoalResponse> getGoal(@PathVariable String goalId) {
         return engine.getGoal(goalId)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @GetMapping({"/agent/goals/{goalId}/events", "/oenexa/goals/{goalId}/events", "/argon/goals/{goalId}/events"})
+    @GetMapping({"/agent/goals/{goalId}/events", "/oenexa/goals/{goalId}/events"})
     public ResponseEntity<List<OenexaExecutionEvent>> getGoalEvents(@PathVariable String goalId) {
         return ResponseEntity.ok(engine.getGoalEvents(goalId));
     }
 
-    @GetMapping({"/agent/goals/{goalId}/healing-cycles", "/oenexa/goals/{goalId}/healing-cycles", "/argon/goals/{goalId}/healing-cycles"})
+    @GetMapping({"/agent/goals/{goalId}/healing-cycles", "/oenexa/goals/{goalId}/healing-cycles"})
     public ResponseEntity<List<OenexaSelfHealingCycle>> getGoalHealingCycles(@PathVariable String goalId) {
         return ResponseEntity.ok(engine.getGoalHealingCycles(goalId));
     }
 
-    @PostMapping({"/agent/goals/{goalId}/heal", "/oenexa/goals/{goalId}/heal", "/argon/goals/{goalId}/heal"})
+    @PostMapping({"/agent/goals/{goalId}/heal", "/oenexa/goals/{goalId}/heal"})
     public ResponseEntity<OenexaSelfHealingCycle> triggerSelfHealing(
             @PathVariable String goalId,
             @RequestBody OenexaManualHealRequest request

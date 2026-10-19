@@ -122,7 +122,7 @@ public class IntelligentChatController {
         return ResponseEntity.ok(repositoryKnowledgeService.searchSimilarChunks(repositoryId, query, topK));
     }
 
-    @PostMapping("/models/route")
+    @PostMapping("/chat/intelligent/route")
     public ResponseEntity<ModelRoutingDecision> routeModel(@RequestBody ModelRouteRequest request) {
         String msg = (request != null) ? request.message() : "";
         String pref = (request != null) ? request.preferredModel() : "auto";
