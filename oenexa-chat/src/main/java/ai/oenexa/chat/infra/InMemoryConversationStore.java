@@ -31,8 +31,8 @@ public class InMemoryConversationStore implements ConversationStore {
     public Mono<Void> append(UUID tenantId, UUID conversationId, ChatMessage message) {
         return Mono.fromRunnable(() -> {
             Key key = new Key(tenantId, conversationId);
-            data.computeIfAbsent(key, k -> new CopyOnWriteArrayList<>()).add(message);
-            metadataMap.compute(key, (k, existing) -> {
+            data.computeIfAbsent(key, _ -> new CopyOnWriteArrayList<>()).add(message);
+            metadataMap.compute(key, (_, existing) -> {
                 if (existing == null) {
                     String title = (message.content() != null && !message.content().isBlank())
                             ? (message.content().length() > 40 ? message.content().substring(0, 40) + "..." : message.content())
@@ -64,7 +64,7 @@ public class InMemoryConversationStore implements ConversationStore {
     public Mono<ConversationMetadata> getMetadata(UUID tenantId, UUID conversationId) {
         return Mono.fromSupplier(() -> {
             Key key = new Key(tenantId, conversationId);
-            return metadataMap.computeIfAbsent(key, k ->
+            return metadataMap.computeIfAbsent(key, _ ->
                     new ConversationMetadata(conversationId, tenantId, "New Conversation", "oenexa-reasoning-v1", Instant.now(), Instant.now(), 0, false)
             );
         });
@@ -162,7 +162,7 @@ public class InMemoryConversationStore implements ConversationStore {
             if (msgs != null) {
                 msgs.clear();
             }
-            metadataMap.computeIfPresent(key, (k, meta) ->
+            metadataMap.computeIfPresent(key, (_, meta) ->
                     new ConversationMetadata(meta.conversationId(), meta.tenantId(), meta.title(), meta.model(), meta.createdAt(), Instant.now(), 0, meta.pinned())
             );
         });

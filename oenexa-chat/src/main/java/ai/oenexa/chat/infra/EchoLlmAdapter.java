@@ -11,7 +11,7 @@ public class EchoLlmAdapter implements LlmPort {
 
     @Override
     public Flux<String> stream(List<ChatMessage> prompt) {
-        String last = prompt.isEmpty() ? "" : prompt.get(prompt.size() - 1).content();
+        String last = prompt.isEmpty() ? "" : prompt.getLast().content();
         return Flux.fromStream(Arrays.stream(("Echo: " + last).split("(?<= )")));
     }
 }

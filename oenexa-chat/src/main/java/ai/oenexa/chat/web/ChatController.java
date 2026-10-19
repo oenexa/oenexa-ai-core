@@ -191,7 +191,7 @@ public class ChatController {
     }
 
     private static UUID tenantOf(Principal principal) {
-        if (principal instanceof Authentication auth && auth.getDetails() instanceof TokenClaims(var userId, var tenantId, var role)) {
+        if (principal instanceof Authentication auth && auth.getDetails() instanceof TokenClaims(_, var tenantId, _)) {
             return tenantId;
         }
         throw new OenexaException(ErrorCode.UNAUTHORIZED, "Authentication required");

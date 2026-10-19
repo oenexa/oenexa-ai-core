@@ -8,12 +8,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Extracts structured CodeArtifacts from markdown code blocks in AI responses.
+ * Extracts structured CodeArtifacts from Markdown code blocks in AI responses.
  */
 public class ArtifactExtractor {
 
     private static final Pattern CODE_BLOCK_PATTERN = Pattern.compile("```([a-zA-Z0-9_-]*)\\s*\\n([\\s\\S]*?)```");
-    private static final Pattern FILE_HINT_PATTERN = Pattern.compile("(?i)(?:\\/\\/|#|<!--)\\s*(?:file|path):\\s*([^\\n]+)");
+    private static final Pattern FILE_HINT_PATTERN = Pattern.compile("(?i)(?://|#|<!--)\\s*(?:file|path):\\s*([^\\n]+)");
 
     public List<CodeArtifact> extract(String responseText) {
         if (responseText == null || responseText.isBlank()) {
@@ -38,7 +38,7 @@ public class ArtifactExtractor {
             }
 
             // Look for file hint
-            String filePath = null;
+            String filePath;
             Matcher fileMatcher = FILE_HINT_PATTERN.matcher(code);
             if (fileMatcher.find()) {
                 filePath = fileMatcher.group(1).trim();
