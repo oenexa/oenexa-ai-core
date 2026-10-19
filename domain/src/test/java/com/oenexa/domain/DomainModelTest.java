@@ -261,9 +261,11 @@ class DomainModelTest {
     @Test
     void testPhase2AndPhase3DomainModels() {
         // Enums
-        assertEquals(9, ChatDomain.ModelProvider.values().length);
+        assertEquals(11, ChatDomain.ModelProvider.values().length);
         assertEquals(ChatDomain.ModelProvider.LOCAL_OLLAMA, ChatDomain.ModelProvider.valueOf("LOCAL_OLLAMA"));
         assertEquals(ChatDomain.ModelProvider.LOCAL_PRIVATE, ChatDomain.ModelProvider.valueOf("LOCAL_PRIVATE"));
+        assertEquals(ChatDomain.ModelProvider.QWEN, ChatDomain.ModelProvider.valueOf("QWEN"));
+        assertEquals(ChatDomain.ModelProvider.OENEXA_GPT, ChatDomain.ModelProvider.valueOf("OENEXA_GPT"));
 
         assertEquals(9, ChatDomain.TaskType.values().length);
         assertEquals(ChatDomain.TaskType.PRODUCT_MANAGEMENT, ChatDomain.TaskType.valueOf("PRODUCT_MANAGEMENT"));
