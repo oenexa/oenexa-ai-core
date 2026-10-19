@@ -8,12 +8,18 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.List;
 
+import com.sun.net.httpserver.HttpServer;
+import java.io.OutputStream;
+import java.net.InetSocketAddress;
+import java.net.http.HttpClient;
+import java.time.Duration;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("ChatService Zero-Mock Unit Tests")
 class ChatServiceTest {
 
-    private final ChatService chatService = new ChatService();
+    private final ChatService chatService = new ChatService(new ChatResponseSynthesisEngine(), new LocalOllamaClient("offline://local", null));
 
     @ParameterizedTest(name = "Should generate architecture response for prompt: {0}")
     @ValueSource(strings = {"Tell me about the system architecture", "Show me the service design"})
@@ -266,5 +272,46 @@ class ChatServiceTest {
         assertNotNull(resp7);
         assertFalse(resp7.conversationId().isBlank());
     }
+
+    @Test
+    @DisplayName("Should process message using live LocalOllamaClient and parse thoughts and code blocks")
+    void shouldProcessMessageUsingLiveLocalOllamaClient() throws Exception {
+        HttpServer server = HttpServer.create(new InetSocketAddress(0), 0);
+        int port = server.getAddress().getPort();
+        server.createContext("/generate", exchange -> {
+            String json = """
+                    {
+                      "model": "deepseek-r1:8b",
+                      "response": "<think>Deliberating step by step on system architecture.</think>### Architecture Blueprint\\n```java\\npackage com.oenexa.workspace;\\npublic record EngineCore(String name) {}\\n```",
+                      "done": true
+                    }
+                    """;
+            byte[] bytes = json.getBytes();
+            exchange.getResponseHeaders().set("Content-Type", "application/json");
+            exchange.sendResponseHeaders(200, bytes.length);
+            try (OutputStream os = exchange.getResponseBody()) {
+                os.write(bytes);
+            }
+        });
+        server.start();
+
+        try {
+            HttpClient client = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(2)).build();
+            LocalOllamaClient ollama = new LocalOllamaClient("http://localhost:" + port + "/", client);
+            ChatService liveService = new ChatService(new ChatResponseSynthesisEngine(), ollama);
+
+            ChatResponse resp = liveService.processMessage("live-conv-1", "Design engine core", "deepseek-r1:8b", true);
+
+            assertNotNull(resp);
+            assertEquals("deepseek-r1:8b", resp.model());
+            assertTrue(resp.thoughtProcess().contains("Deliberating step by step on system architecture."));
+            assertTrue(resp.reply().contains("EngineCore"));
+            assertFalse(resp.artifacts().isEmpty());
+            assertEquals("EngineCore", resp.artifacts().get(0).title());
+        } finally {
+            server.stop(0);
+        }
+    }
 }
+
 

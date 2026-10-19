@@ -18,17 +18,23 @@ public class ChatService {
     private final Map<String, List<Message>> conversations = new ConcurrentHashMap<>();
     private final Map<String, ConversationMetadata> metadataMap = new ConcurrentHashMap<>();
     private final ChatResponseSynthesisEngine synthesisEngine;
+    private final LocalOllamaClient ollamaClient;
 
     public ChatService() {
-        this(new ChatResponseSynthesisEngine());
+        this(new ChatResponseSynthesisEngine(), new LocalOllamaClient());
     }
 
     public ChatService(DeliberativeReasoningEngine deliberativeReasoningEngine) {
-        this(new ChatResponseSynthesisEngine(deliberativeReasoningEngine));
+        this(new ChatResponseSynthesisEngine(deliberativeReasoningEngine), new LocalOllamaClient());
     }
 
     public ChatService(ChatResponseSynthesisEngine synthesisEngine) {
+        this(synthesisEngine, new LocalOllamaClient());
+    }
+
+    public ChatService(ChatResponseSynthesisEngine synthesisEngine, LocalOllamaClient ollamaClient) {
         this.synthesisEngine = (synthesisEngine != null) ? synthesisEngine : new ChatResponseSynthesisEngine();
+        this.ollamaClient = (ollamaClient != null) ? ollamaClient : new LocalOllamaClient();
     }
 
     public ChatResponse autoChatStep(AutoChatTurnRequest request) {
@@ -115,17 +121,31 @@ public class ChatService {
             }
         }
 
-        // 4. Technical Response Formulation
-        String reply = synthesisEngine.generateEngineeringResponse(messageText, intent);
+        // 4. Technical Response Formulation: Live Local LLM (DeepSeek-R1 / Qwen) with resilient offline fallback
+        var llmResult = ollamaClient.generate(messageText, selectedModel);
+        String reply;
+        String finalThought;
+        String effectiveModel = selectedModel;
+        if (llmResult != null && llmResult.reply() != null && !llmResult.reply().isBlank()) {
+            reply = llmResult.reply();
+            if (llmResult.modelUsed() != null && !llmResult.modelUsed().isBlank()) {
+                effectiveModel = llmResult.modelUsed();
+            }
+            if (llmResult.thoughtProcess() != null && !llmResult.thoughtProcess().isBlank()) {
+                thoughtBuilder.insert(0, llmResult.thoughtProcess() + "\n\n");
+            }
+            finalThought = includeThinking ? thoughtBuilder.toString() : null;
+        } else {
+            reply = synthesisEngine.generateEngineeringResponse(messageText, intent);
+            finalThought = includeThinking ? thoughtBuilder.toString() : null;
+        }
         List<CodeArtifact> artifacts = extractArtifacts(reply);
-
-        String finalThought = includeThinking ? thoughtBuilder.toString() : null;
 
         // Append user turn
         history.add(new Message(Role.USER, messageText, Instant.now(), null, selectedModel, safeAttachments, List.of(), List.of(), List.of()));
 
         // Append assistant turn with thought and model metadata
-        history.add(new Message(Role.ASSISTANT, reply, Instant.now(), finalThought, selectedModel, List.of(), toolCalls, toolResults, artifacts));
+        history.add(new Message(Role.ASSISTANT, reply, Instant.now(), finalThought, effectiveModel, List.of(), toolCalls, toolResults, artifacts));
 
         // Update metadata
         metadataMap.compute(convId, (k, meta) -> {
