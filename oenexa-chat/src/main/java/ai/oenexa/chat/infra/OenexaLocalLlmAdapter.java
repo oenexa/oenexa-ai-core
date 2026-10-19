@@ -22,6 +22,7 @@ public class OenexaLocalLlmAdapter implements LlmPort {
 
     private static final String DEFAULT_ENDPOINT = "http://localhost:11434/api/";
     private static final Pattern TEXT_PATTERN = Pattern.compile("\"response\":\\s*\"((?:[^\"\\\\]|\\\\.)*)\"|\"text\":\\s*\"((?:[^\"\\\\]|\\\\.)*)\"");
+    private static final Pattern TAGS_NAME_PATTERN = Pattern.compile("\"name\":\\s*\"([^\"]+)\"");
 
     private final String apiKey;
     private final String model;
@@ -76,13 +77,14 @@ public class OenexaLocalLlmAdapter implements LlmPort {
         }
 
         try {
-            String requestBody = buildLocalJsonPayload(prompt);
+            String targetModel = discoverOrResolveModel();
+            String requestBody = buildLocalJsonPayload(prompt, targetModel);
             String targetUrl = endpointUrl.endsWith("/") ? endpointUrl + "generate" : endpointUrl + "/generate";
 
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(targetUrl))
                     .header("Content-Type", "application/json")
-                    .timeout(Duration.ofSeconds(10))
+                    .timeout(Duration.ofSeconds(15))
                     .POST(HttpRequest.BodyPublishers.ofString(requestBody))
                     .build();
 
@@ -99,9 +101,39 @@ public class OenexaLocalLlmAdapter implements LlmPort {
         return reasoningEngine.stream(prompt, model);
     }
 
+    public String discoverOrResolveModel() {
+        if (model != null && !model.isBlank() && !model.startsWith("oenexa-")) {
+            return model;
+        }
+        if (httpClient != null && !endpointUrl.startsWith("offline://")) {
+            try {
+                String tagsUrl = endpointUrl.endsWith("/") ? endpointUrl + "tags" : endpointUrl + "/tags";
+                HttpRequest tagsRequest = HttpRequest.newBuilder()
+                        .uri(URI.create(tagsUrl))
+                        .timeout(Duration.ofSeconds(2))
+                        .GET()
+                        .build();
+                HttpResponse<String> tagsResponse = httpClient.send(tagsRequest, HttpResponse.BodyHandlers.ofString());
+                if (tagsResponse.statusCode() == 200 && tagsResponse.body() != null) {
+                    Matcher matcher = TAGS_NAME_PATTERN.matcher(tagsResponse.body());
+                    if (matcher.find()) {
+                        return matcher.group(1);
+                    }
+                }
+            } catch (Exception ignored) {
+            }
+        }
+        return model;
+    }
+
     public String buildLocalJsonPayload(List<ChatMessage> prompt) {
+        return buildLocalJsonPayload(prompt, model);
+    }
+
+    public String buildLocalJsonPayload(List<ChatMessage> prompt, String targetModel) {
         StringBuilder sb = new StringBuilder();
-        sb.append("{\"model\":\"").append(model).append("\",\"prompt\":\"");
+        String effective = (targetModel != null && !targetModel.isBlank()) ? targetModel : model;
+        sb.append("{\"model\":\"").append(effective).append("\",\"prompt\":\"");
         for (ChatMessage msg : prompt) {
             sb.append("[").append(msg.role()).append("] ")
               .append(escapeJson(msg.content())).append("\\n");

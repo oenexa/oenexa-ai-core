@@ -173,4 +173,47 @@ class OenexaLocalLlmAdapterTest {
             server.stop(0);
         }
     }
+
+    @Test
+    void shouldDiscoverModelFromLocalTagsEndpoint() throws Exception {
+        HttpServer server = HttpServer.create(new InetSocketAddress(0), 0);
+        int port = server.getAddress().getPort();
+        server.createContext("/tags", exchange -> {
+            String tagsJson = """
+                    {
+                      "models": [
+                        {
+                          "name": "deepseek-r1:8b",
+                          "model": "deepseek-r1:8b"
+                        }
+                      ]
+                    }
+                    """;
+            byte[] bytes = tagsJson.getBytes();
+            exchange.getResponseHeaders().set("Content-Type", "application/json");
+            exchange.sendResponseHeaders(200, bytes.length);
+            try (OutputStream os = exchange.getResponseBody()) {
+                os.write(bytes);
+            }
+        });
+        server.start();
+
+        try {
+            HttpClient client = HttpClient.newHttpClient();
+            String localEndpoint = "http://localhost:" + port + "/";
+            var adapter = new OenexaLocalLlmAdapter("test-key", "oenexa-reasoning-v1", localEndpoint, client, engine);
+
+            String discovered = adapter.discoverOrResolveModel();
+            assertThat(discovered).isEqualTo("deepseek-r1:8b");
+        } finally {
+            server.stop(0);
+        }
+    }
+
+    @Test
+    void shouldRespectExplicitModelWithoutDiscovery() {
+        var client = HttpClient.newHttpClient();
+        var adapter = new OenexaLocalLlmAdapter("test-key", "deepseek-r1:8b", "http://localhost:11434/api/", client, engine);
+        assertThat(adapter.discoverOrResolveModel()).isEqualTo("deepseek-r1:8b");
+    }
 }
