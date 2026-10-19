@@ -1,12 +1,19 @@
 package com.oenexa.api;
 
 import com.oenexa.application.ChatService;
+import com.oenexa.application.ConversationManagementService;
+import com.oenexa.application.DocumentIngestionService;
 import com.oenexa.domain.ChatDomain.*;
+import com.oenexa.domain.ConversationCoreDomain.*;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -14,8 +21,18 @@ import static org.junit.jupiter.api.Assertions.*;
 @DisplayName("ChatController Zero-Mock Unit Tests")
 class ChatControllerTest {
 
-    private final ChatService chatService = new ChatService();
-    private final ChatController controller = new ChatController(chatService);
+    private ChatService chatService;
+    private DocumentIngestionService documentIngestionService;
+    private ConversationManagementService conversationManagementService;
+    private ChatController controller;
+
+    @BeforeEach
+    void setUp() {
+        chatService = new ChatService();
+        documentIngestionService = new DocumentIngestionService();
+        conversationManagementService = new ConversationManagementService(chatService, documentIngestionService);
+        controller = new ChatController(chatService, conversationManagementService);
+    }
 
     @Test
     @DisplayName("Should send message and return chat response")
@@ -117,7 +134,6 @@ class ChatControllerTest {
     @Test
     @DisplayName("Should handle auto-chat turn endpoint with real scenario execution")
     void shouldHandleAutoChatTurnEndpoint() {
-        // With explicit request
         AutoChatTurnRequest req = new AutoChatTurnRequest("conv-auto-endpoint", "public record Order() {}", "Build Order Microservice");
         ResponseEntity<ChatResponse> response = controller.autoChatTurn(req);
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -125,11 +141,95 @@ class ChatControllerTest {
         assertEquals("conv-auto-endpoint", response.getBody().conversationId());
         assertEquals("TESTING_SYNTHESIS", response.getBody().intent());
 
-        // With null request (uses default safe turn)
         ResponseEntity<ChatResponse> defaultResp = controller.autoChatTurn(null);
         assertEquals(HttpStatus.OK, defaultResp.getStatusCode());
         assertNotNull(defaultResp.getBody());
         assertEquals("ARCHITECTURE_DESIGN", defaultResp.getBody().intent());
     }
-}
 
+    @Test
+    @DisplayName("Should pin and unpin conversation")
+    void shouldPinAndUnpinConversation() {
+        var create = controller.createConversation(new ChatController.CreateConversationRequest("Pin Test", "gemini-2.5-flash"));
+        String id = create.getBody().conversationId();
+
+        var pinResp = controller.togglePin(id, new ChatController.PinRequest(true));
+        assertEquals(HttpStatus.OK, pinResp.getStatusCode());
+        assertTrue(pinResp.getBody().pinned());
+    }
+
+    @Test
+    @DisplayName("Should manage chat folders: create, list, assign, and delete")
+    void shouldManageChatFolders() {
+        var createResp = controller.createFolder("tenant-1", "user-1", new CreateFolderRequest("System Design", "#3b82f6"));
+        assertEquals(HttpStatus.OK, createResp.getStatusCode());
+        ChatFolder folder = createResp.getBody();
+        assertNotNull(folder);
+
+        var listResp = controller.listFolders("tenant-1", "user-1");
+        assertEquals(HttpStatus.OK, listResp.getStatusCode());
+        assertEquals(1, listResp.getBody().size());
+
+        var assignResp = controller.assignFolder("conv-1", new AssignFolderRequest("conv-1", folder.id()));
+        assertEquals(HttpStatus.OK, assignResp.getStatusCode());
+        assertEquals(folder.id(), assignResp.getBody().get("folderId"));
+
+        var deleteResp = controller.deleteFolder(folder.id());
+        assertEquals(HttpStatus.NO_CONTENT, deleteResp.getStatusCode());
+    }
+
+    @Test
+    @DisplayName("Should share conversation and retrieve shared conversation view")
+    void shouldShareAndRetrieveConversation() {
+        var create = controller.createConversation(new ChatController.CreateConversationRequest("Public Chat", "gemini-2.5-flash"));
+        String id = create.getBody().conversationId();
+        controller.sendMessage(new ChatRequest("Say hello", id));
+
+        var shareResp = controller.shareConversation(id, "user-1", "tenant-1");
+        assertEquals(HttpStatus.OK, shareResp.getStatusCode());
+        assertNotNull(shareResp.getBody().shareToken());
+
+        var viewResp = controller.getSharedConversation(shareResp.getBody().shareToken());
+        assertEquals(HttpStatus.OK, viewResp.getStatusCode());
+        assertEquals("Public Chat", viewResp.getBody().title());
+    }
+
+    @Test
+    @DisplayName("Should search conversations across titles and contents")
+    void shouldSearchConversations() {
+        controller.createConversation(new ChatController.CreateConversationRequest("Kubernetes Deployment", "gemini-2.5-flash"));
+        var searchResp = controller.searchConversations("Kubernetes", "default-tenant");
+        assertEquals(HttpStatus.OK, searchResp.getStatusCode());
+        assertFalse(searchResp.getBody().isEmpty());
+    }
+
+    @Test
+    @DisplayName("Should add and list message reactions")
+    void shouldAddAndListReactions() {
+        var addResp = controller.addReaction("conv-react", 0, "user-1", new MessageReactionRequest("❤️"));
+        assertEquals(HttpStatus.OK, addResp.getStatusCode());
+        assertEquals("❤️", addResp.getBody().emoji());
+
+        var listResp = controller.listReactions("conv-react", 0);
+        assertEquals(HttpStatus.OK, listResp.getStatusCode());
+        assertEquals(1, listResp.getBody().size());
+    }
+
+    @Test
+    @DisplayName("Should parse multi-format attachment via REST")
+    void shouldParseAttachmentViaRest() {
+        String base64Csv = Base64.getEncoder().encodeToString("name,age\nAlice,30\n".getBytes(StandardCharsets.UTF_8));
+        var parseResp = controller.parseAttachment(new ChatController.ParseAttachmentRequest("data.csv", base64Csv));
+        assertEquals(HttpStatus.OK, parseResp.getStatusCode());
+        assertNotNull(parseResp.getBody());
+        assertEquals(AttachmentType.CSV, parseResp.getBody().type());
+        assertTrue(parseResp.getBody().extractedContent().contains("Alice"));
+    }
+
+    @Test
+    @DisplayName("Should return active SseEmitter for progressive response stream")
+    void shouldReturnSseEmitterForStream() {
+        SseEmitter emitter = controller.streamMessage("conv-stream-api", "Explain SOLID principles", "gemini-2.5-flash");
+        assertNotNull(emitter);
+    }
+}

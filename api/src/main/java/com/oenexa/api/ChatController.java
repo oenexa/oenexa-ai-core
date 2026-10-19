@@ -1,14 +1,24 @@
 package com.oenexa.api;
 
 import com.oenexa.application.ChatService;
+import com.oenexa.application.ConversationManagementService;
+import com.oenexa.application.DocumentIngestionService;
 import com.oenexa.domain.ChatDomain.*;
+import com.oenexa.domain.ConversationCoreDomain.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
+import java.io.IOException;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 /**
- * REST API for Contextual AI Chat & Assistance.
+ * REST API for Contextual AI Chat, Enterprise Folders, Pinning, Sharing,
+ * Reactions, Multi-Format Document Ingestion, and Progressive Streaming.
  */
 @RestController
 @RequestMapping("/api/v1/chat")
@@ -16,11 +26,20 @@ public class ChatController {
 
     public record CreateConversationRequest(String title, String model) {}
     public record ForkConversationRequest(String newConversationId, Integer upToMessageIndex) {}
+    public record PinRequest(boolean pinned) {}
+    public record ParseAttachmentRequest(String fileName, String base64Content) {}
 
     private final ChatService chatService;
+    private final ConversationManagementService conversationManagementService;
 
     public ChatController(ChatService chatService) {
+        this(chatService, new ConversationManagementService(chatService, new DocumentIngestionService()));
+    }
+
+    @Autowired
+    public ChatController(ChatService chatService, ConversationManagementService conversationManagementService) {
         this.chatService = chatService;
+        this.conversationManagementService = conversationManagementService;
     }
 
     @PostMapping("/messages")
@@ -38,6 +57,30 @@ public class ChatController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping(value = "/messages/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public SseEmitter streamMessage(
+            @RequestParam(required = false) String conversationId,
+            @RequestParam String message,
+            @RequestParam(defaultValue = "gemini-2.5-flash") String model
+    ) {
+        SseEmitter emitter = new SseEmitter(120_000L);
+        CompletableFuture.runAsync(() -> {
+            try {
+                conversationManagementService.streamProgressiveResponse(conversationId, message, model, chunk -> {
+                    try {
+                        emitter.send(SseEmitter.event().name("chunk").data(chunk));
+                    } catch (IOException e) {
+                        emitter.completeWithError(e);
+                    }
+                });
+                emitter.complete();
+            } catch (Exception e) {
+                emitter.completeWithError(e);
+            }
+        });
+        return emitter;
+    }
+
     @PostMapping("/auto-turn")
     public ResponseEntity<ChatResponse> autoChatTurn(@RequestBody(required = false) AutoChatTurnRequest request) {
         AutoChatTurnRequest safeReq = (request != null)
@@ -53,8 +96,8 @@ public class ChatController {
 
     @PostMapping("/conversations")
     public ResponseEntity<ConversationMetadata> createConversation(@RequestBody(required = false) CreateConversationRequest request) {
-        String title = (request != null) ? request.title() : "New Conversation";
-        String model = (request != null) ? request.model() : "gemini-2.5-flash";
+        String title = (request != null && request.title() != null) ? request.title() : "New Conversation";
+        String model = (request != null && request.model() != null) ? request.model() : "gemini-2.5-flash";
         return ResponseEntity.ok(chatService.createConversation(null, "default-tenant", "default-user", title, model));
     }
 
@@ -66,6 +109,93 @@ public class ChatController {
     @GetMapping("/conversations/{id}/metadata")
     public ResponseEntity<ConversationMetadata> getMetadata(@PathVariable String id) {
         return ResponseEntity.ok(chatService.getMetadata(id));
+    }
+
+    @PutMapping("/conversations/{id}/pin")
+    public ResponseEntity<ConversationMetadata> togglePin(
+            @PathVariable String id,
+            @RequestBody PinRequest request
+    ) {
+        return ResponseEntity.ok(conversationManagementService.togglePin(id, request.pinned()));
+    }
+
+    @PostMapping("/conversations/{id}/share")
+    public ResponseEntity<ConversationShare> shareConversation(
+            @PathVariable String id,
+            @RequestHeader(value = "X-User-Id", defaultValue = "default-user") String userId,
+            @RequestHeader(value = "X-Tenant-Id", defaultValue = "default-tenant") String tenantId
+    ) {
+        return ResponseEntity.ok(conversationManagementService.shareConversation(id, userId, tenantId));
+    }
+
+    @GetMapping("/shared/{shareToken}")
+    public ResponseEntity<SharedConversationView> getSharedConversation(@PathVariable String shareToken) {
+        return ResponseEntity.ok(conversationManagementService.getSharedConversation(shareToken));
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<ConversationMetadata>> searchConversations(
+            @RequestParam("q") String query,
+            @RequestParam(defaultValue = "default-tenant") String tenantId
+    ) {
+        return ResponseEntity.ok(conversationManagementService.searchConversations(query, tenantId));
+    }
+
+    @GetMapping("/folders")
+    public ResponseEntity<List<ChatFolder>> listFolders(
+            @RequestHeader(value = "X-Tenant-Id", defaultValue = "default-tenant") String tenantId,
+            @RequestHeader(value = "X-User-Id", defaultValue = "default-user") String userId
+    ) {
+        return ResponseEntity.ok(conversationManagementService.listFolders(tenantId, userId));
+    }
+
+    @PostMapping("/folders")
+    public ResponseEntity<ChatFolder> createFolder(
+            @RequestHeader(value = "X-Tenant-Id", defaultValue = "default-tenant") String tenantId,
+            @RequestHeader(value = "X-User-Id", defaultValue = "default-user") String userId,
+            @RequestBody CreateFolderRequest request
+    ) {
+        return ResponseEntity.ok(conversationManagementService.createFolder(tenantId, userId, request));
+    }
+
+    @DeleteMapping("/folders/{id}")
+    public ResponseEntity<Void> deleteFolder(@PathVariable String id) {
+        conversationManagementService.deleteFolder(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/conversations/{id}/folder")
+    public ResponseEntity<Map<String, String>> assignFolder(
+            @PathVariable String id,
+            @RequestBody AssignFolderRequest request
+    ) {
+        conversationManagementService.assignConversationToFolder(id, request.folderId());
+        return ResponseEntity.ok(Map.of("conversationId", id, "folderId", request.folderId()));
+    }
+
+    @PostMapping("/conversations/{id}/messages/{index}/reactions")
+    public ResponseEntity<MessageReaction> addReaction(
+            @PathVariable String id,
+            @PathVariable int index,
+            @RequestHeader(value = "X-User-Id", defaultValue = "default-user") String userId,
+            @RequestBody MessageReactionRequest request
+    ) {
+        return ResponseEntity.ok(conversationManagementService.addReaction(id, index, userId, request.emoji()));
+    }
+
+    @GetMapping("/conversations/{id}/messages/{index}/reactions")
+    public ResponseEntity<List<MessageReaction>> listReactions(
+            @PathVariable String id,
+            @PathVariable int index
+    ) {
+        return ResponseEntity.ok(conversationManagementService.listReactions(id, index));
+    }
+
+    @PostMapping("/attachments/parse")
+    public ResponseEntity<ParsedDocument> parseAttachment(@RequestBody ParseAttachmentRequest request) {
+        byte[] bytes = java.util.Base64.getDecoder().decode(request.base64Content());
+        ParsedDocument parsed = conversationManagementService.parseUploadedAttachment(request.fileName(), bytes);
+        return ResponseEntity.ok(parsed);
     }
 
     @PostMapping("/conversations/{id}/fork")
@@ -84,4 +214,3 @@ public class ChatController {
         return ResponseEntity.noContent().build();
     }
 }
-
