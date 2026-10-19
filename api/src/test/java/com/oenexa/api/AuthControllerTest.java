@@ -38,6 +38,10 @@ class AuthControllerTest {
                 new Class<?>[]{UserRepository.class},
                 (proxy, method, args) -> {
                     String name = method.getName();
+                    if (name.equals("findById")) {
+                        Long id = (Long) args[0];
+                        return Optional.ofNullable(userDb.get(id));
+                    }
                     if (name.equals("findByUsername")) {
                         String username = (String) args[0];
                         return userDb.values().stream()
@@ -50,12 +54,20 @@ class AuthControllerTest {
                                 .filter(u -> u.email().equalsIgnoreCase(email))
                                 .findFirst();
                     }
+                    if (name.equals("existsByUsername")) {
+                        String username = (String) args[0];
+                        return userDb.values().stream().anyMatch(u -> u.username().equalsIgnoreCase(username));
+                    }
+                    if (name.equals("existsByEmail")) {
+                        String email = (String) args[0];
+                        return userDb.values().stream().anyMatch(u -> u.email().equalsIgnoreCase(email));
+                    }
                     if (name.equals("save")) {
                         User u = (User) args[0];
                         long id = u.id() != null ? u.id() : idGen.getAndIncrement();
-                        User saved = new User(u.username(), u.passwordHash(), u.email()).withId(id);
-                        userDb.put(id, saved);
-                        return saved;
+                        u.withId(id);
+                        userDb.put(id, u);
+                        return u;
                     }
                     return null;
                 }
@@ -178,5 +190,69 @@ class AuthControllerTest {
 
         ResponseEntity<?> tampered = controller.me("Bearer not-a-valid-token");
         assertEquals(HttpStatus.UNAUTHORIZED, tampered.getStatusCode());
+    }
+
+    @Test
+    @DisplayName("Should login via OAuth provider and return tokens")
+    void shouldLoginViaOAuth() {
+        OAuthLoginRequest req = new OAuthLoginRequest("GOOGLE", "g-1", "googleuser@gmail.com", "Google Dev", "https://avatar/g.png", "token-xyz");
+        ResponseEntity<?> resp = controller.oauthLogin("GOOGLE", req);
+
+        assertEquals(HttpStatus.OK, resp.getStatusCode());
+        assertTrue(resp.getBody() instanceof TokenPair);
+    }
+
+    @Test
+    @DisplayName("Should send and verify OTP codes successfully")
+    void shouldSendAndVerifyOtp() {
+        ResponseEntity<?> sendResp = controller.sendOtp(new OtpRequest("otp@test.com", "LOGIN"));
+        assertEquals(HttpStatus.OK, sendResp.getStatusCode());
+        Map<?, ?> body = (Map<?, ?>) sendResp.getBody();
+        assertNotNull(body);
+        String code = (String) body.get("code");
+
+        ResponseEntity<?> verifyResp = controller.verifyOtp(new OtpVerifyRequest("otp@test.com", code, "LOGIN"));
+        assertEquals(HttpStatus.OK, verifyResp.getStatusCode());
+
+        ResponseEntity<?> failResp = controller.verifyOtp(new OtpVerifyRequest("otp@test.com", "000000", "LOGIN"));
+        assertEquals(HttpStatus.BAD_REQUEST, failResp.getStatusCode());
+    }
+
+    @Test
+    @DisplayName("Should execute complete password reset flow")
+    void shouldExecutePasswordResetFlow() {
+        controller.register(new RegisterRequest("resetuser", "reset@test.com", "Pass12345!", "Reset User"));
+
+        ResponseEntity<?> reqResp = controller.requestPasswordReset(new PasswordResetRequest("reset@test.com"));
+        assertEquals(HttpStatus.OK, reqResp.getStatusCode());
+        Map<?, ?> body = (Map<?, ?>) reqResp.getBody();
+        String token = (String) body.get("resetToken");
+
+        ResponseEntity<?> confResp = controller.confirmPasswordReset(new PasswordResetConfirmRequest("reset@test.com", token, "BrandNewPass999!"));
+        assertEquals(HttpStatus.OK, confResp.getStatusCode());
+
+        // Login with new pass
+        ResponseEntity<?> loginResp = controller.login(new LoginRequest("resetuser", "BrandNewPass999!"));
+        assertEquals(HttpStatus.OK, loginResp.getStatusCode());
+    }
+
+    @Test
+    @DisplayName("Should update user profile and list sessions")
+    void shouldUpdateProfileAndListSessions() {
+        ResponseEntity<?> regResp = controller.register(new RegisterRequest("profileuser", "prof@test.com", "Pass12345!", "Prof User"));
+        TokenPair pair = (TokenPair) regResp.getBody();
+        String authHeader = "Bearer " + pair.accessToken();
+
+        UserProfileUpdateRequest updateReq = new UserProfileUpdateRequest(
+                "Alan", "Turing", "UK", "Father of Computer Science", "National Lab", "Fellow", "en", "Europe/London", "https://avatar/turing.png"
+        );
+        ResponseEntity<?> updateResp = controller.updateProfile(authHeader, updateReq);
+        assertEquals(HttpStatus.OK, updateResp.getStatusCode());
+
+        ResponseEntity<?> sessionsResp = controller.listSessions(authHeader);
+        assertEquals(HttpStatus.OK, sessionsResp.getStatusCode());
+
+        ResponseEntity<?> auditResp = controller.auditLogs(authHeader);
+        assertEquals(HttpStatus.OK, auditResp.getStatusCode());
     }
 }

@@ -81,7 +81,7 @@
 |:--------------------------|:---------------------------------------------------------------------|:--------------------------------------------------------------|
 | **Language**              | **Java 25+** (bytecode target 69, pure Java, zero Kotlin in prod)    | **TypeScript** (strict mode)                                  |
 | **Framework**             | **Spring Boot 4.1.1** (Latest GA)                                    | **React 18** (Vite 5)                                         |
-| **AI Orchestration**      | **Spring AI 2.0.1** (Multi-Agent, RAG, Conversational Memory)         | Monaco AI Overlay                                             |
+| **AI Orchestration**      | **Spring AI 2.0.1** (Multi-Agent, RAG, Conversational Memory)        | Monaco AI Overlay                                             |
 | **Dependency Management** | **Gradle Version Catalog** (`gradle/libs.versions.toml`)             | **npm / Vite**                                                |
 | **Build Tool**            | **Gradle 9.8.0** (with parallel compile & config cache)              | **Vite 5**                                                    |
 | **API Architecture**      | **Spring MVC REST** (`@RestController`, Virtual Threads, NO WebFlux) | **Vite Proxy** (`/api` $\rightarrow$ `http://localhost:8080`) |
@@ -89,7 +89,7 @@
 | **Compiler Plugin**       | **Lombok 1.18.42** (centralized in Version Catalog)                  | TypeScript Compiler (`tsc`)                                   |
 | **Coverage Tool**         | **JaCoCo 0.8.13** ($\ge 80\%$ line & branch gate)                    | **Vitest Runner**                                             |
 | **Security**              | JJWT 0.12.6, Jakarta Validation, OWASP Top-10, Immutability          | Strict CSP, XSS-safe React rendering                          |
-| **Quality Gate**          | **0 Warnings, $\ge 80\%$ Coverage, 0 Failures**                       | **0 Warnings, 100% Tests passing**                            |
+| **Quality Gate**          | **0 Warnings, $\ge 80\%$ Coverage, 0 Failures**                      | **0 Warnings, 100% Tests passing**                            |
 
 ---
 

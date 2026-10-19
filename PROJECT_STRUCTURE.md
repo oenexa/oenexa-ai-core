@@ -13,7 +13,7 @@
 oenexa-ai-engineer-backend/
 ├── .gitattributes               # LF line endings enforcement for *.sh, *.ps1, gradlew
 ├── .env.example                 # Environment configuration template
-├── .dockerignore                # Build cache optimization for Docker
+├── .docker ignore                # Build cache optimization for Docker
 │
 ├── gradle/
 │   ├── libs.versions.toml       # Central Version Catalog (Spring Boot 4.1.1, Java 25, Cucumber, Lombok)
