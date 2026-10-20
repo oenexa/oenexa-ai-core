@@ -1,7 +1,7 @@
 # OENEXA AI Engineer - Development Notes & Architecture Log
 
-> **Component Role:** `[AI-BE] ⚡` (Backend Service)  
-> **Paired Frontend UI:** `[AI-FE] 💻` [`oenexa-ai-engineer-frontend`](../oenexa-ai-engineer-frontend) (`http://localhost:5173`)  
+> **Component Role:** `[AI-CORE] ⚡` (Backend Service)  
+> **Paired Frontend UI:** `[AI-WEB] 💻` [`oenexa-ai-web`](../oenexa-ai-web) (`http://localhost:5173`)  
 > **Backend Stack:** Java 25+ | Spring Boot 4.1.1 | Spring MVC REST (No WebFlux) | Spring Data JPA | Redis | Kafka | Elasticsearch | Flyway | Cucumber-JVM 7.18.1 | JUnit 5 Platform  
 > **Frontend Stack:** React 18 | Vite 5 | TypeScript | Tailwind CSS | Material-UI 5 | Monaco Editor | Vitest  
 > **Architecture Pattern:** Clean / Hexagonal Modular Monolith  
@@ -15,7 +15,7 @@
 The backend is structured into 4 decoupled Java modules:
 
 ```
-oenexa-ai-engineer-backend/
+oenexa-ai-core/
 ├── domain/            # Core business entities, value objects, domain logic (zero external framework lock-in)
 ├── application/       # Use-cases, application services, AI prompt workflows, orchestration
 ├── infrastructure/    # External adapters: PostgreSQL (JPA), Redis, Kafka, Elasticsearch, Flyway
@@ -38,7 +38,7 @@ oenexa-ai-engineer-backend/
      - `UserServiceTest` verifies actual use-case workflow executions.
    - Configured with `tasks.withType<Test> { useJUnitPlatform() }` and `junit-platform-launcher`.
 5. **Decoupled Frontend Repository**
-   - Frontend is completely separated in `oenexa-ai-engineer-frontend`, utilizing Vite 5, React 18, Tailwind CSS, and Monaco Editor with proxying to `/api/*`.
+   - Frontend is completely separated in `oenexa-ai-web`, utilizing Vite 5, React 18, Tailwind CSS, and Monaco Editor with proxying to `/api/*`.
 
 ---
 
@@ -57,9 +57,9 @@ oenexa-ai-engineer-backend/
 | **09** | Testing Policy                                   | Enforced real tests; removed mock tests                                                                                                                                                                                                                                                                                                                                                                                                                                                                            | Added JUnit 5 Platform tests without any mocks (`UserTest`, `UserServiceTest`).                                                                                             |
 | **10** | Build & Test Gate                                | Executed full `./gradlew clean test assemble`                                                                                                                                                                                                                                                                                                                                                                                                                                                                      | **BUILD SUCCESSFUL in 4s** (19/19 actionable tasks passed).                                                                                                                 |
 | **11** | Database Architecture                            | Implemented Flyway `V1__init_oenexa_schema.sql`, 15 JPA entities, and zero-friction `local` profile                                                                                                                                                                                                                                                                                                                                                                                                                | Resolved PostgreSQL host auth exception via embedded PostgreSQL-compatible H2 fallback with full Flyway seeding; full Docker/PostgreSQL config in `application-docker.yml`. |
-| **12** | Core Logic Port & Modernization                  | Upgraded `oenexa-ai-engineer-backend` with core logic ported from `oenexa-platform`: Multi-Agent Workflows (15 agent types, 4 ordered pipelines, bounded delegation, step execution), Semantic RAG (chunking, vector retrieval), and Conversational Context Window.                                                                                                                                                                                                                                                | Rewrote all ported features under clean Hexagonal Java 25 & Spring MVC non-blocking architecture with zero WebFlux overhead, zero warnings, and 100% test pass.             |
+| **12** | Core Logic Port & Modernization                  | Upgraded `oenexa-ai-core` with core logic ported from `oenexa-platform`: Multi-Agent Workflows (15 agent types, 4 ordered pipelines, bounded delegation, step execution), Semantic RAG (chunking, vector retrieval), and Conversational Context Window.                                                                                                                                                                                                                                                | Rewrote all ported features under clean Hexagonal Java 25 & Spring MVC non-blocking architecture with zero WebFlux overhead, zero warnings, and 100% test pass.             |
 | **13** | Full Module & Auth Migration                     | Ported all 20 platform modules (`PlatformModule`, `PlannedModule`), Authentication & JWT Services (`TokenService`, `AuthController` with login, register, refresh, and `/me`), Global RFC Error Handling (`ErrorCode`, `OenexaException`, `GlobalErrorHandler`), and Multi-Tenant Context (`TenantContext`).                                                                                                                                                                                                       | Cleanly integrated across all four tiers with zero framework leakage in domain, 100% JaCoCo test pass, and live discovery via `/api/v1/modules`.                            |
-| **14** | Direct Module Port & Verification Gate           | Directly copied all 19 `oenexa-*` modules from `oenexa-platform` into `oenexa-ai-engineer-backend`. Updated root `build.gradle.kts` with exact conditional dependency rules, compiler options (`-parameters`, `-Xlint:all,-processing`), and 80% Jacoco coverage gate with `coverageExempt`. Added controller and module test suites to exceed 80% coverage.                                                                                                                                                       | `.\gradlew check` and `.\git-sync.ps1 -Action test` pass with 100% test success across all 23 backend modules and the entire repository suite.                              |
+| **14** | Direct Module Port & Verification Gate           | Directly copied all 19 `oenexa-*` modules from `oenexa-platform` into `oenexa-ai-core`. Updated root `build.gradle.kts` with exact conditional dependency rules, compiler options (`-parameters`, `-Xlint:all,-processing`), and 80% Jacoco coverage gate with `coverageExempt`. Added controller and module test suites to exceed 80% coverage.                                                                                                                                                       | `.\gradlew check` and `.\git-sync.ps1 -Action test` pass with 100% test success across all 23 backend modules and the entire repository suite.                              |
 | **15** | Stack Upgrade (Java 25+, Boot 4.1.1, Gradle 9.8) | Upgraded language target to Java 25, Spring Boot to 4.1.1, Spring AI to 2.0.1, Springdoc to 3.1.1, and Gradle Kotlin DSL to latest conventions. Updated package namespaces (`spring-boot-persistence`, `spring-boot-webtestclient`), adopted modern Java 21+ record pattern deconstruction (`TokenClaims(var userId, var tenantId, var role)`), enabled parallel/cached Gradle build properties, and migrated project dependencies to type-safe `project(it.path)` notations.                                      | Full `./gradlew check` and polyrepo `./git-sync.ps1 -Action test` clean pass with 0 errors across all 23 modules.                                                           |
 | **16** | Linux / Git Bash Runnable Script (`run.sh`)      | Created POSIX-compliant, executable shell launcher `run.sh` supporting `api`, `gateway`, `dev`, `build`, `test`, `clean`, `status`, and `help`. Created `.env.example` with standard defaults. Configured `.gitattributes` for explicit LF line endings (`*.sh`, `gradlew`) to prevent Windows CRLF mangling. Set Git executable bit (`chmod +x`).                                                                                                                                                                 | Developers and CI pipelines on Linux, macOS, or Git Bash can execute `./run.sh api` or `./run.sh test` with zero manual configuration.                                      |
 | **17** | Unified Docker Runner (Frontend & Backend)       | Architected multi-stage Docker environment for both backend (`eclipse-temurin:25-jdk` + `eclipse-temurin:25-jre` with ZGC) and frontend (`node:22-alpine` build + `nginx:alpine` SPA with `/api/` reverse proxy). Created `docker-compose.yml`, `docker-compose.dev.yml`, POSIX `docker-runner.sh`, and native Windows `docker-runner.ps1`. Fixed IPv6 listener routing, disabled inactive actuator probes, and verified 100% healthy status across all 4 containers (`backend`, `frontend`, `postgres`, `redis`). | Full platform stack starts with `./docker-runner.sh up` or `.\docker-runner.ps1 up`, with UI on `http://localhost:3000` and API on `http://localhost:8080`.                 |
@@ -584,7 +584,7 @@ In accordance with **Constitution Rule 1.0**, every implemented subsystem and ar
 
 ### Running Backend with `run.sh` (Linux & Git Bash)
 ```bash
-cd oenexa-ai-engineer-backend
+cd oenexa-ai-core
 
 # Check prerequisites
 ./run.sh status
@@ -607,7 +607,7 @@ cd oenexa-ai-engineer-backend
 
 ### Running Backend on Windows PowerShell
 ```powershell
-cd oenexa-ai-engineer-backend
+cd oenexa-ai-core
 .\gradlew.bat :api:bootRun
 ```
 
@@ -628,7 +628,7 @@ cd oenexa-ai-engineer-backend
 
 ### Running Frontend Locally
 ```bash
-cd oenexa-ai-engineer-frontend
+cd oenexa-ai-web
 npm install
 npm run dev
 ```

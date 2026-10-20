@@ -18,7 +18,9 @@ class HealthControllerTest {
         assertEquals(200, response.getStatusCode().value());
         assertNotNull(response.getBody());
         assertEquals("UP", response.getBody().get("status"));
-        assertEquals("oenexa-ai-engineer-backend", response.getBody().get("service"));
+        assertEquals("oenexa-ai-core", response.getBody().get("service"));
+        assertEquals("OENEXA AI Core", response.getBody().get("application"));
+        assertEquals("OENEXA AI", response.getBody().get("product"));
         assertNotNull(response.getBody().get("javaVersion"));
     }
 }

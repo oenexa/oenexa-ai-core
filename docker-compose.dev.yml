@@ -46,7 +46,7 @@ services:
       - OENEXA_REDIS_ENABLED=true
       - OENEXA_KAFKA_ENABLED=false
       - OENEXA_ELASTICSEARCH_ENABLED=false
-      - OENEXA_JWT_SECRET=${OENEXA_JWT_SECRET:-oenexa-ai-engineer-jwt-secret-key-32bytes-min-sample}
+      - OENEXA_JWT_SECRET=${OENEXA_JWT_SECRET:-oenexa-ai-core-jwt-secret-key-32bytes-min-sample}
       - OENEXA_LLM_PROVIDER=${OENEXA_LLM_PROVIDER:-echo}
       - OPENAI_API_KEY=${OPENAI_API_KEY:-}
     ports:

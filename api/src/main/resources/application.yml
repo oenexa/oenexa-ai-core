@@ -3,7 +3,7 @@ server:
 
 spring:
   application:
-    name: oenexa-ai-engineer
+    name: oenexa-ai-core
   profiles:
     active: ${SPRING_PROFILES_ACTIVE:local}
   main:

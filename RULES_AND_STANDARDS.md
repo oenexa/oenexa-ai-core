@@ -1,6 +1,6 @@
 # OENEXA Developer & AI Agent Constitution: Rules, Standards & Architecture Log
 
-> **MANDATE:** Strict compliance is required for all AI agents and software engineers contributing to `oenexa-ai-engineer-backend` and `oenexa-ai-engineer-frontend`.
+> **MANDATE:** Strict compliance is required for all AI agents and software engineers contributing to `oenexa-ai-core` and `oenexa-ai-web`.
 
 ---
 

@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Map;
 
 /**
- * Health & Diagnostics REST Controller.
+ * Health & Diagnostics REST Controller for OENEXA AI Core.
  * Why: Pure REST controller separated from main application runner.
  * How: Spring MVC GetMapping returning health metrics record/map.
  */
@@ -20,7 +20,9 @@ public class HealthController {
     public ResponseEntity<Map<String, Object>> health() {
         return ResponseEntity.ok(Map.of(
                 "status", "UP",
-                "service", "oenexa-ai-engineer-backend",
+                "service", "oenexa-ai-core",
+                "application", "OENEXA AI Core",
+                "product", "OENEXA AI",
                 "javaVersion", System.getProperty("java.version")
         ));
     }

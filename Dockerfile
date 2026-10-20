@@ -1,6 +1,7 @@
 # ==============================================================================
-# OENEXA AI Engineer Backend - Multi-Stage Container Image
+# OENEXA AI Core - Multi-Stage Container Image
 # Targets Java 25 & Spring Boot 4.1.1 on Eclipse Temurin
+# Repository: github.com/oenexa/oenexa-ai-core
 # ==============================================================================
 
 # Stage 1: Build the application with Gradle wrapper and Java 25 JDK

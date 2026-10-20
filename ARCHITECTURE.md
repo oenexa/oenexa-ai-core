@@ -1,7 +1,7 @@
 # OENEXA AI Engineer — System Architecture & Component Blueprint
 
-> **System Identity:** `[AI-BE] ⚡` OENEXA AI Engineer Backend Service  
-> **Paired Frontend UI:** `[AI-FE] 💻` [`oenexa-ai-engineer-frontend`](../oenexa-ai-engineer-frontend) (`http://localhost:3000` via Docker / `http://localhost:5173` via Vite)  
+> **System Identity:** `[AI-CORE] ⚡` OENEXA AI Core Service  
+> **Paired Frontend UI:** `[AI-WEB] 💻` [`oenexa-ai-web`](../oenexa-ai-web) (`http://localhost:3000` via Docker / `http://localhost:5173` via Vite)  
 > **Runtime Baseline:** Java 25+ | Spring Boot 4.1.1 | Spring AI 2.0.1 | PostgreSQL 15 | Redis 7 | Gradle 9.8.0  
 > **Architecture Pattern:** Clean / Hexagonal Modular Monolith (23 Modules)  
 > **Master Ecosystem Directory:** [`AI_AGENT_DEVELOPER_REPO_MAPPING.md`](../AI_AGENT_DEVELOPER_REPO_MAPPING.md)  

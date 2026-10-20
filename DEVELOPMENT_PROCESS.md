@@ -1,6 +1,6 @@
 # OENEXA AI Engineer – Development Process, Prompts & Operating Manual
 
-> **Scope:** Enterprise Engineering Guidelines, AI Agent Prompts, Development Workflow, and Quality Gates for `oenexa-ai-engineer-backend`.  
+> **Scope:** Enterprise Engineering Guidelines, AI Agent Prompts, Development Workflow, and Quality Gates for `oenexa-ai-core`.  
 > **Target Runtime:** Java 25+ | Spring Boot 4.1.1 | Spring AI 2.0.1 | Spring MVC & WebFlux | PostgreSQL 15 | Redis 7 | Kafka | Elasticsearch | Gradle 9.8.0  
 
 ---

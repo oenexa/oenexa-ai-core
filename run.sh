@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # ==============================================================================
-# OENEXA AI Engineer - Unified Linux / Git Bash Service Launcher
+# OENEXA AI Core - Unified Linux / Git Bash Service Launcher
+# Repository: github.com/oenexa/oenexa-ai-core
 # ==============================================================================
 # Supports running the clean-architecture API, building bootJars,
 # running tests, and managing local profiles.
@@ -55,7 +56,7 @@ print_banner() {
  | | | | |_  |  \| |  _|  \  / /_\ \|
  | |_| |  _| | |\  | |___ /  \  _  | |
   \___/|_|   |_| \_|_____/_/\_\_| |_|_|
-  AI ENGINEER - BACKEND SERVICE LAUNCHER
+  AI CORE - BACKEND SERVICE LAUNCHER
 EOF
     echo -e "${COLOR_RESET}"
 }
@@ -96,7 +97,7 @@ show_help() {
     echo -e "${COLOR_BOLD}Usage:${COLOR_RESET} ./run.sh [command] [options...]"
     echo ""
     echo -e "${COLOR_BOLD}Commands:${COLOR_RESET}"
-    echo "  api         Run OENEXA AI Engineer REST API (Port 8080, In-Memory H2 DB) [Default]"
+    echo "  api         Run OENEXA AI Core REST API (Port 8080, In-Memory H2 DB) [Default]"
     echo "  dev         Run API in development live mode with ./gradlew :api:bootRun"
     echo "  build       Build executable Spring Boot jar (:api:bootJar)"
     echo "  test        Execute all unit tests and JaCoCo coverage verification gates"
@@ -129,7 +130,7 @@ run_api() {
 
     export SPRING_PROFILES_ACTIVE="${SPRING_PROFILES_ACTIVE:-local}"
     export SERVER_PORT="${SERVER_PORT:-8080}"
-    export OENEXA_JWT_SECRET="${OENEXA_JWT_SECRET:-oenexa-ai-engineer-jwt-secret-key-32bytes-min-sample}"
+    export OENEXA_JWT_SECRET="${OENEXA_JWT_SECRET:-oenexa-ai-core-jwt-secret-key-32bytes-min-sample}"
 
     local jar_file="$SCRIPT_DIR/api/build/libs/api-0.1.0-SNAPSHOT.jar"
     if [ ! -f "$jar_file" ]; then
@@ -137,7 +138,7 @@ run_api() {
         "$SCRIPT_DIR/gradlew" :api:bootJar
     fi
 
-    log_success "Launching OENEXA AI Engineer API on port ${SERVER_PORT} [Profile: ${SPRING_PROFILES_ACTIVE}]..."
+    log_success "Launching OENEXA AI Core API on port ${SERVER_PORT} [Profile: ${SPRING_PROFILES_ACTIVE}]..."
     exec java -Dfile.encoding=UTF-8 -jar "$jar_file" "$@"
 }
 
@@ -148,16 +149,16 @@ run_dev() {
     load_env
 
     export SPRING_PROFILES_ACTIVE="${SPRING_PROFILES_ACTIVE:-local}"
-    export OENEXA_JWT_SECRET="${OENEXA_JWT_SECRET:-oenexa-ai-engineer-jwt-secret-key-32bytes-min-sample}"
+    export OENEXA_JWT_SECRET="${OENEXA_JWT_SECRET:-oenexa-ai-core-jwt-secret-key-32bytes-min-sample}"
 
-    log_info "Starting OENEXA API in development mode via Gradle bootRun..."
+    log_info "Starting OENEXA AI Core in development mode via Gradle bootRun..."
     exec "$SCRIPT_DIR/gradlew" :api:bootRun "$@"
 }
 
 # Build artifacts
 build_project() {
     check_java
-    log_info "Building executable bootJar for OENEXA backend application..."
+    log_info "Building executable bootJar for OENEXA AI Core..."
     "$SCRIPT_DIR/gradlew" :api:bootJar "$@"
     log_success "Build complete! BootJar generated in:"
     echo "  - api/build/libs/api-0.1.0-SNAPSHOT.jar"

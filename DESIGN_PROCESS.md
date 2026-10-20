@@ -7,7 +7,7 @@
 
 ## 2. High‑Level Architecture Definition
 - Draft **system context diagram** (external systems: Git providers, LLM providers, Cloud services).
-- Choose **modular monolith** as the foundation; define **hexagonal boundaries** (`domain`, `application`, `infrastructure`, `api`) accompanied by 19 specialized platform modules (`oenexa-*`). The Web UI is completely decoupled in the companion repository `oenexa-ai-engineer-frontend`.
+- Choose **modular monolith** as the foundation; define **hexagonal boundaries** (`domain`, `application`, `infrastructure`, `api`) accompanied by 19 specialized platform modules (`oenexa-*`). The Web UI is completely decoupled in the companion repository `oenexa-ai-web`.
 - Identify **cross‑cutting concerns** (security, multi-tenancy, logging, metrics, RFC 7807 error handling).
 - Validate architecture against **C4 model** layers using Mermaid diagrams in `ARCHITECTURE.md`.
 

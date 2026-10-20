@@ -1,6 +1,7 @@
 # ==============================================================================
-# OENEXA AI Engineer Backend - Fast Pre-Built Container Image
+# OENEXA AI Core - Fast Pre-Built Container Image
 # Assumes api/build/libs/api-0.1.0-SNAPSHOT.jar was built on host via ./run.sh build
+# Repository: github.com/oenexa/oenexa-ai-core
 # ==============================================================================
 FROM eclipse-temurin:25-jre-noble AS runner
 WORKDIR /app
