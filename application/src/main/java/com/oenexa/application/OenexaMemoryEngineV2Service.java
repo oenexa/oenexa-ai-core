@@ -24,7 +24,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * Employs Java 25 Virtual Threads for multi-thread parallel fetching and smart eviction.
  */
 @Service
-public class OenexaMemoryEngineV2Service {
+public final class OenexaMemoryEngineV2Service {
 
     public record InternalMemoryEntry(
             String key,

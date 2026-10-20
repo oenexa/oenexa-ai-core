@@ -18,24 +18,25 @@ import java.util.function.Consumer;
  * Harnesses Java 25 Virtual Threads for zero-overhead background prefetching.
  */
 @Service
-public class OenexaIntelligentPrefetchEngine {
+public final class OenexaIntelligentPrefetchEngine {
 
-    private final Map<String, List<String>> associationGraph = new ConcurrentHashMap<>();
+    private final Map<String, List<String>> associationGraph;
     private final AtomicLong prefetchTriggers = new AtomicLong(0);
     private final AtomicLong prefetchHits = new AtomicLong(0);
 
     public OenexaIntelligentPrefetchEngine() {
-        seedStandardHeuristics();
+        this.associationGraph = new ConcurrentHashMap<>(createDefaultAssociations());
     }
 
-    private void seedStandardHeuristics() {
-        // Standard full-stack engineering associations
-        registerAssociation("UserService.java", List.of("UserRepository.java", "UserController.java", "JwtService.java"));
-        registerAssociation("UserController.java", List.of("UserService.java", "UserDto.java", "SecurityConfig.java"));
-        registerAssociation("OrderService.java", List.of("OrderRepository.java", "PaymentGatewayService.java", "InventoryClient.java"));
-        registerAssociation("ChatService.java", List.of("ChatRepository.java", "MemoryService.java", "AiModelRouter.java"));
-        registerAssociation("App.tsx", List.of("ChatTab.tsx", "PlatformNavigationBar.tsx", "scenarioResponseEngine.ts"));
-        registerAssociation("ChatTab.tsx", List.of("ChatMessageStream.tsx", "chatService.ts", "ChatHeaderBar.tsx"));
+    private static Map<String, List<String>> createDefaultAssociations() {
+        Map<String, List<String>> map = new HashMap<>();
+        map.put("UserService.java", List.of("UserRepository.java", "UserController.java", "JwtService.java"));
+        map.put("UserController.java", List.of("UserService.java", "UserDto.java", "SecurityConfig.java"));
+        map.put("OrderService.java", List.of("OrderRepository.java", "PaymentGatewayService.java", "InventoryClient.java"));
+        map.put("ChatService.java", List.of("ChatRepository.java", "MemoryService.java", "AiModelRouter.java"));
+        map.put("App.tsx", List.of("ChatTab.tsx", "PlatformNavigationBar.tsx", "scenarioResponseEngine.ts"));
+        map.put("ChatTab.tsx", List.of("ChatMessageStream.tsx", "chatService.ts", "ChatHeaderBar.tsx"));
+        return map;
     }
 
     public void registerAssociation(String sourceKey, List<String> targets) {
