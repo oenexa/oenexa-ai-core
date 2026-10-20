@@ -2,8 +2,8 @@
 # ==============================================================================
 # OENEXA AI Engineer - Unified Linux / Git Bash Service Launcher
 # ==============================================================================
-# Supports running the clean-architecture API, the modular monolith Gateway,
-# building bootJars, running tests, and managing local profiles.
+# Supports running the clean-architecture API, building bootJars,
+# running tests, and managing local profiles.
 # ==============================================================================
 
 set -euo pipefail
@@ -64,7 +64,6 @@ EOF
 load_env() {
     if [ -f "$SCRIPT_DIR/.env" ]; then
         log_info "Loading configuration from .env..."
-        # Export non-comment lines
         set -a
         # shellcheck disable=SC1091
         source "$SCRIPT_DIR/.env"
@@ -98,9 +97,8 @@ show_help() {
     echo ""
     echo -e "${COLOR_BOLD}Commands:${COLOR_RESET}"
     echo "  api         Run OENEXA AI Engineer REST API (Port 8080, In-Memory H2 DB) [Default]"
-    echo "  gateway     Run OENEXA Platform Gateway (Modular Monolith with all 19 modules)"
     echo "  dev         Run API in development live mode with ./gradlew :api:bootRun"
-    echo "  build       Build all executable Spring Boot jars (:api and :oenexa-gateway)"
+    echo "  build       Build executable Spring Boot jar (:api:bootJar)"
     echo "  test        Execute all unit tests and JaCoCo coverage verification gates"
     echo "  clean       Clean build outputs and temporary caches"
     echo "  status      Check build artifacts and system readiness"
@@ -117,14 +115,13 @@ show_help() {
     echo -e "${COLOR_BOLD}Examples:${COLOR_RESET}"
     echo "  ./run.sh                    # Start API service"
     echo "  ./run.sh api                # Start API service explicitly"
-    echo "  ./run.sh gateway            # Start Platform Gateway"
     echo "  ./run.sh dev                # Start with Gradle bootRun"
     echo "  ./run.sh test               # Run all test suites"
     echo "  ./run.sh api --server.port=9090  # Override Spring Boot port"
     echo ""
 }
 
-# Run the API service (com.oenexa.api.OenexaAiEngineerApplication)
+# Run the API service (com.oenexa.api.OenexaApiApplication)
 run_api() {
     print_banner
     check_java
@@ -144,26 +141,6 @@ run_api() {
     exec java -Dfile.encoding=UTF-8 -jar "$jar_file" "$@"
 }
 
-# Run the Gateway service (ai.oenexa.OenexaApplication)
-run_gateway() {
-    print_banner
-    check_java
-    load_env
-
-    export SERVER_PORT="${SERVER_PORT:-8080}"
-    export OENEXA_JWT_SECRET="${OENEXA_JWT_SECRET:-oenexa-ai-engineer-jwt-secret-key-32bytes-min-sample}"
-    export OENEXA_LLM_PROVIDER="${OENEXA_LLM_PROVIDER:-echo}"
-
-    local jar_file="$SCRIPT_DIR/oenexa-gateway/build/libs/oenexa-gateway-0.1.0-SNAPSHOT.jar"
-    if [ ! -f "$jar_file" ]; then
-        log_info "Gateway jar not found. Building with Gradle (:oenexa-gateway:bootJar)..."
-        "$SCRIPT_DIR/gradlew" :oenexa-gateway:bootJar
-    fi
-
-    log_success "Launching OENEXA Platform Gateway on port ${SERVER_PORT} [LLM Provider: ${OENEXA_LLM_PROVIDER}]..."
-    exec java -Dfile.encoding=UTF-8 -jar "$jar_file" "$@"
-}
-
 # Run in Gradle development mode
 run_dev() {
     print_banner
@@ -180,17 +157,16 @@ run_dev() {
 # Build artifacts
 build_project() {
     check_java
-    log_info "Building executable bootJars for all OENEXA backend applications..."
-    "$SCRIPT_DIR/gradlew" :api:bootJar :oenexa-gateway:bootJar "$@"
-    log_success "Build complete! BootJars generated in:"
+    log_info "Building executable bootJar for OENEXA backend application..."
+    "$SCRIPT_DIR/gradlew" :api:bootJar "$@"
+    log_success "Build complete! BootJar generated in:"
     echo "  - api/build/libs/api-0.1.0-SNAPSHOT.jar"
-    echo "  - oenexa-gateway/build/libs/oenexa-gateway-0.1.0-SNAPSHOT.jar"
 }
 
 # Run tests
 run_tests() {
     check_java
-    log_info "Running test suite and JaCoCo coverage verification across all 23 modules..."
+    log_info "Running test suite and JaCoCo coverage verification across hexagonal modules..."
     "$SCRIPT_DIR/gradlew" check "$@"
     log_success "All tests and JaCoCo coverage gates passed successfully!"
 }
@@ -215,15 +191,14 @@ check_status() {
     echo ""
 
     echo -e "${COLOR_BOLD}=== Build Artifacts ===${COLOR_RESET}"
-    for jar in "$SCRIPT_DIR/api/build/libs/api-0.1.0-SNAPSHOT.jar" "$SCRIPT_DIR/oenexa-gateway/build/libs/oenexa-gateway-0.1.0-SNAPSHOT.jar"; do
-        if [ -f "$jar" ]; then
-            local size
-            size=$(du -h "$jar" | cut -f1)
-            echo -e "  [${COLOR_GREEN}EXISTS${COLOR_RESET}] $(basename "$jar") (${size})"
-        else
-            echo -e "  [${COLOR_YELLOW}MISSING${COLOR_RESET}] $(basename "$jar") (Run './run.sh build' to generate)"
-        fi
-    done
+    local jar="$SCRIPT_DIR/api/build/libs/api-0.1.0-SNAPSHOT.jar"
+    if [ -f "$jar" ]; then
+        local size
+        size=$(du -h "$jar" | cut -f1)
+        echo -e "  [${COLOR_GREEN}EXISTS${COLOR_RESET}] $(basename "$jar") (${size})"
+    else
+        echo -e "  [${COLOR_YELLOW}MISSING${COLOR_RESET}] $(basename "$jar") (Run './run.sh build' to generate)"
+    fi
     echo ""
 }
 
@@ -235,11 +210,8 @@ if [ $# -gt 0 ]; then
 fi
 
 case "$COMMAND" in
-    api)
+    api|gateway|platform)
         run_api "$@"
-        ;;
-    gateway|platform)
-        run_gateway "$@"
         ;;
     dev)
         run_dev "$@"

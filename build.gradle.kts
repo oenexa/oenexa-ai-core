@@ -13,8 +13,7 @@ allprojects {
 }
 
 subprojects {
-    if (name == "oenexa-ui") return@subprojects
-    apply{
+    apply {
         plugin("java-library")
         plugin("io.spring.dependency-management")
         plugin("jacoco")
@@ -56,7 +55,7 @@ subprojects {
         reports { xml.required.set(true); html.required.set(true) }
     }
 
-    // Coverage gate. All 23 modules enforce JaCoCo verification.
+    // Coverage gate. All 4 hexagonal modules enforce JaCoCo verification.
     val coverageExempt = emptySet<String>()
     if (name !in coverageExempt) {
         tasks.withType<JacocoCoverageVerification>().configureEach {

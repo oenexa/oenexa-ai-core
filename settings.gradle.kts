@@ -1,5 +1,5 @@
-// Settings for the OENEXA AI Engineer multi‑module project
-rootProject.name = "oenexa-ai-engineer"
+// Settings for the OENEXA AI Engineer Backend multi-module project
+rootProject.name = "oenexa-ai-engineer-backend"
 
 // Foundation Hexagonal Core
 include(
