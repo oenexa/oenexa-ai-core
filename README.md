@@ -13,14 +13,14 @@ OENEXA AI Core is the **enterprise-grade AI-powered operating system engine**. I
 
 ## 🛠️ Technology Stack
 
-| Layer | Technologies |
-|---|---|
-| **Backend Core** | Java 25 (Virtual Threads, Structured Concurrency), Spring Boot 4.1.1, Spring MVC, Spring WebFlux |
-| **AI Layer** | Spring AI 2.0.1, 10-Agent Autonomous Ecosystem, ReAct Reflection, MCP v1.0 Protocol, 7-Layer Memory Hierarchy |
-| **Persistence** | PostgreSQL 15, Redis 7 Alpine, Spring Data JPA, Flyway, Zero-Copy MappedByteBuffer |
-| **Testing** | JUnit 5 Platform, Zero-Mock Policy (100% In-Process Real Verification), JaCoCo (80%+ Line/Branch Gates) |
-| **Infrastructure** | Docker, Docker Compose, Kubernetes, Helm (`charts/oenexa-ai-core`) |
-| **Architecture** | Hexagonal / Clean Architecture (`domain`, `application`, `infrastructure`, `api`) |
+| Layer              | Technologies                                                                                                  |
+|--------------------|---------------------------------------------------------------------------------------------------------------|
+| **Backend Core**   | Java 25 (Virtual Threads, Structured Concurrency), Spring Boot 4.1.1, Spring MVC, Spring WebFlux              |
+| **AI Layer**       | Spring AI 2.0.1, 10-Agent Autonomous Ecosystem, ReAct Reflection, MCP v1.0 Protocol, 7-Layer Memory Hierarchy |
+| **Persistence**    | PostgreSQL 15, Redis 7 Alpine, Spring Data JPA, Flyway, Zero-Copy MappedByteBuffer                            |
+| **Testing**        | JUnit 5 Platform, Zero-Mock Policy (100% In-Process Real Verification), JaCoCo (80%+ Line/Branch Gates)       |
+| **Infrastructure** | Docker, Docker Compose, Kubernetes, Helm (`charts/oenexa-ai-core`)                                            |
+| **Architecture**   | Hexagonal / Clean Architecture (`domain`, `application`, `infrastructure`, `api`)                             |
 
 ---
 

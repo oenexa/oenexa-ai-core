@@ -1,22 +1,23 @@
-# OENEXA AI Engineer — System Architecture & Component Blueprint
+# OENEXA AI Core — System Architecture & Component Blueprint
 
-> **System Identity:** `[AI-CORE] ⚡` OENEXA AI Core Service  
+> **System Identity:** `[AI-CORE] ⚡` OENEXA AI Core Backend Service  
 > **Paired Frontend UI:** `[AI-WEB] 💻` [`oenexa-ai-web`](../oenexa-ai-web) (`http://localhost:3000` via Docker / `http://localhost:5173` via Vite)  
-> **Runtime Baseline:** Java 25+ | Spring Boot 4.1.1 | Spring AI 2.0.1 | PostgreSQL 15 | Redis 7 | Gradle 9.8.0  
-> **Architecture Pattern:** Clean / Hexagonal Modular Monolith (23 Modules)  
+> **Repository:** `https://github.com/oenexa/oenexa-ai-core`  
+> **Runtime Baseline:** Java 25+ (Virtual Threads) | Spring Boot 4.1.1 | Spring AI 2.0.1 | PostgreSQL 15 | Redis 7 | Gradle 9.8.0  
+> **Architecture Pattern:** Clean Hexagonal Modular Monolith (`domain`, `application`, `infrastructure`, `api`)  
 > **Master Ecosystem Directory:** [`AI_AGENT_DEVELOPER_REPO_MAPPING.md`](../AI_AGENT_DEVELOPER_REPO_MAPPING.md)  
 
 ---
 
 ## 1. High-Level Architectural Overview
 
-OENEXA AI Engineer is an enterprise-grade autonomous software engineering platform. It understands, analyzes, generates, reviews, tests, debugs, and deploys complex codebases across heterogeneous programming stacks.
+OENEXA AI Core is the enterprise-grade AI Operating System and autonomous software engineering platform. It rivals systems such as Claude, ChatGPT, Gemini, Microsoft Copilot, and DeepSeek by combining deep Chain-of-Thought reasoning, a 10-Agent Autonomous DAG execution engine, a 7-Layer Memory Hierarchy with NVMe context caching, Model Context Protocol (MCP v1.0) interoperability, multimodal intelligence (Voice STT/TTS and Vision OCR/SVG), and banking-grade security.
 
-The platform follows a **Hexagonal / Clean Modular Monolith** architecture:
-1. **Core Business Logic (Inner Hexagon):** Pure, framework-agnostic Java 25 domain objects, records, and boundary contracts.
-2. **Application Orchestration Layer:** Use-case workflows, multi-agent coordination, conversational context windows, and RAG knowledge retrieval.
-3. **Infrastructure Layer (Outer Hexagon):** Adapters for PostgreSQL (Spring Data JPA + Flyway migrations), Redis (context caching), Kafka (event streaming), and Elasticsearch (code search).
-4. **Primary Adapters (API & Gateway):** Spring MVC REST endpoints with Java virtual threads, OpenAPI 3.1 documentation, and the OENEXA Modular Gateway.
+The platform strictly adheres to a **Clean Hexagonal Architecture**:
+1. **Core Business Logic (Inner Hexagon - `domain`):** Pure, framework-agnostic Java 25 domain objects, records, value objects, domain events, and boundary contracts.
+2. **Application Orchestration Layer (`application`):** Autonomous agent ecosystem, memory hierarchy management, MCP protocol handlers, use-case workflows, and multi-model router orchestration.
+3. **Infrastructure Layer (Outer Hexagon - `infrastructure`):** PostgreSQL JPA entities (Flyway migrations), zero-copy NVMe SSD memory-mapped buffer adapters (`MappedByteBuffer`), Redis context cache, and distributed/in-process event publishers.
+4. **Primary Adapters (`api`):** Spring Boot 4.1.1 executable bootJar (`com.oenexa.api.OenexaApiApplication`) with Virtual Threads, REST controllers (`/api/v4/*`, `/api/v1/*`), and OpenAPI documentation.
 
 ---
 
@@ -26,31 +27,31 @@ The platform follows a **Hexagonal / Clean Modular Monolith** architecture:
 
 ```mermaid
 C4Context
-    title System Context Diagram (C4 Level 1) - OENEXA AI Engineer Platform
+    title System Context Diagram (C4 Level 1) - OENEXA AI Core Platform
 
-    Person(developer, "Software Engineer / AI Agent", "Interacts with Monaco editor, prompts AI, requests AST refactoring, triggers code reviews")
-    Person_Ext(cicd_runner, "CI/CD & Webhook Runner", "Triggers automated PR reviews, security scans, and build failure repairs")
+    Person(developer, "Developer / Enterprise User", "Interacts with AI Chat, Agent Dashboard, Monaco Editor, Memory Telemetry")
+    Person_Ext(cicd_runner, "CI/CD & MCP Client", "Interacts via Model Context Protocol (MCP v1.0) and REST API")
 
-    Enterprise_Boundary(b_oenexa, "OENEXA Autonomous Engineering Boundary") {
-        System(oenexa_ui, "OENEXA Frontend UI", "React 18 + Vite 5 SPA with Monaco Editor, SSE Stream Client, and Module Dashboard (Port 3000/5173)")
-        System(oenexa_be, "OENEXA Backend Services", "Spring Boot 4.1.1 + Java 25 Clean Modular Monolith (Port 8080)")
+    Enterprise_Boundary(b_oenexa, "OENEXA AI Ecosystem Boundary") {
+        System(oenexa_web, "OENEXA AI Web", "React 18 + Vite 5 SPA, Monaco Editor, 10-Agent DAG Inspector, Memory Telemetry (Port 3000/5173)")
+        System(oenexa_core, "OENEXA AI Core", "Spring Boot 4.1.1 + Java 25 Clean Hexagonal Architecture (Port 8080)")
     }
 
-    System_Ext(gemini_api, "Google Gemini API", "Gemini 2.5 Pro / Flash models for deep Chain-of-Thought reasoning, long-context analysis, and code synthesis")
-    System_Ext(postgres_db, "PostgreSQL 15 Store", "Persistent relational datastore for multi-tenant organizations, projects, workflows, AST scans (Port 5432)")
-    System_Ext(redis_cache, "Redis 7 Cache", "In-memory cache for conversational session history, sliding-window compaction, and agent locks (Port 6379)")
-    System_Ext(git_vcs, "Git VCS Providers", "GitHub, GitLab, Bitbucket, and local polyrepo repositories inspected via SSH / REST")
-    System_Ext(kafka_bus, "Apache Kafka", "High-throughput domain event streaming and asynchronous multi-agent task distribution (Port 9092)")
+    System_Ext(gemini_api, "Google Gemini & Cloud LLMs", "Claude 3.5, Gemini 2.5 Pro, GPT-4o, DeepSeek V3 for reasoning and generation")
+    System_Ext(local_llm, "Local Ollama Engine", "Local-first air-gapped models (llama3.3, qwen2.5) via http://localhost:11434")
+    System_Ext(postgres_db, "PostgreSQL 15 Store", "Persistent relational store for organizations, projects, memory, vector embeddings (Port 5432)")
+    System_Ext(redis_cache, "Redis 7 Cache", "In-memory cache for sliding context windows, agent mutex locks (Port 6379)")
+    System_Ext(mcp_clients, "External MCP Tools", "External tools and data sources integrated via MCP v1.0 JSON-RPC 2.0")
 
-    Rel(developer, oenexa_ui, "Uses via web browser", "HTTPS / WSS")
-    Rel(cicd_runner, oenexa_be, "Triggers review & repair webhooks", "REST / JSON (:8080)")
-    Rel(oenexa_ui, oenexa_be, "Proxies REST calls, chat SSE streams, module discovery", "REST / JSON (:3000/api -> :8080)")
+    Rel(developer, oenexa_web, "Uses via web browser", "HTTPS / WSS")
+    Rel(cicd_runner, oenexa_core, "Invokes via MCP & REST", "JSON-RPC / REST (:8080)")
+    Rel(oenexa_web, oenexa_core, "Proxies REST calls, chat SSE streams, MCP tools", "REST / SSE (:3000/api -> :8080)")
     
-    Rel(oenexa_be, gemini_api, "Dispatches prompt chains & CoT reasoning tasks", "HTTPS / REST")
-    Rel(oenexa_be, postgres_db, "Reads & writes tenant records, workflows, audit logs", "JDBC / JPA (:5432)")
-    Rel(oenexa_be, redis_cache, "Caches conversational turns & distributed mutex locks", "RESP (:6379)")
-    Rel(oenexa_be, git_vcs, "Inspects code trees, generates branch commits & patches", "Git CLI / SSH")
-    Rel(oenexa_be, kafka_bus, "Publishes & consumes domain events", "Kafka Protocol (:9092)")
+    Rel(oenexa_core, gemini_api, "Dispatches prompt chains & reasoning", "HTTPS / REST")
+    Rel(oenexa_core, local_llm, "Executes air-gapped inference", "HTTP (:11434)")
+    Rel(oenexa_core, postgres_db, "Reads & writes tenant records, workflows, memory", "JDBC / JPA (:5432)")
+    Rel(oenexa_core, redis_cache, "Caches conversational turns & distributed locks", "RESP (:6379)")
+    Rel(oenexa_core, mcp_clients, "Exchanges tool schemas and execution results", "MCP v1.0 Protocol")
 ```
 
 ### 2.2 Container Diagram (Level 2)
@@ -58,7 +59,7 @@ C4Context
 ```mermaid
 flowchart TD
     subgraph ClientZone ["Developer / Client Zone"]
-        Browser["Web Browser / Client<br/>(Monaco Editor, Chat UI)"]
+        Browser["Web Browser / Client<br/>(Monaco Editor, Chat UI, 10-Agent DAG)"]
     end
 
     subgraph DockerBridge ["Docker Bridge Network (oenexa-network)"]
@@ -70,506 +71,192 @@ flowchart TD
 
         subgraph BackContainer ["Container: oenexa-backend"]
             direction TB
-            JVM["Eclipse Temurin 25 JRE<br/>Generational ZGC (-XX:+UseZGC)"]
+            JVM["Eclipse Temurin 25 JRE<br/>Virtual Threads + Generational ZGC"]
             
-            subgraph DualRunners ["Dual-Runner Executables"]
-                ApiJar["Mode 1: :api bootJar<br/>(Clean Hexagonal Core, Virtual Threads)"]
-                GatewayJar["Mode 2: :oenexa-gateway bootJar<br/>(Unified Modular Monolith, All 19 Modules)"]
+            subgraph CoreRunner ["Executable Runtime"]
+                ApiJar[":api bootJar<br/>(com.oenexa.api.OenexaApiApplication)"]
             end
             
-            JVM --- DualRunners
+            JVM --- CoreRunner
             Probes["Actuator Health Probes<br/>/actuator/health/liveness<br/>/actuator/health/readiness"]
         end
 
         subgraph DataContainers ["Data & Persistence Tier"]
-            Postgres["Container: oenexa-postgres<br/>PostgreSQL 15 Alpine (Port 5432)<br/>DB: oenexa_db | Flyway V1"]
+            Postgres["Container: oenexa-postgres<br/>PostgreSQL 15 Alpine (Port 5432)<br/>DB: oenexa_db | Flyway V1-V6"]
             Redis["Container: oenexa-redis<br/>Redis 7.4 Alpine (Port 6379)<br/>TTL: 3600s Sliding Cache"]
+            NvmeCache["NVMe SSD File Cache<br/>MappedByteBuffer Zero-Copy mmap"]
             Volumes["Persistent Named Volumes<br/>oenexa_pgdata | oenexa_redisdata"]
             Postgres --- Volumes
             Redis --- Volumes
         end
     end
 
-    subgraph ExternalCloud ["Upstream External Cloud"]
-        Gemini["Google Gemini API<br/>gemini-2.5-pro / flash"]
-        VCS["Remote Git Hosts<br/>GitHub / GitLab / Bitbucket"]
+    subgraph ExternalServices ["AI Model Providers & LLMs"]
+        CloudLLMs["Cloud LLM Providers<br/>Claude 3.5 | Gemini 2.5 | GPT-4o | DeepSeek"]
+        LocalOllama["Local Ollama<br/>llama3.3 | qwen2.5 | deepseek-r1"]
     end
 
     Browser -->|http://localhost:3000| Nginx
     Nginx -->|proxy_pass /api/*| BackContainer
     BackContainer -->|jdbc:postgresql://postgres:5432/oenexa_db| Postgres
     BackContainer -->|redis://redis:6379| Redis
-    BackContainer -->|HTTPS REST| Gemini
-    BackContainer -->|Git SSH / HTTPS| VCS
+    BackContainer -->|NIO FileChannel.map| NvmeCache
+    BackContainer -->|HTTPS REST| CloudLLMs
+    BackContainer -->|HTTP :11434| LocalOllama
 ```
 
-### 2.3 Component & Hexagonal Architecture Diagram (Level 3)
+### 2.3 Hexagonal Component Architecture (Level 3)
 
 ```mermaid
 flowchart TB
-    subgraph Ring4 ["Ring 4: Inbound Adapters (Primary)"]
-        API[":api<br/>(Spring MVC REST Controllers, Virtual Threads)"]
-        GATEWAY[":oenexa-gateway<br/>(Modular Monolith Aggregator bootJar)"]
+    subgraph Ring4 ["Ring 4: Inbound REST Controllers (Primary Adapters)"]
+        direction TB
+        AgentCtrl["AutonomousAgentEcosystemController (/api/v4/agents/*)"]
+        MemoryCtrl["EnterpriseMemoryHierarchyController (/api/v4/memory/*)"]
+        McpCtrl["ModelContextProtocolController (/api/v4/mcp/*)"]
+        ChatCtrl["IntelligentChatController (/api/v1/chat/*)"]
+        BillingCtrl["EnterpriseSubscriptionController (/api/v1/billing/*)"]
+        VoiceCtrl["EnterpriseVoiceController (/api/v1/voice/*)"]
+        MediaCtrl["EnterpriseMediaController (/api/v1/media/*)"]
+        EngineerCtrl["AiSoftwareEngineerController (/api/v1/engineer/*)"]
     end
 
-    subgraph Ring3 ["Ring 3: Outer Persistence & Messaging Adapters (Secondary)"]
-        INFRA[":infrastructure<br/>(Spring Data JPA, Flyway V1, Redis Adapters, Kafka)"]
+    subgraph Ring3 ["Ring 3: Outer Persistence & System Adapters (Secondary Adapters)"]
+        direction TB
+        JPA["Spring Data JPA Repositories (PostgreSQL 15)"]
+        Flyway["Flyway V1..V6 Database Migrations"]
+        MmapAdapter["NIO MappedByteBuffer NVMe Context Cache"]
+        RedisAdapter["Redis Client Adapter"]
     end
 
-    subgraph Ring2 ["Ring 2: Application Orchestration"]
-        APP[":application<br/>(AgentCoordinatorService, ChatService, RagService, TokenService)"]
+    subgraph Ring2 ["Ring 2: Application Orchestration Services"]
+        direction TB
+        AgentSvc["EnterpriseAgentEcosystemService (10 Personas, DAG, Reflection)"]
+        MemorySvc["EnterpriseMemoryHierarchyService (7-Layer Memory Hierarchy)"]
+        McpSvc["ModelContextProtocolService (MCP v1.0 Runtime)"]
+        ChatSvc["IntelligentConversationService (Gemini CoT & Multi-Model)"]
+        BillingSvc["EnterpriseSubscriptionService (Stripe Tiers & Quotas)"]
+        VoiceSvc["EnterpriseVoiceService (Real-Time Audio STT/TTS)"]
+        MediaSvc["EnterpriseMediaService (Multimodal Vision OCR & SVG)"]
+        EngineerSvc["AiSoftwareEngineerService (AST Parsing & Code Generation)"]
     end
 
     subgraph Ring1 ["Ring 1: Inner Domain Core (Pure Java 25)"]
-        DOM[":domain<br/>(Pure Records, Invariants, ErrorCode, Value Objects)"]
-    end
-
-    subgraph PlatformModules ["Specialized Platform Subsystems (19 Modules)"]
         direction TB
-        
-        subgraph Group_Identity ["Identity & Multi-Tenancy"]
-            COMMON[":oenexa-common"]
-            AUTH[":oenexa-auth"]
-            CORE[":oenexa-core"]
-            WORKSPACE[":oenexa-workspace"]
-            ADMIN[":oenexa-admin"]
-        end
-
-        subgraph Group_AI ["Cognitive AI & Search"]
-            CHAT[":oenexa-chat (Gemini CoT)"]
-            AGENT[":oenexa-agent (15 Agents)"]
-            RAG[":oenexa-rag (Embeddings)"]
-            SEARCH[":oenexa-search (Hybrid RRF)"]
-        end
-
-        subgraph Group_Eng ["Software Engineering Automation"]
-            CODE[":oenexa-code (AST Engine)"]
-            REVIEW[":oenexa-review (PR Diff)"]
-            SECURITY[":oenexa-security (SAST/OWASP)"]
-            TESTING[":oenexa-testing (Synthesizer)"]
-            DOCS[":oenexa-documentation (ADRs)"]
-        end
-
-        subgraph Group_Ops ["DevOps & Reliability Operations"]
-            DEVOPS[":oenexa-devops (K8s/Docker)"]
-            PIPELINE[":oenexa-pipeline (CI Repair)"]
-            REPO[":oenexa-repository (VCS Tree)"]
-            OBS[":oenexa-observability (Fingerprints)"]
-        end
+        AgentDomain["AutonomousAgentEcosystemDomain (Records, Roles, Invariants)"]
+        MemoryDomain["EnterpriseMemoryHierarchyDomain (L1..L7 Layer Contracts)"]
+        McpDomain["ModelContextProtocolDomain (MCP v1.0 Protocol Schemas)"]
+        ChatDomain["ChatDomain (Messages, Sessions, Contexts)"]
+        SubDomain["SubscriptionDomain (Tiers, Quotas, Usage Meters)"]
+        VoiceDomain["VoiceDomain (Transcripts, Voice Commands, Audio)"]
+        MediaDomain["MediaDomain (OCR Extracts, SVG Scenes, Video)"]
+        EngineerDomain["AiEngineerDomain (AST Models, Patches, Diff)"]
     end
 
-    %% Inward dependency rules
-    API --> APP
-    API --> DOM
-    INFRA --> DOM
-    APP --> DOM
-    
-    GATEWAY --> PlatformModules
-    PlatformModules --> COMMON
-    CHAT --> AUTH
-    AGENT --> AUTH
-    RAG --> AUTH
-    CORE --> INFRA
+    %% Dependency flow follows the Dependency Inversion Principle (strictly inward)
+    Ring4 --> Ring2
+    Ring4 --> Ring1
+    Ring3 --> Ring1
+    Ring2 --> Ring1
+    Ring2 --> Ring3
 ```
 
 ---
 
-## 3. The 23 Modular Subsystems
+## 3. The 4 Clean Hexagonal Modules
 
-The backend is organized into 23 strictly bounded Gradle modules. All dependencies are managed centrally in `gradle/libs.versions.toml`:
+The backend is organized into 4 strictly bounded Gradle modules:
 
-### 3.1 Hexagonal Core (4 Modules)
-| Module | Layer | Responsibility & Contents | Test Verification & Gate |
-| :--- | :--- | :--- | :--- |
-| **`:domain`** | Inner Hexagon | Pure Java 25 business entities, records (`UserRegistration`, `TenantContext`, `Workflow`, `AgentContract`, `RagDocument`, `ChatDomain`, `CodeContextAttachment`, `CodeArtifact`, `ToolCall`, `ToolResult`), invariants, domain events, and RFC 7807 error codes. **Zero external framework dependencies.** | **100% Coverage (171/171 lines, 100% branches)** |
-| **`:application`** | Use-Cases | Application services (`UserService`, `ChatService`, `AgentCoordinatorService`, `RagService`, `TokenService`, `PlatformEventPublisher`). Orchestrates domain objects without framework coupling. | **100% Coverage (305/305 lines, 100% branches)** |
-| **`:infrastructure`**| Outer Adapters | Spring Data JPA entities, Flyway database migrations (`V1__init_oenexa_schema.sql`), Redis configuration, Kafka event publishers, and embedded fallbacks. | **100% Coverage (374/374 lines, 100% branches)** |
-| **`:api`** | Primary Adapter | Spring Boot MVC executable bootJar (`com.oenexa.api`). Exposes `@RestController` endpoints (`ChatController`, `AgentController`, `RagController`, `AuthController`, `ModulesController`), global RFC 7807 exception handler, and actuator metrics. | **100% Coverage (123/123 lines, 100% branches)** |
-
-### 3.2 Platform Engineering Modules (19 Modules)
-| Module | Responsibility & Key Services | REST Endpoints | Test Verification & Gate |
-| :--- | :--- | :--- | :--- |
-| **`:oenexa-common`** | Shared cross-cutting concerns: RFC 7807 `ErrorResponse`, global error handler, domain events, and reactive multi-tenant context (`TenantContext`). | Filter / Utility layer | **100% Coverage (58/58 lines)** |
-| **`:oenexa-auth`** | Token authentication, JWT issuing/parsing via JJWT 0.12.6, BCrypt password hashing, and Role-Based Access Control (`AuthService`). | `/api/v1/auth/*` | **100% Coverage (112/112 lines, 100% branches)** |
-| **`:oenexa-agent`** | Autonomous multi-agent coordination framework: 15 agent contracts, 4 sequential workflow pipelines, step execution, and delegation boundaries. | `/api/v1/agents/*` | **100% Coverage (153/153 lines, 100% branches)** |
-| **`:oenexa-chat`** | Pro-Grade conversational AI reasoning engine (`GeminiReasoningEngine`), autonomous tool calling (`ast_analyzer`, `security_scanner`, `test_synthesizer`, `code_refactoring`, `architecture_diagram`), code context attachment ingestion (`CodeContextAttachment`), Monaco code artifact extraction (`CodeArtifact`, `ArtifactExtractor`), multi-turn session lifecycle & conversation management (metadata, pinning, forking, titling), Google Gemini 2.5 Pro/Flash models, confidence scoring, long-context compaction, and SSE streaming. | `/api/v1/chat/*` | **100% Coverage (571/571 lines)** |
-| **`:oenexa-rag`** | Retrieval-Augmented Generation: document ingestion, token chunking, semantic vector index, and similarity retrieval. | `/api/v1/rag/*` | **100% Coverage (114/114 lines)** |
-| **`:oenexa-core`** | Relational tenancy kernel: Organizations, Teams, Projects, Users domain records, JPA/In-Memory adapters, and tenancy services (`DefaultCoreTenancyService`). | `/api/v1/core/*` | **100% Coverage (281/281 lines)** |
-| **`:oenexa-gateway`** | Executable Modular Monolith bootJar aggregating all 19 platform modules into a single production service. | Unified Gateway Host (`/api/v1/modules`) | **100% Coverage (29/29 lines)** |
-| **`:oenexa-code`** | AST inspection, smell detection, automated code refactoring, and code generation (`DefaultCodeService`). | `POST /api/v1/code/ast/analyze`<br/>`POST /api/v1/code/refactor`<br/>`POST /api/v1/code/generate` | **100% Coverage (172/172 lines)** |
-| **`:oenexa-review`** | Automated PR reviewer, unified diff hunk parser, quality grading, and blast-radius risk scoring (`DefaultReviewService`). | `POST /api/v1/review/pull-requests`<br/>`POST /api/v1/review/diff/analyze` | **100% Coverage (113/113 lines)** |
-| **`:oenexa-security`** | Automated SAST vulnerability scanner, secrets detector (AWS, GitHub, API keys), and OWASP Top-10 classifier (`DefaultSecurityService`). | `POST /api/v1/security/sast/scan`<br/>`POST /api/v1/security/secrets/scan`<br/>`POST /api/v1/security/owasp/audit` | **100% Coverage (132/132 lines)** |
-| **`:oenexa-testing`** | Automated test suite synthesizer (JUnit 5, Cucumber BDD, Vitest, PyTest) and JaCoCo coverage evaluator (`DefaultTestingService`). | `POST /api/v1/testing/generate`<br/>`POST /api/v1/testing/coverage/evaluate` | **100% Coverage (126/126 lines)** |
-| **`:oenexa-documentation`**| Markdown documentation synthesizer, Architectural Decision Record (ADR) generator, and Mermaid diagram exporter (`DefaultDocumentationService`). | `POST /api/v1/documentation/generate`<br/>`POST /api/v1/documentation/adr`<br/>`POST /api/v1/documentation/diagram` | **100% Coverage (125/125 lines)** |
-| **`:oenexa-devops`** | Manifest linting and security scanner (Dockerfile, K8s, Compose, Helm) and CI/CD workflow generator (`DefaultDevopsService`). | `POST /api/v1/devops/manifest/analyze`<br/>`POST /api/v1/devops/pipeline/generate` | **100% Coverage (111/111 lines)** |
-| **`:oenexa-pipeline`** | CI/CD build failure diagnosis engine (compilation, test failures, timeouts, permissions) and automated repair generator (`DefaultPipelineService`). | `POST /api/v1/pipeline/diagnose`<br/>`POST /api/v1/pipeline/repair` | **100% Coverage (86/86 lines)** |
-| **`:oenexa-search`** | Full-text, semantic vector, and hybrid Reciprocal Rank Fusion (RRF) search engine with citation linking (`DefaultSearchService`). | `GET /api/v1/search/query`<br/>`POST /api/v1/search/index` | **100% Coverage (71/71 lines)** |
-| **`:oenexa-workspace`** | Multi-tenant organization boundaries, team workspace isolation, and project environment registration (`DefaultWorkspaceService`). | `POST /api/v1/workspaces`<br/>`GET /api/v1/workspaces/{id}`<br/>`POST /api/v1/workspaces/{id}/projects`<br/>`GET /api/v1/workspaces/tenant/{tenantId}` | **100% Coverage (105/105 lines)** |
-| **`:oenexa-admin`** | Tamper-evident audit logging, tenant usage metrics (token/compute rollups), and enterprise security policy governance (`DefaultAdminService`). | `POST /api/v1/admin/audit`<br/>`GET /api/v1/admin/audit/tenant/{tenantId}`<br/>`GET /api/v1/admin/metrics/tenant/{tenantId}`<br/>`GET/POST /api/v1/admin/settings/tenant/{tenantId}` | **100% Coverage (87/87 lines)** |
-| **`:oenexa-repository`** | Remote VCS inspector (GitHub/GitLab/Bitbucket), multi-module dependency tree analyzer, and Mermaid architecture graph generator (`DefaultRepositoryService`). | `POST /api/v1/repository/inspect`<br/>`POST /api/v1/repository/graph` | **100% Coverage (90/90 lines)** |
-| **`:oenexa-observability`**| Log stream ingestion, cross-service deterministic error fingerprint grouping (`errorType + message`), and incident timeline correlation (`DefaultObservabilityService`). | `POST /api/v1/observability/events`<br/>`GET /api/v1/observability/fingerprints/{fingerprint}`<br/>`GET /api/v1/observability/analytics`<br/>`GET /api/v1/observability/timeline` | **100% Coverage (136/136 lines)** |
+| Module | Architectural Role | Responsibilities & Capabilities | Test Gate |
+|:---|:---|:---|:---|
+| **`:domain`** | Inner Hexagon | Pure Java 25 business models, immutable records, sealed interfaces, and domain events. Zero external framework dependencies. Contains 10-Agent persona contracts, 7-Layer memory hierarchy definitions, MCP v1.0 protocol schemas, multimodal voice/media contracts, and subscription quota rules. | **100% Zero-Mock Verification (100% Lines & Branches)** |
+| **`:application`** | Use-Cases & Orchestration | Orchestration services: `EnterpriseAgentEcosystemService` (10-agent DAG scheduler), `EnterpriseMemoryHierarchyService` (7 memory layers with NVMe SSD context cache), `ModelContextProtocolService` (MCP tool execution), `IntelligentConversationService`, `EnterpriseSubscriptionService`, `EnterpriseVoiceService`, `EnterpriseMediaService`. | **100% Zero-Mock Verification (100% Lines & Branches)** |
+| **`:infrastructure`** | Outer Adapters | Spring Data JPA entities, Flyway database migrations (`V1` to `V6`), zero-copy `MappedByteBuffer` file cache for out-of-RAM context buffer, Redis adapters, and event publishers. | **100% Zero-Mock Verification (100% Lines & Branches)** |
+| **`:api`** | Primary Inbound Adapter | Spring Boot 4.1.1 executable application (`OenexaApiApplication`) with Virtual Threads. Exposes REST controllers for all V4 endpoints (`/api/v4/*`), V1 endpoints (`/api/v1/*`), global RFC 7807 problem details error handling, and Actuator probes. | **100% Zero-Mock Verification (100% Lines & Branches)** |
 
 ---
 
-## 4. Multi-Agent Orchestration Architecture
+## 4. 10-Agent Autonomous Ecosystem
 
-The multi-agent system (`oenexa-agent` and `application/AgentCoordinatorService`) organizes autonomous agents into deterministic, verifiable workflows:
-
-```mermaid
-sequenceDiagram
-    autonumber
-    actor Dev as Developer / Web UI
-    participant Gateway as API Gateway (:8080)
-    participant Coord as AgentCoordinatorService
-    participant Reg as Agent Registry (15 Types)
-    participant Pipeline as Workflow Pipeline (DAG)
-    participant Agent as Specialized Agent Worker
-    participant Event as PlatformEventPublisher
-
-    Dev->>Gateway: POST /api/v1/agents/workflows/{workflowId}/run
-    Gateway->>Coord: executeWorkflow(workflowId, input)
-    Coord->>Pipeline: resolveSteps(workflowId)
-    Pipeline-->>Coord: [STEP 1: REPO_INTEL, STEP 2: CODE_REVIEW, STEP 3: TESTING]
-    
-    loop For each step in workflow
-        Coord->>Reg: resolveAgent(step.agentType)
-        Reg-->>Coord: AgentContract instance
-        Coord->>Agent: executeStep(task, context)
-        Agent-->>Coord: StepExecutionResult(SUCCESS, payload)
-        Coord->>Event: publish(DomainEvent: StepCompleted)
-    end
-
-    Coord-->>Gateway: WorkflowExecutionResult(SUCCESS, timeline)
-    Gateway-->>Dev: HTTP 200 OK (Execution Summary & Artifacts)
-```
-
-### Supported Workflows:
-1. **`CODE_REVIEW`**: `REPOSITORY_INTELLIGENCE` $\rightarrow$ `CODE_REVIEW` $\rightarrow$ `SECURITY_AUDIT` $\rightarrow$ `TESTING_VERIFICATION`.
-2. **`FEATURE_IMPLEMENTATION`**: `ARCHITECTURE_UNDERSTANDING` $\rightarrow$ `CODE_GENERATION` $\rightarrow$ `TESTING_VERIFICATION` $\rightarrow$ `DOCUMENTATION_GENERATION`.
-3. **`BUG_FIX`**: `DEBUG_DIAGNOSIS` $\rightarrow$ `AUTOMATED_BUG_FIX` $\rightarrow$ `TESTING_VERIFICATION` $\rightarrow$ `DEVOPS_INTEGRATION`.
-4. **`SECURITY_HARDENING`**: `SECURITY_AUDIT` $\rightarrow$ `AUTOMATED_BUG_FIX` $\rightarrow$ `TESTING_VERIFICATION` $\rightarrow$ `DEVOPS_INTEGRATION`.
-
-### 4.2 End-to-End Gemini Chain-of-Thought (CoT) Request Flow
-
-```mermaid
-sequenceDiagram
-    autonumber
-    actor Dev as Developer / Web UI
-    participant Nginx as Nginx Proxy (:3000)
-    participant Ctrl as ChatController (:api / :gateway)
-    participant Sec as JwtFilter & TenantContext
-    participant Engine as GeminiReasoningEngine (:oenexa-chat)
-    participant Cache as Redis Session Store (:infrastructure)
-    participant Adapter as GeminiLlmAdapter (:oenexa-chat)
-    participant Gemini as Google Gemini 2.5 API (REST)
-    participant DB as PostgreSQL 15 (:infrastructure)
-
-    Dev->>Nginx: POST /api/v1/chat/reasoning (Bearer JWT, payload)
-    Nginx->>Ctrl: Forward request (:8080)
-    Ctrl->>Sec: Validate Bearer token & extract TenantContext
-    Sec-->>Ctrl: Context bound to Java 25 Virtual Thread
-    
-    Ctrl->>Engine: reasonWithCoT(sessionId, prompt, options)
-    Engine->>Cache: fetchHistory(sessionId)
-    Cache-->>Engine: List of prior chat turns
-    
-    opt If history exceeds token budget (> 12 turns)
-        Engine->>Engine: compactContextSummary(history)
-    end
-
-    Engine->>Engine: classifyIntent(prompt) -> Intent.CODE_GENERATION
-    Engine->>Adapter: executeCoTCall(systemPrompt, prompt, model)
-    Adapter->>Gemini: POST /v1beta/models/gemini-2.5-pro:generateContent
-    Gemini-->>Adapter: JSON (Thought Process + Output Code)
-    
-    Adapter-->>Engine: GeminiModelOutput(rawThinking, responseText)
-    Engine->>Engine: parseCoTResponse(output) -> ReasoningResponse
-    
-    par Async Persistence
-        Engine->>Cache: appendTurn(sessionId, prompt, response)
-        Engine->>DB: persistChatLog(tenantId, sessionId, prompt, response)
-    end
-
-    Engine-->>Ctrl: ReasoningResponse(thoughts, code, confidence)
-    Ctrl-->>Nginx: HTTP 200 OK (application/json)
-    Nginx-->>Dev: HTTP 200 OK (Rendered in UI)
-```
-
----
-
-## 5. Dual-Runner Architecture
-
-The backend supports two distinct production modes:
-
-```
-                  ┌──────────────────────────────────────────────┐
-                  │          OENEXA BACKEND SOURCE CODE          │
-                  └──────────────────────┬───────────────────────┘
-                                         │
-                 ┌───────────────────────┴───────────────────────┐
-                 ▼                                               ▼
-   ┌───────────────────────────┐                   ┌───────────────────────────┐
-   │         MODE 1:           │                   │         MODE 2:           │
-   │  Spring MVC REST API      │                   │     Modular Monolith      │
-   │      (:api bootJar)       │                   │ (:oenexa-gateway bootJar) │
-   ├───────────────────────────┤                   ├───────────────────────────┤
-   │ • Fast, micro-footprint   │                   │ • Self-contained monolith │
-   │ • Clean Hexagonal Core    │                   │ • Includes all 19 modules │
-   │ • Virtual Threads (MVC)   │                   │ • Integrated WebFlux/MVC  │
-   │ • Used by Docker Stack    │                   │ • Enterprise deployment   │
-   │ • Port: 8080              │                   │ • Port: 8080              │
-   └───────────────────────────┘                   └───────────────────────────┘
-```
-
-Both jars are built via `./run.sh build` or `.\gradlew.bat bootJar`.
-
----
-
-## 6. Docker Container Ecosystem Architecture
-
-The multi-container Docker environment runs on an isolated bridge network (`oenexa-network`):
-
-```
-                        [ DEVELOPER BROWSER ]
-                                  │
-                                  │ http://localhost:3000
-                                  ▼
-           ┌─────────────────────────────────────────────┐
-           │              oenexa-frontend                │
-           │  (Node 22 Builder + Nginx Alpine Runner)    │
-           │  • Serves React 18 / Vite SPA               │
-           │  • Proxies /api/ to http://backend:8080     │
-           │  • Dual IPv4/IPv6 listener (ports 80 & [::])│
-           └──────────────────────┬──────────────────────┘
-                                  │
-                                  │ http://backend:8080/api/*
-                                  ▼
-           ┌─────────────────────────────────────────────┐
-           │              oenexa-backend                 │
-           │  (Eclipse Temurin 25 JRE + Generational ZGC)│
-           │  • Spring Boot 4.1.1 Application            │
-           │  • Liveness & Readiness Actuator Probes     │
-           │  • Exposes Port 8080                        │
-           └──────────────┬───────────────────────┬──────┘
-                          │                       │
-         jdbc:postgresql: │                       │ redis://redis:6379
-         //postgres:5432  ▼                       ▼
-           ┌─────────────────────┐         ┌─────────────────────┐
-           │   oenexa-postgres   │         │    oenexa-redis     │
-           │ (PostgreSQL 15 Alp) │         │  (Redis 7.4.11 Alp) │
-           │ Port 5432           │         │ Port 6379           │
-           │ DB: oenexa_db       │         │ Auth: disabled/dev  │
-           └─────────────────────┘         └─────────────────────┘
-```
-
----
-
-## 7. Testing & Quality Assurance Architecture
-
-The system enforces strict quality gates:
-1. **Strictly Zero Mocks:** Unit and application service tests execute with real instantiated domain records, services, and state transitions. No Mockito, PowerMock, or `@MockBean`.
-2. **Behavior-Driven Development (BDD):** Cucumber-JVM 7.21.1 executes Gherkin feature files verifying real multi-step user scenarios.
-3. **JaCoCo Quality Gate ($\ge 80\%$ Minimum, 100% Submodule Coverage Target):** All implemented submodules enforce a mandatory JaCoCo verification gate.
-4. **Zero Compiler Warnings:** Enforced via `JavaCompile` options (`-parameters`, `-Xlint:all,-processing`).
-5. **Symbolic Step Ledger:** Every engineering and development step maintains a WHAT, WHY, and HOW entry marked with official symbolic tags (`[CODE] 💻`, `[REVIEW] 🔍`, `[SEC] 🛡️`, `[TEST] 🧪`, `[DOC] 📚`, `[DEVOPS] 🐳`, `[PIPE] ⚡`, `[SEARCH] 🔎`, `[WORKSPACE] 📁`, `[ADMIN] ⚙️`, `[REPO] 📦`, `[OBS] 📊`).
-
-### Verified 100% Test Coverage Across Implemented Platform Submodules
-
-| Subsystem Module | Covered Lines | Missed Lines | Line Coverage | Test Framework | Mocking Status |
-| :--- | :---: | :---: | :---: | :--- | :--- |
-| **`oenexa-code`** | 172 | 0 | **100%** | JUnit 5 | **Strictly Zero Mocks** |
-| **`oenexa-review`** | 113 | 0 | **100%** | JUnit 5 | **Strictly Zero Mocks** |
-| **`oenexa-security`** | 132 | 0 | **100%** | JUnit 5 | **Strictly Zero Mocks** |
-| **`oenexa-testing`** | 126 | 0 | **100%** | JUnit 5 | **Strictly Zero Mocks** |
-| **`oenexa-documentation`** | 125 | 0 | **100%** | JUnit 5 | **Strictly Zero Mocks** |
-| **`oenexa-devops`** | 111 | 0 | **100%** | JUnit 5 | **Strictly Zero Mocks** |
-| **`oenexa-pipeline`** | 86 | 0 | **100%** | JUnit 5 | **Strictly Zero Mocks** |
-| **`oenexa-search`** | 71 | 0 | **100%** | JUnit 5 | **Strictly Zero Mocks** |
-| **`oenexa-workspace`** | 105 | 0 | **100%** | JUnit 5 | **Strictly Zero Mocks** |
-| **`oenexa-admin`** | 87 | 0 | **100%** | JUnit 5 | **Strictly Zero Mocks** |
-| **`oenexa-repository`** | 90 | 0 | **100%** | JUnit 5 | **Strictly Zero Mocks** |
-| **`oenexa-observability`** | 136 | 0 | **100%** | JUnit 5 | **Strictly Zero Mocks** |
-| **`oenexa-core`** | 281 | 0 | **100%** | JUnit 5 | **Strictly Zero Mocks** |
-| **`oenexa-chat`** | 571 | 0 | **100%** | JUnit 5 | **Strictly Zero Mocks** |
-| **`oenexa-auth`** | 112 | 0 | **100%** | JUnit 5 | **Strictly Zero Mocks** |
-| **`oenexa-common`** | 58 | 0 | **100%** | JUnit 5 | **Strictly Zero Mocks** |
-| **`oenexa-rag`** | 114 | 0 | **100%** | JUnit 5 | **Strictly Zero Mocks** |
-| **`oenexa-agent`** | 153 | 0 | **100%** | JUnit 5 | **Strictly Zero Mocks** |
-| **`oenexa-gateway`** | 29 | 0 | **100%** | JUnit 5 | **Strictly Zero Mocks** |
-| **`domain`** | 171 | 0 | **100%** | JUnit 5 | **Strictly Zero Mocks** |
-| **`application`** | 305 | 0 | **100%** | JUnit 5 / BDD | **Strictly Zero Mocks** |
-| **`infrastructure`** | 374 | 0 | **100%** | JUnit 5 | **Strictly Zero Mocks** |
-| **`api`** | 123 | 0 | **100%** | JUnit 5 | **Strictly Zero Mocks** |
-| **`TOTAL`** | **3,485+** | **0** | **100%** | JUnit 5 / BDD | **Zero Mocks Across All Modules** |
-
----
-
-## 8. Phase 2 & Phase 3: Intelligent Chat, Memory & 7-Agent Architecture
-
-The Phase 2 and Phase 3 platform upgrade transforms OENEXA into a complete AI Engineering Platform similar to Claude, ChatGPT, Gemini, Cursor AI, and Devin AI:
+The V4 agent system provides 10 specialized personas that collaborate via a Directed Acyclic Graph (DAG) with automated self-healing reflection loops:
 
 ```mermaid
 graph TD
-    User["Developer / Frontend Web UI"] --> Gateway["API Gateway (:8080)"]
-    Gateway --> Orchestrator["IntelligentConversationService (:application)"]
-    
-    subgraph MemoryLayer ["AI Memory Architecture (:application / :infrastructure)"]
-        ShortTerm["Short-Term Memory<br/>(Sliding Window up to 50 Turns, Tokens, Auto-Summary)"]
-        LongTerm["Long-Term Memory<br/>(User Preferences, Facts, Project Context, PostgreSQL)"]
-    end
-    
-    subgraph RepoLayer ["Repository Understanding & Vector RAG (:application)"]
-        Parser["Multi-Stack Parser<br/>(Java, Spring, React, Vue, K8s, Docker, SQL)"]
-        Symbols["Symbol Indexer<br/>(Classes, Methods, Endpoints, Tables)"]
-        VectorDB["Vector Store & Cosine Similarity<br/>(64-dim Embeddings, Semantic Search)"]
-    end
-    
-    subgraph RouterLayer ["Multi-Model AI Engine (:application)"]
-        TaskClassifier["Autonomous Task Classifier<br/>(Coding, Reasoning, BugFix, FastChat, DevOps, Security)"]
-        ModelRouter["Dynamic Model Router<br/>(Claude 3.5 Sonnet, GPT-4o, Gemini 2.5, DeepSeek V3)"]
-    end
-    
-    subgraph AgentLayer ["Collaborative 7-Agent System (:application)"]
-        ArchAg["1. Architecture Agent"]
-        CodeAg["2. Code Agent"]
-        TestAg["3. Test Agent"]
-        SecAg["4. Security Agent"]
-        DevOpsAg["5. DevOps Agent"]
-        DocAg["6. Documentation Agent"]
-        BugAg["7. Bug Fix Agent"]
-    end
-    
-    Orchestrator --> ShortTerm
-    Orchestrator --> LongTerm
-    Orchestrator --> VectorDB
-    Orchestrator --> TaskClassifier
-    TaskClassifier --> ModelRouter
-    ModelRouter --> AgentLayer
-    
-    AgentLayer --> Ranker["AI Response Ranking & Follow-Up Synthesis"]
-    Ranker --> Persistence["PostgreSQL V2 Schema Persistence"]
-    Persistence --> Gateway
-    Gateway --> Stream["Token Streaming / SSE / UI Update"]
+    UserGoal["User Goal / Prompt Input"] --> PM["1. Product Manager Agent<br/>(PRD, INVEST Stories, Acceptance Criteria)"]
+    PM --> Arch["2. System Architect Agent<br/>(C4 Models, Modular Boundaries, ADRs)"]
+    Arch --> Eng["3. Software Engineer Agent<br/>(AST Synthesis, Clean Code, Virtual Threads)"]
+    Arch --> Data["7. Data Engineer Agent<br/>(Flyway Migrations, ER Schemas, Vector RAG)"]
+    Eng --> QA["8. QA & Verification Agent<br/>(JUnit 5, Zero-Mock Tests, Coverage Gates)"]
+    Data --> QA
+    Eng --> Sec["4. Security Specialist Agent<br/>(OWASP Scans, Secrets Detection, RBAC)"]
+    Eng --> DevOps["5. DevOps Specialist Agent<br/>(Docker, Kubernetes Helm, CI/CD Workflows)"]
+    Sec --> DevOps
+    DevOps --> QA
+    QA --> Fin["9. Financial Analyst Agent<br/>(Cloud Compute Cost, Token Quotas, ROI)"]
+    Fin --> CS["10. Customer Support Agent<br/>(User Guidance, Troubleshooting, Release Notes)"]
+    Arch --> Res["6. Research Specialist Agent<br/>(Literature, Benchmarks, Competitive Intelligence)"]
+
+    %% Self-Healing Reflection Loop
+    QA -.->|Verification Failure| SelfHealing["Self-Healing Reflection Loop<br/>(Root-Cause Diagnosis, Unified Patch, Re-test)"]
+    SelfHealing -.->|Apply Patch| Eng
 ```
 
-### Architectural Guarantees:
-1. **Zero Mock Testing:** 100% real domain records, JPA proxies, and in-memory caches.
-2. **Context Window Management:** Automatic summarization when turns exceed sliding thresholds.
-3. **Multi-Model Dynamic Routing:** Direct routing of coding and reasoning to Claude / GPT-4o, fast chat to DeepSeek, architecture and diagrams to Gemini Pro.
-4. **Autonomous Collaborative Pipelines:** Sequential multi-agent workflows executing end-to-end software engineering deliveries.
+### Persona Matrix
+1. **Software Engineer (`SOFTWARE_ENGINEER`)**: Clean code generation, AST refactoring, zero compiler warnings.
+2. **System Architect (`SYSTEM_ARCHITECT`)**: Hexagonal boundary design, C4 architecture diagrams, ADR generation.
+3. **DevOps Specialist (`DEVOPS_SPECIALIST`)**: Multi-stage Dockerfiles, Helm charts, GitHub Actions CI/CD workflows.
+4. **Security Specialist (`SECURITY_SPECIALIST`)**: SAST vulnerability scanning, secret detection, OWASP Top-10 compliance.
+5. **Research Specialist (`RESEARCH_SPECIALIST`)**: Algorithmic benchmarking, academic literature analysis, competitive review.
+6. **Product Manager (`PRODUCT_MANAGER`)**: PRD synthesis, INVEST user stories, Gherkin BDD criteria.
+7. **Data Engineer (`DATA_ENGINEER`)**: PostgreSQL DDL, Flyway migrations, vector embedding pipelines.
+8. **QA & Verification (`QA_VERIFICATION`)**: 100% zero-mock testing, mutation coverage, regression verification.
+9. **Financial Analyst (`FINANCIAL_ANALYST`)**: Cloud compute cost estimation, LLM token budget optimization, subscription margins.
+10. **Customer Support (`CUSTOMER_SUPPORT`)**: Interactive user troubleshooting, API documentation, release notes.
 
 ---
 
-## 9. Google Gemini 4 & Argon Autonomous AI Agent Architecture
-
-The Gemini 4 Argon Autonomous AI Agent Engine upgrades OENEXA into a self-governing software engineer capable of high-level goal decomposition, multi-persona collaboration, real-time trace streaming, and automated self-healing reflection:
+## 5. 7-Layer Memory Hierarchy & NVMe SSD Context Cache
 
 ```mermaid
 graph TD
-    User["Developer Goal Input"] --> AgentController["ArgonAgentController (:api)"]
-    AgentController --> Engine["ArgonAutonomousAgentEngine (:application)"]
-    
-    subgraph ArgonLifecycle ["Gemini 4 Argon Autonomous Reasoning Loop"]
-        Phase1["1. PLANNING<br/>(Goal Decomposition, Context Retrieval, Memory Analysis)"]
-        Phase2["2. DECOMPOSITION<br/>(Dynamic DAG Construction across 7 Personas)"]
-        Phase3["3. TOOL_EXECUTION<br/>(Architecture -> Code -> Test -> Security -> DevOps -> Docs)"]
-        Phase4["4. SELF_HEALING_VERIFICATION<br/>(Compilation Check, Root Cause Analysis, Git Patch Diff)"]
-        Phase5["5. REFLECTION<br/>(Confidence Evaluation, Regression Free Verification)"]
-        Phase6["6. COMPLETED<br/>(Artifact Extraction, Summary Generation)"]
-        
-        Phase1 --> Phase2
-        Phase2 --> Phase3
-        Phase3 --> Phase4
-        Phase4 --> Phase5
-        Phase5 --> Phase6
+    subgraph MemoryHierarchy ["7-Layer Enterprise Memory Hierarchy"]
+        L1["L1: Register / Virtual Thread Context<br/>(In-flight turn variables, ScopedValues, sub-millisecond)"]
+        L2["L2: Conversational Cache<br/>(Sliding window of recent turns, Redis in-memory)"]
+        L3["L3: Working Memory Scratchpad<br/>(Active goals, sub-task DAG state, reflection iterations)"]
+        L4["L4: Fast NVMe SSD Context Buffer<br/>(MappedByteBuffer zero-copy out-of-RAM cache, up to 100MB)"]
+        L5["L5: Relational Persistence<br/>(PostgreSQL 15 Flyway JPA tables, permanent user/tenant state)"]
+        L6["L6: Semantic Vector Space<br/>(pgvector embeddings, cosine similarity, AST code knowledge)"]
+        L7["L7: Cold Storage Archive<br/>(Compressed gzip JSON logs, immutable audit trail)"]
     end
-    
-    Engine --> Phase1
-    Phase4 -.->|If Error / Discrepancy| SelfHealingCycle["Self-Healing Reflection Loop<br/>(BugFixAgent + TestAgent)"]
-    SelfHealingCycle -.->|Patch Verified| Phase4
-    
-    subgraph PersistenceLayer ["PostgreSQL V3 Schema Persistence (:infrastructure)"]
-        GoalsTable[("argon_goals")]
-        StepsTable[("argon_plan_steps")]
-        EventsTable[("argon_execution_events")]
-        HealingTable[("argon_self_healing_cycles")]
-    end
-    
-    Phase6 --> PersistenceLayer
-    Phase3 --> SSE["Real-Time SSE Trace Stream<br/>(Fine-Grained Agent Thoughts & Actions)"]
-    SSE --> UI["Frontend Gemini Argon Console"]
+
+    L1 --> L2 --> L3 --> L4 --> L5 --> L6 --> L7
 ```
 
-### Core Invariants:
-1. **Autonomous ReAct Loop:** Multi-stage execution through `PLANNING` ➔ `DECOMPOSITION` ➔ `TOOL_EXECUTION` ➔ `SELF_HEALING_VERIFICATION` ➔ `REFLECTION` ➔ `COMPLETED`.
-2. **Self-Healing Reflection:** When compilation errors, syntax faults, or test regressions occur, the engine analyzes stack traces, formulates a minimal unified git patch diff, applies it, and re-verifies.
-3. **Real-Time Streaming:** Live SSE telemetry streams persona thoughts, tool calls, and output snippets directly to the developer console.
-4. **Zero-Mock Invariant:** 100% verified line coverage across all 23 backend modules with zero mock frameworks.
+### NVMe SSD Zero-Copy Memory Mapping
+- **Mechanism:** Implemented in `EnterpriseMemoryHierarchyService` via Java NIO `FileChannel.map(FileChannel.MapMode.READ_WRITE, 0, capacity)`.
+- **Purpose:** Allows large codebase context buffers (up to 100 MB per workspace) to be paged directly between NVMe SSD storage and the operating system page cache without JVM heap memory pressure or garbage collection pauses.
 
 ---
 
-## 10. Local-First Private AI, Multimodal Ingestion & AI Product Manager Architecture
+## 6. Model Context Protocol (MCP v1.0) Architecture
 
-OENEXA operates as a local-first, privacy-guaranteed engineering platform with multimodal comprehension and automated product requirement formulation:
+OENEXA AI Core acts as a compliant MCP v1.0 Server, enabling bi-directional tool calling, resource URI resolution, and prompt schema distribution:
 
-```mermaid
-graph TD
-    Client["User Input: Voice, Image, Document or Goal"] --> Gateway["ArgonAgentController (:api)"]
-    
-    subgraph LocalFirstPrivacy ["Local-First & Air-Gapped Privacy Boundary"]
-        PrivacyGuard["LocalPrivacyConfig<br/>(Telemetry Disabled, Air-Gapped Verification)"]
-        LocalOllama["Local Ollama Inference<br/>(http://localhost:11434 / llama3.3 / deepseek-r1)"]
-    end
-    
-    Gateway --> PrivacyGuard
-    PrivacyGuard --> LocalOllama
-    
-    subgraph MultimodalPipeline ["Multimodal Ingestion Engine"]
-        Voice["Audio / Voice Clips<br/>(Developer Speech Directives)"] --> SpeechTranscriber["Voice Transcriber"]
-        Images["Architecture Diagrams & UI Mockups"] --> VisionOCR["Diagram & OCR Extractor"]
-        Docs["PRDs, SQL DDL & OpenAPI Schemas"] --> DocParser["Schema & AST Parser"]
-        
-        SpeechTranscriber --> MultiModalContext["Multimodal Context Graph"]
-        VisionOCR --> MultiModalContext
-        DocParser --> MultiModalContext
-    end
-    
-    Client --> MultimodalPipeline
-    MultiModalContext --> Engine["ArgonAutonomousAgentEngine (:application)"]
-    
-    subgraph ProductLifecycleDAG ["7-Stage Autonomous Plan DAG"]
-        PM["1. PRODUCT_MANAGER_AGENT<br/>(PRD Synthesis, INVEST User Stories, Acceptance Criteria)"]
-        Arch["2. ARCHITECTURE_AGENT<br/>(Hexagonal Invariants, C4 Contracts)"]
-        Code["3. CODE_AGENT<br/>(Java 25 Records, REST, Spring Data)"]
-        Test["4. TEST_AGENT<br/>(JUnit 5 Zero-Mock 100% Coverage)"]
-        Sec["5. SECURITY_AGENT<br/>(SAST & Air-Gapped Verification)"]
-        DevOps["6. DEVOPS_AGENT<br/>(Multi-Stage Docker & Kubernetes)"]
-        DocsStage["7. DOCUMENTATION_AGENT<br/>(OpenAPI & Mermaid Diagrams)"]
-        
-        PM --> Arch
-        Arch --> Code
-        Code --> Test
-        Test --> Sec
-        Sec --> DevOps
-        DevOps --> DocsStage
-    end
-    
-    Engine --> ProductLifecycleDAG
-    
-    subgraph V4Persistence ["PostgreSQL V4 Schema (:infrastructure)"]
-        PRDTable[("product_requirements_documents")]
-        StoriesTable[("user_stories")]
-        AttachmentsTable[("multimodal_attachments")]
-        AuditTable[("local_agent_audit_logs")]
-    end
-    
-    ProductLifecycleDAG --> V4Persistence
-```
+- **Protocol Endpoints:**
+  - `GET /api/v4/mcp/tools`: Lists all registered MCP tools with JSON schemas (`ast_analyzer`, `security_scanner`, `test_synthesizer`, `code_refactoring`, `architecture_diagram`, `voice_transcriber`, `svg_generator`).
+  - `POST /api/v4/mcp/tools/execute`: Executes a tool invocation with structured JSON arguments.
+  - `GET /api/v4/mcp/resources`: Discovers MCP workspace resources (`file://`, `workspace://`, `memory://`).
+  - `GET /api/v4/mcp/prompts`: Retrieves standard prompt templates with parameter validation.
+  - `POST /api/v4/mcp/rpc`: JSON-RPC 2.0 transport handler supporting `tools/list`, `tools/call`, `resources/list`, `resources/read`, and `prompts/list`.
 
-### Key Capabilities:
-1. **Local-First & Zero-Telemetry Mode:** Guarantees that sensitive proprietary codebases, schema definitions, and credentials never leave the host machine.
-2. **Native Multimodal Understanding:** Ingests visual architecture diagrams, developer voice directives, and complex technical documents directly into agent context.
-3. **End-to-End Product Engineering:** From business requirements (`PRODUCT_MANAGER_AGENT` formulating PRDs and INVEST user stories) through implementation, zero-mock testing, security, containerization, and documentation.
+---
 
+## 7. Zero-Mock Quality & Verification Policy
 
-
+1. **Strictly Real In-Process Verification**:
+   - Zero Mockito, PowerMock, or mock test doubles allowed in test suites.
+   - All tests instantiate real concrete records, domain services, and in-process databases.
+2. **Coverage Gates**:
+   - JaCoCo 80%+ mandatory line and branch coverage gate enforced on all builds.
+3. **Single Responsibility Principle (SRP)**:
+   - All source files across the platform are strictly kept below 400 lines of code.

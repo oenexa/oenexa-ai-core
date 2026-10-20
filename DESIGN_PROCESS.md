@@ -1,158 +1,162 @@
-# Design Process for OENEXA AI Engineer
+# Design Process: OENEXA AI Core (V4 Operating System)
+
+> **Component:** `[AI-CORE] ⚡` OENEXA AI Core Backend  
+> **Repository:** `C:\workspace\oenexarepo\oenexa-ai-core`  
+> **Paired Frontend UI:** `[AI-WEB] 💻` [`oenexa-ai-web`](../oenexa-ai-web) (`http://localhost:5173`)  
+> **Architecture Pattern:** Clean Hexagonal Modular Monolith (Domain, Application, Infrastructure, API)  
+> **Target Runtime:** Java 25+ (Virtual Threads, Structured Concurrency, Scoped Values) | Spring Boot 4.1.1 | Spring AI 2.0.1 | PostgreSQL 15 | Redis 7 | MCP v1.0 | Gradle 9.8.0  
+
+---
 
 ## 1. Requirements & Stakeholder Alignment
-- **Stakeholder workshops** with product owners, engineering leads, security team, and AI researchers.
-- Capture **functional** (AI agents, UI, API generation) and **non‑functional** (scalability, latency, security, observability) requirements.
-- Produce a **requirements backlog** in the `issues/` repository with clear acceptance criteria.
 
-## 2. High‑Level Architecture Definition
-- Draft **system context diagram** (external systems: Git providers, LLM providers, Cloud services).
-- Choose **modular monolith** as the foundation; define **hexagonal boundaries** (`domain`, `application`, `infrastructure`, `api`) accompanied by 19 specialized platform modules (`oenexa-*`). The Web UI is completely decoupled in the companion repository `oenexa-ai-web`.
-- Identify **cross‑cutting concerns** (security, multi-tenancy, logging, metrics, RFC 7807 error handling).
-- Validate architecture against **C4 model** layers using Mermaid diagrams in `ARCHITECTURE.md`.
-
-## 3. Detailed Component Design
-### 3.1 Backend Modules (23 Modules)
-- **Domain (`domain`)** – Pure Java 25 business records, immutable domain events, execution context, and zero framework lock-in.
-- **Application (`application`)** – Use‑case orchestration, `AgentCoordinatorService`, `ChatService`, `RagService`, and `TokenService`.
-- **Infrastructure (`infrastructure`)** – DataSource, PostgreSQL JPA entities, Flyway migrations, Redis cache, Kafka producer/consumer, Elasticsearch client.
-- **API (`api`)** – Spring MVC REST controllers (`@RestController`) powered by Java virtual threads, OpenAPI 3.1 spec generation, ProblemDetail error handlers.
-- **Platform Modules (`oenexa-*`)** – 19 focused subsystems (`common`, `auth`, `agent`, `chat`, `rag`, `core`, `gateway`, `code`, `search`, `security`, `documentation`, `review`, `testing`, `devops`, `pipeline`, `observability`, `repository`, `workspace`, `admin`).
-- **AI Agent Layer** – 15 specialized agent contracts (`AgentContract`), 4 ordered workflow pipelines (`Workflow`), sliding context window manager.
-
-### 3.2 UI Design (Decoupled Frontend Repository)
-- **Component library**: React 18, Material‑UI 5, Tailwind CSS.
-- **Editor integration**: Monaco editor with AI‑suggestion overlay and real-time backend health monitor.
-- **Reverse Proxy**: Nginx Alpine container forwarding `/api/` traffic to the backend on port 8080.
-
-### 3.3 Security Design
-- **Authentication** – RFC 7519 JWT (access & refresh tokens) via JJWT 0.12.6.
-- **Authorization** – RBAC policies, method security annotations, multi-tenant isolation via `TenantContext`.
-- **Hardening** – OWASP Top‑10 sanitization, secret scanning, CSP headers, immutable record parameters.
-
-### 3.4 Observability Design
-- **Metrics** – Micrometer + Prometheus metrics for JVM, HTTP endpoints, agent execution queues (`/actuator/prometheus`).
-- **Tracing** – OpenTelemetry 1.52.0 SDK distributed tracing.
-- **Logging** – JSON logback to Loki/ELK.
-- **Dashboards** – Grafana panels for request latency, error rates, AI agent queue depth.
-
-## 4. Data Model & Persistence
-- Create **ER diagram** (Mermaid) covering users, projects, repositories, scans, issues, fixes, PRs, tests, security findings, deployments, logs, agent tasks.
-- Map to **Flyway migrations** (`V1__init.sql`).
-- Use **Spring Data JPA** repositories with proper indexes.
-
-## 5. AI Agent Orchestration Blueprint
-- **Coordinator service** (Spring bean) receives a task request, selects the appropriate agent(s), persists context in Redis.
-- Agents are **stateless**; they can be scaled horizontally.
-- Define **communication contracts** (DTOs) between coordinator and agents.
-- Implement **fallback & retry** logic for LLM API failures.
-
-## 6. CI/CD & Deployment Architecture
-- **GitHub Actions workflow**: lint → unit tests → integration tests (Testcontainers) → static analysis → build Docker image → push to GHCR → helm package → argo‑cd sync.
-- **Docker‑Compose** for local development (Postgres, Redis, Kafka, Elasticsearch, API, UI).
-- **Helm chart** with separate sub‑charts for each service; values file supports cloud‑specific overrides (GKE, AKS, EKS).
-- **Argo CD** as GitOps engine to continuously deploy changes.
-
-## 7. Review & Validation
-- Conduct **architecture review** with security & performance specialists.
-- Run **load testing** (k6, Gatling) against a staged environment.
-- Perform **penetration testing** on authentication and API endpoints.
-- Iterate based on findings.
+- **Product Vision:** Build OENEXA AI as a world-class AI Operating System rivaling Claude, ChatGPT, Gemini, Microsoft Copilot, and DeepSeek.
+- **Enterprise Standards:** Banking-grade security (Argon2id, RFC 7519 JWT, RBAC), 10-agent autonomous collaboration with dynamic DAG planning, 7-layer memory hierarchy with zero-copy NVMe SSD buffers, and Model Context Protocol (MCP v1.0) compliance.
+- **Hexagonal Boundaries:** Clean separation of concerns with zero framework lock-in in domain models, single responsibility principle (<400 lines per file), and zero-mock verification policy.
 
 ---
 
-# Development Plan (12‑Week Sprint Roadmap)
+## 2. High-Level Architecture Definition (C4 Level 1 & 2)
 
-## Week 0 – Project Kick‑off
-- Initialize repo, Gradle multi‑module scaffold (already done).
-- Set up CI pipeline skeleton.
-- Agree on coding standards, branch strategy (GitFlow).
+```mermaid
+graph TD
+    User["Developer / Enterprise User"]
+    WebUI["[AI-WEB] Frontend UI (React 18 / Vite 5 / Monaco)"]
+    MCPClient["External MCP Clients (Claude Desktop / Cursor / IDEs)"]
 
-## Week 1 – Core Backend Foundations
-- Implement **Domain** entities (`User`, `Project`, `Repository`).
-- Create **Flyway** migrations for core tables.
-- Configure **Infrastructure** beans (DataSource, Kafka, Redis, Elasticsearch).
-- Add **unit tests** for repositories.
+    subgraph CoreBackend["[AI-CORE] OENEXA AI Core (Java 25 / Spring Boot 4.1.1)"]
+        API["Inbound REST & MCP API Layer (:api)"]
+        App["Application Orchestration (:application)"]
+        Domain["Pure Domain Core (:domain)"]
+        Infra["Infrastructure Adapters (:infrastructure)"]
+    end
 
-## Week 2 – Application Layer & Security Basics
-- Build **Application services** (e.g., `UserService`, `ProjectService`).
-- Implement **JWT authentication** (login, refresh).
-- Add **RBAC** annotations to services.
+    subgraph StorageMemory["Storage & Persistence"]
+        Postgres[("PostgreSQL 15 (Relational & pgvector)")]
+        RedisStore[("Redis 7 (Distributed Cache & Semaphores)")]
+        NVMeBuffer[("Fast NVMe SSD MappedByteBuffer")]
+    end
 
-## Week 3 – API Layer & OpenAPI
-- Write **WebFlux controllers** for CRUD endpoints.
-- Generate **OpenAPI spec** via SpringDoc and expose Swagger UI.
-- Add **integration tests** using Testcontainers (Postgres, Kafka).
-
-## Week 4 – UI Scaffold & Editor Integration
-- Finalize **React/Vite** scaffold (already done).
-- Connect UI health check to backend.
-- Integrate **Monaco editor** with basic AI suggestion placeholder.
-
-## Week 5 – AI Agent Framework
-- Define `Agent` interface and **CoordinatorService**.
-- Implement **RepositoryIntelligenceAgent** (clone repo, build dependency graph stub).
-- Implement **ArchitectureUnderstandingAgent** (parse source, generate UML stub).
-- Add **unit tests** for agent contracts.
-
-## Week 6 – Expanded Agent Capabilities
-- Add **BugFixAgent** (parse compiler errors, generate patch stub).
-- Add **DocumentationAgent** (auto‑generate README, Swagger docs). 
-- Wire agents into the **Coordinator** with a simple routing map.
-
-## Week 7 – Observability & Telemetry
-- Enable **Micrometer** Prometheus exporter, expose `/actuator/prometheus`.
-- Add **OpenTelemetry** auto‑instrumentation (Java agent).
-- Configure **logback** to output JSON for Loki.
-- Provide **Grafana dashboards** (import JSON). 
-
-## Week 8 – CI/CD Pipeline Completion
-- Complete **GitHub Actions** workflow (lint, test, static analysis, Docker build, Helm release).
-- Add **secret scanning** (GitHub secret scanning, Gitleaks step).
-- Validate pipeline on a feature branch.
-
-## Week 9 – Helm Chart & Kubernetes Deployment
-- Create **Helm chart** with sub‑charts for API, UI, Postgres, Redis, Kafka, Elasticsearch.
-- Deploy to a **dev GKE cluster** via Argo CD.
-- Verify health, logs, and metrics collection.
-
-## Week 10 – Security Hardening & Pen‑Test
-- Run **OWASP ZAP** scan against the deployed API.
-- Harden **CORS**, **Content‑Security‑Policy**, **Rate Limiting**.
-- Add **MFA** flow for admin users (TOTP placeholder).
-
-## Week 11 – Performance & Load Testing
-- Execute **k6** scripts simulating concurrent AI‑agent requests.
-- Tune **JVM**, **thread pools**, **Kafka producer configs**.
-- Optimize **database indexes** based on query logs.
-
-## Week 12 – Release Candidate & Documentation
-- Generate **final documentation** (architecture diagrams, API docs, ADRs).
-- Freeze **release branch**, tag `v0.1.0`.
-- Publish Docker images, Helm chart, and update **README** with deployment steps.
-- Conduct a **post‑mortem** to capture lessons learned.
+    User -->|HTTP / SSE :5173| WebUI
+    WebUI -->|HTTP / SSE :8080| API
+    MCPClient -->|JSON-RPC 2.0 /api/v4/mcp/*| API
+    API --> App
+    App --> Domain
+    App --> Infra
+    Infra --> Postgres
+    Infra --> RedisStore
+    Infra --> NVMeBuffer
+```
 
 ---
 
-## Milestones & Deliverables
-| Milestone                                 | Expected Output                                                 | Status |
-|-------------------------------------------|-----------------------------------------------------------------|:---|
-| **M1 – Core Backend** (Hexagonal Core)    | Pure Java 25 domain records, Flyway migrations, Spring MVC REST API with JJWT. | ✅ **COMPLETED** |
-| **M2 – UI & Editor** (Decoupled Repo)     | React 18, Vite 5, Monaco code editor, real-time health probe.   | ✅ **COMPLETED** |
-| **M3 – AI Agent MVP** (Orchestration)     | 15 agent types, 4 ordered workflow pipelines, RAG retrieval.    | ✅ **COMPLETED** |
-| **M4 – Observability Stack**              | OpenTelemetry 1.52.0, Prometheus Micrometer, Actuator readiness. | ✅ **COMPLETED** |
-| **M5 – Platform Monolith Migration**      | 19 platform modules ported, tested, and verified under Gradle.  | ✅ **COMPLETED** |
-| **M6 – Docker Stack & Dual Runners**      | Multi-stage Temurin 25 JRE, Nginx SPA proxy, Compose orchestrators (`run.sh`, `docker-runner.sh`). | ✅ **COMPLETED** |
-| **M7 – Release Candidate & Verification** | Zero-mock test suite, 80% JaCoCo coverage gate, 100% healthy containers. | ✅ **COMPLETED** |
+## 3. Detailed Component & Subsystem Design
+
+### 3.1 4-Module Hexagonal Architecture
+
+1. **Domain (`domain`)**:
+   - Zero-framework pure Java 25 records, sealed interfaces, and business logic.
+   - Core domain aggregates: `AutonomousAgentEcosystemDomain`, `EnterpriseMemoryHierarchyDomain`, `ModelContextProtocolDomain`, `AiEngineerDomain`, `AuthDomain`, `ChatDomain`, `SubscriptionDomain`, `VoiceDomain`, `MediaDomain`, `WorkspaceDomain`.
+   - Hard invariant: No dependencies on Spring, Hibernate, or third-party web frameworks.
+
+2. **Application (`application`)**:
+   - Use-case orchestrators and application boundary services.
+   - Core services: `EnterpriseAgentEcosystemService` (10-agent DAG execution, ReAct reflection), `EnterpriseMemoryHierarchyService` (7-tier hierarchical memory storage), `ModelContextProtocolService` (MCP v1.0 protocol runtime), `AiSoftwareEngineerService` (AST indexing, code refactoring), `AuthenticationService`, `EnterpriseSubscriptionService`, `EnterpriseVoiceService`, `EnterpriseMediaService`.
+   - Dependency Inversion: Drives domain interfaces and defines ports for infrastructure adapters.
+
+3. **Infrastructure (`infrastructure`)**:
+   - Outbound persistence, messaging, and system adapters.
+   - Relational JPA entities and Spring Data repositories for PostgreSQL.
+   - `NvmeMemoryBufferAdapter`: Zero-copy `MappedByteBuffer` context caching on NVMe SSD with sub-millisecond retrieval.
+   - Flyway migration scripts (`V1__init_oenexa_schema.sql`).
+
+4. **API (`api`)**:
+   - Inbound HTTP REST controllers and MCP JSON-RPC endpoints running on Java 25 virtual threads.
+   - Endpoints:
+     - `/api/v4/agents/*`: 10-agent autonomous task planning, DAG execution, and ReAct self-healing reflection.
+     - `/api/v4/memory/*`: 7-layer memory hierarchy telemetry, search, and context compaction.
+     - `/api/v4/mcp/*`: Standardized Model Context Protocol (resources, tools, prompts).
+     - `/api/v1/auth/*`: Banking-grade JWT authentication and RBAC.
+     - `/api/v1/chat/*`: Multi-turn conversational reasoning with Gemini Pro / Claude streaming.
+     - `/api/v1/engineer/*`: Repository intelligence, AST analysis, and automated code generation.
+     - `/api/v1/billing/*`: Enterprise subscription management and quota enforcement.
+     - `/api/v1/voice/*`: Real-time speech-to-text, speaker diarization, and TTS synthesis.
+     - `/api/v1/media/*`: Multimodal image generation, OCR, and diagram-to-code synthesis.
 
 ---
 
-## Risk Management
-- **LLM API rate limits** – implement exponential back‑off and local cache.
-- **Schema drift** – enforce Flyway baseline and CI migration checks.
-- **Agent stability** – run agents in separate thread pools, monitor queue depth.
-- **Compliance** – ensure data handling follows GDPR/CCPA (audit logs, data masking).
+## 4. 10-Agent Autonomous Ecosystem Design
+
+```mermaid
+graph TD
+    Goal["User / Enterprise Objective"] --> PM["1. Product Manager (PRD, Specs)"]
+    PM --> Arch["2. System Architect (C4 Diagrams, Boundaries)"]
+    Arch --> SE["3. Software Engineer (AST, Code Synthesis)"]
+    Arch --> Data["4. Data Engineer (Schemas, Vector Index)"]
+    SE --> QA["5. QA Verification (Zero-Mock Tests, JaCoCo)"]
+    SE --> Sec["6. Security Specialist (SAST, CVE, Argon2id)"]
+    SE --> DevOps["7. DevOps Specialist (Docker, K8s, CI/CD)"]
+    QA --> ReAct{"ReAct Reflection Loop"}
+    ReAct -- "Tests Failed / Bugs Detected" --> SE
+    ReAct -- "Passed" --> Research["8. Research Specialist (Knowledge Mining)"]
+    Research --> Fin["9. Financial Analyst (Cost & Tokens)"]
+    Fin --> CS["10. Customer Support (Telemetry & Docs)"]
+    CS --> VerifiedOutput["Production-Ready Verified System"]
+```
+
+### 10 Specialized Personas
+1. **`SOFTWARE_ENGINEER`**: Clean code authoring, AST analysis, refactoring, and multi-file atomic diff generation.
+2. **`SYSTEM_ARCHITECT`**: C4 architecture modeling, domain boundary enforcement, and hexagonal interface design.
+3. **`DEVOPS_SPECIALIST`**: Multi-stage Docker builds, Kubernetes manifests, Helm packaging, and CI/CD pipelines.
+4. **`SECURITY_SPECIALIST`**: SAST vulnerability scanning, OWASP Top-10 audits, secret detection, and cryptographic validation.
+5. **`RESEARCH_SPECIALIST`**: Semantic literature retrieval, vector similarity search, and multi-model benchmark evaluation.
+6. **`PRODUCT_MANAGER`**: PRD generation, INVEST user stories, and Gherkin BDD scenario synthesis.
+7. **`DATA_ENGINEER`**: Relational schemas, Flyway migrations, vector index optimization, and data streaming.
+8. **`QA_VERIFICATION`**: Deterministic test generation, zero-mock regression suites, and JaCoCo coverage gates.
+9. **`FINANCIAL_ANALYST`**: LLM token consumption tracking, cost optimization, and billing quota enforcement.
+10. **`CUSTOMER_SUPPORT`**: Release notes, interactive API documentation, and telemetry monitoring.
 
 ---
 
-*All diagrams are expressed in Mermaid syntax and can be rendered directly in the Markdown files.*
+## 5. 7-Layer Memory Hierarchy Design
+
+| Tier | Memory Level | Storage Medium | Latency | Eviction Policy / Purpose |
+|:---|:---|:---|:---|:---|
+| **L1** | Thread Context | Java 25 Scoped Values / Virtual Thread Local | < 1 µs | Thread termination / Active call stack |
+| **L2** | Turn Memory | In-Process Concurrent LRU Cache | < 10 µs | Sliding window (50 turns) |
+| **L3** | Scratchpad | Working Memory / Blackboard State | < 50 µs | Cleared on Agent DAG goal completion |
+| **L4** | Context Buffer | Zero-Copy NVMe SSD (`MappedByteBuffer`) | < 500 µs | Zero-copy mmap with sub-ms retrieval |
+| **L5** | Relational Store | PostgreSQL 15 (JPA Entities) | < 5 ms | ACID transactions, users, workspaces, audits |
+| **L6** | Semantic Vector | `pgvector` / In-Memory Cosine Store | < 20 ms | High-dimensional embedding similarity search |
+| **L7** | Cold Archive | MinIO / S3 Encrypted Parquet Store | < 100 ms | Historical audit logs and compliance records |
+
+---
+
+## 6. Model Context Protocol (MCP v1.0) Integration
+
+The platform functions as both an **MCP Server** and **MCP Client**:
+- **Protocol:** JSON-RPC 2.0 over HTTP and Server-Sent Events (SSE) at `/api/v4/mcp/*`.
+- **Capabilities:**
+  - `resources/list` & `resources/read`: Expose repositories, AST symbols, and system metrics.
+  - `tools/list` & `tools/call`: Expose AST parsing, security audits, code patching, and test generation tools.
+  - `prompts/list` & `prompts/get`: Expose persona system prompts and structured workflow templates.
+
+---
+
+## 7. Milestone Roadmap & Delivery Verification
+
+| Milestone | Scope & Deliverables | Verification Standard | Status |
+|:---|:---|:---|:---|
+| **V1 – Foundations** | Pure Java 25 domain records, Spring Boot 4.1.1 MVC REST, Flyway schema, JJWT authentication. | Zero-mock JUnit 5 tests, 0 warnings. | ✅ **COMPLETED** |
+| **V2 – Hexagonal Monolith** | Modular architecture, 20 platform subsystems, Docker containerization, and Nginx SPA proxy. | 100% line coverage across all subsystems. | ✅ **COMPLETED** |
+| **V3 – Target Capabilities** | Claude reasoning (ToT), Gemini multimodal fusion, Cursor atomic diffs, Devin sandbox, Copilot completion. | 141/141 Gradle tasks passing. | ✅ **COMPLETED** |
+| **V4 – AI Operating System** | Clean 4-module architecture, 10-Agent Autonomous DAG, 7-Layer Memory with NVMe mmap, MCP v1.0, and repo rename to `oenexa-ai-core`. | 22/22 Gradle tasks passing, zero mocks, SRP < 400 lines. | ✅ **COMPLETED** |
+
+---
+
+## 8. Quality & Operational Invariants
+
+1. **Zero-Mock Policy:** All tests execute against real instantiated domain records, services, and memory buffers without Mockito or dummy doubles.
+2. **Single Responsibility Principle (SRP):** Every source file must remain under **400 lines** of clean, readable code.
+3. **Immutability First:** Standard Java records and unmodifiable collections for all DTOs and value objects.
+4. **Virtual Threads Native:** Standard Spring MVC with Java 25 virtual threads; no reactive WebFlux overhead.
