@@ -215,26 +215,54 @@ graph TD
 
 ---
 
-## 5. 7-Layer Memory Hierarchy & NVMe SSD Context Cache
+## 5. OENEXA Memory Engine V2: SSD-First AI Memory Architecture & 6-Layer Brain Analogy
+
+OENEXA Memory Engine V2 implements an enterprise **SSD-First AI Memory Architecture** modeled after human cognitive memory systems. Designed to operate on massive repositories (10M+ files) and extended multi-agent reasoning traces without relying entirely on physical RAM, it enables **64 GB RAM + 4 TB NVMe Gen5 SSD** to behave like **500 GB – 1 TB Effective AI Working Memory**.
 
 ```mermaid
 graph TD
-    subgraph MemoryHierarchy ["7-Layer Enterprise Memory Hierarchy"]
-        L1["L1: Register / Virtual Thread Context<br/>(In-flight turn variables, ScopedValues, sub-millisecond)"]
-        L2["L2: Conversational Cache<br/>(Sliding window of recent turns, Redis in-memory)"]
-        L3["L3: Working Memory Scratchpad<br/>(Active goals, sub-task DAG state, reflection iterations)"]
-        L4["L4: Fast NVMe SSD Context Buffer<br/>(MappedByteBuffer zero-copy out-of-RAM cache, up to 100MB)"]
-        L5["L5: Relational Persistence<br/>(PostgreSQL 15 Flyway JPA tables, permanent user/tenant state)"]
-        L6["L6: Semantic Vector Space<br/>(pgvector embeddings, cosine similarity, AST code knowledge)"]
-        L7["L7: Cold Storage Archive<br/>(Compressed gzip JSON logs, immutable audit trail)"]
+    subgraph HumanBrainAnalogy ["Human Brain Analogy"]
+        B1["Current Thought (< 1ns)"]
+        B2["Active Thought (< 50ns)"]
+        B3["Working Memory (< 100ns)"]
+        B4["Short-Term Memory (< 5μs)"]
+        B5["Long-Term Memory (< 25μs)"]
+        B6["Permanent Knowledge (1-15ms)"]
     end
 
-    L1 --> L2 --> L3 --> L4 --> L5 --> L6 --> L7
+    subgraph OenexaV2Hierarchy ["OENEXA V2 Memory Hierarchy"]
+        L1["L1: Hot Execution Registers & CPU/GPU Tensors"]
+        L2["L2: Active Thought On-Heap Ring Buffer"]
+        L3["L3: RAM Working Memory (JVM Heap 32-256 GB)"]
+        L4["L4: Compressed Short-Term Memory (ZSTD/Dict Pool)"]
+        L5["L5: NVMe SSD Long-Term Virtual Memory (Zero-Copy Mmap)"]
+        L6["L6: Permanent Knowledge Storage (PostgreSQL, Qdrant, MinIO)"]
+    end
+
+    B1 -.-> L1
+    B2 -.-> L2
+    B3 -.-> L3
+    B4 -.-> L4
+    B5 -.-> L5
+    B6 -.-> L6
+
+    L1 <--> L2 <--> L3 <--> L4 <--> L5 <--> L6
 ```
 
-### NVMe SSD Zero-Copy Memory Mapping
-- **Mechanism:** Implemented in `EnterpriseMemoryHierarchyService` via Java NIO `FileChannel.map(FileChannel.MapMode.READ_WRITE, 0, capacity)`.
-- **Purpose:** Allows large codebase context buffers (up to 100 MB per workspace) to be paged directly between NVMe SSD storage and the operating system page cache without JVM heap memory pressure or garbage collection pauses.
+### Deterministic 6-Step Data Movement Pipeline
+1. **Step 1 (Routing & Dispatch):** Request received by Task Routing Engine and dispatched to Memory Engine V2.
+2. **Step 2 (Check Hot Cache):** Probe L1 registers; if miss, probe L2 on-heap active thought buffer. Hits return in nanoseconds.
+3. **Step 3 (Check Working Memory):** Probe RAM layer. If hit, promote to L2/L1 and trigger background prefetch.
+4. **Step 4 (Check Compressed Memory):** Probe in-memory ZSTD/dictionary pool. If hit, decompress and promote to RAM/L2/L1.
+5. **Step 5 (Check NVMe SSD Memory):** Read zero-copy `MappedByteBuffer` offset. Decompress if needed, index access pattern, and promote to RAM/L2/L1.
+6. **Step 6 (Knowledge Retrieval):** Query durable PostgreSQL tables, Qdrant vector store, or MinIO S3 bucket. Assemble context and cascade promotion: `Knowledge -> SSD -> Compressed -> RAM -> L2 -> L1`.
+
+### Key Subsystems
+- **Intelligent Prefetch Engine:** Predicts subsequent files based on code structural associations (e.g., `UserService.java` preloads `UserRepository.java`, `UserController.java`, `JwtService.java`) asynchronously via Java 25 Virtual Threads (`Thread.ofVirtual()`).
+- **Context Compression Engine (100 MB -> 10-30 MB):** 5-phase pipeline combining line deduplication, semantic token pruning, embedding clustering, FP32-to-INT8 quantization, and dictionary compression.
+- **Multi-Factor Smart Eviction:** Evaluates $\text{PriorityScore} = 0.30 \times \text{Freq} + 0.35 \times \text{Recency} + 0.20 \times \text{Imp} + 0.15 \times \text{Usage}$. Automatically demotes cold records from RAM $\to$ Compressed $\to$ SSD $\to$ Knowledge Storage.
+- **Repository Memory Graph:** Segments 10M+ file repositories into modular topological nodes (Module A, B, C...) to load only relevant modules into RAM.
+- **Long-Term Memory Lifecycle:** 24h Inactive $\to$ Compressed Layer; 7d Inactive $\to$ SSD Layer; 30d Inactive $\to$ Knowledge Storage; Frequently Accessed $\to$ Promoted to RAM.
 
 ---
 
