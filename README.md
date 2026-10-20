@@ -1,7 +1,7 @@
-# OENEXA AI Engineer — Backend Platform
+# OENEXA AI Core — Backend Platform
 
-> **Component:** `[AI-BE] ⚡` OENEXA AI Engineer Backend  
-> **Repository:** `oenexa-ai-engineer-backend`  
+> **Component:** `[AI-CORE] ⚡` OENEXA AI Core Backend  
+> **Repository:** `oenexa-ai-core`  
 > **Framework:** Java 25+ | Spring Boot 4.1.1 | Spring AI 2.0.1 | Gradle 9.8.0  
 > **Architecture:** Clean Hexagonal Architecture (Domain, Application, Infrastructure, API)  
 
@@ -9,7 +9,7 @@
 
 ## 🚀 Overview
 
-OENEXA AI Engineer Backend is an **enterprise-grade AI-powered software engineering platform and AI Operating System**. It provides a 10-Agent Autonomous System, a 7-Layer Memory Hierarchy with NVMe SSD context caching, Model Context Protocol (MCP v1.0) compliance, multimodal understanding, semantic code indexing, and banking-grade security.
+OENEXA AI Core is the **enterprise-grade AI-powered operating system engine**. It provides a 10-Agent Autonomous System, a 7-Layer Memory Hierarchy with NVMe SSD context caching, Model Context Protocol (MCP v1.0) compliance, multimodal understanding, semantic code indexing, and banking-grade security.
 
 ## 🛠️ Technology Stack
 
@@ -19,7 +19,7 @@ OENEXA AI Engineer Backend is an **enterprise-grade AI-powered software engineer
 | **AI Layer** | Spring AI 2.0.1, 10-Agent Autonomous Ecosystem, ReAct Reflection, MCP v1.0 Protocol, 7-Layer Memory Hierarchy |
 | **Persistence** | PostgreSQL 15, Redis 7 Alpine, Spring Data JPA, Flyway, Zero-Copy MappedByteBuffer |
 | **Testing** | JUnit 5 Platform, Zero-Mock Policy (100% In-Process Real Verification), JaCoCo (80%+ Line/Branch Gates) |
-| **Infrastructure** | Docker, Docker Compose, Kubernetes, Helm (`charts/oenexa-ai-engineer-backend`) |
+| **Infrastructure** | Docker, Docker Compose, Kubernetes, Helm (`charts/oenexa-ai-core`) |
 | **Architecture** | Hexagonal / Clean Architecture (`domain`, `application`, `infrastructure`, `api`) |
 
 ---

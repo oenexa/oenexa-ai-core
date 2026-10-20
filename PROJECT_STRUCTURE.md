@@ -1,8 +1,8 @@
-# OENEXA AI Engineer — Project Structure & Directory Blueprint
+# OENEXA AI Core — Project Structure & Directory Blueprint
 
-> **Component:** `[AI-BE] ⚡` OENEXA AI Engineer Backend  
-> **Repository:** `C:\workspace\oenexarepo\oenexa-ai-engineer-backend`  
-> **Project Name:** `oenexa-ai-engineer-backend`  
+> **Component:** `[AI-CORE] ⚡` OENEXA AI Core Backend  
+> **Repository:** `C:\workspace\oenexarepo\oenexa-ai-core`  
+> **Project Name:** `oenexa-ai-core`  
 > **Target Framework:** Java 25+ | Spring Boot 4.1.1 | Spring AI 2.0.1 | Gradle 9.8.0  
 > **Architecture:** Clean Hexagonal Architecture (Domain, Application, Infrastructure, API)  
 
@@ -11,7 +11,7 @@
 ## 1. High-Level Workspace Directory Layout
 
 ```text
-oenexa-ai-engineer-backend/
+oenexa-ai-core/
 ├── .gitattributes               # LF line endings enforcement for *.sh, *.ps1, gradlew
 ├── .env.example                 # Environment configuration template
 ├── .dockerignore                # Build cache optimization for Docker
@@ -21,10 +21,10 @@ oenexa-ai-engineer-backend/
 │   └── wrapper/                 # Gradle Wrapper distribution (v9.8.0)
 │
 ├── charts/
-│   └── oenexa-ai-engineer-backend/  # Helm chart packaging for Kubernetes deployment
+│   └── oenexa-ai-core/          # Helm chart packaging for Kubernetes deployment
 │
 ├── build.gradle.kts             # Root Gradle build script (4 hexagonal modules, JaCoCo gates)
-├── settings.gradle.kts          # Multi-project module inclusion (oenexa-ai-engineer-backend)
+├── settings.gradle.kts          # Multi-project module inclusion (rootProject.name = "oenexa-ai-core")
 ├── gradle.properties            # Parallel compilation, configuration cache, JVM memory tuning
 ├── gradlew                      # POSIX wrapper script for Linux / macOS / Git Bash
 ├── gradlew.bat                  # Windows CMD / PowerShell wrapper script
@@ -51,7 +51,7 @@ oenexa-ai-engineer-backend/
 ## 2. Hexagonal Subsystems & Source Packages
 
 ```text
-oenexa-ai-engineer-backend/
+oenexa-ai-core/
 │
 ├── domain/                      # [Module 1/4] Pure Business Logic (Zero-Framework Inner Hexagon)
 │   └── src/main/java/com/oenexa/domain/

@@ -43,13 +43,13 @@ services:
       - oenexa-net
 
   # ----------------------------------------------------------------------------
-  # OENEXA AI Engineer - Spring Boot 4 Backend (Java 25)
+  # OENEXA AI Core - Spring Boot 4 Backend (Java 25)
   # ----------------------------------------------------------------------------
   backend:
     build:
       context: .
       dockerfile: Dockerfile
-    image: oenexa/ai-engineer-backend:latest
+    image: oenexa/ai-core:latest
     container_name: oenexa-backend
     restart: unless-stopped
     depends_on:
@@ -83,13 +83,13 @@ services:
       - oenexa-net
 
   # ----------------------------------------------------------------------------
-  # OENEXA AI Engineer - React / Vite Frontend (Nginx SPA + Reverse Proxy)
+  # OENEXA AI Web - React / Vite Frontend (Nginx SPA + Reverse Proxy)
   # ----------------------------------------------------------------------------
   frontend:
     build:
-      context: ../oenexa-ai-engineer-frontend
+      context: ../oenexa-ai-web
       dockerfile: Dockerfile
-    image: oenexa/ai-engineer-frontend:latest
+    image: oenexa/ai-web:latest
     container_name: oenexa-frontend
     restart: unless-stopped
     depends_on:

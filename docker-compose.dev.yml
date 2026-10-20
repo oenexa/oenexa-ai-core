@@ -30,7 +30,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.fast
-    image: oenexa/ai-engineer-backend:dev
+    image: oenexa/ai-core:dev
     container_name: oenexa-backend-dev
     depends_on:
       postgres:
@@ -59,7 +59,7 @@ services:
     container_name: oenexa-frontend-dev
     working_dir: /app
     volumes:
-      - ../oenexa-ai-engineer-frontend:/app
+      - ../oenexa-ai-web:/app
       - frontend_node_modules:/app/node_modules
     command: sh -c "npm install && npm run dev -- --host 0.0.0.0 --port 3000"
     ports:
