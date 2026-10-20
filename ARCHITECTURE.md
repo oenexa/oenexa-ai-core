@@ -15,7 +15,7 @@ OENEXA AI Core is the enterprise-grade AI Operating System and autonomous softwa
 
 The platform strictly adheres to a **Clean Hexagonal Architecture**:
 1. **Core Business Logic (Inner Hexagon - `domain`):** Pure, framework-agnostic Java 25 domain objects, records, value objects, domain events, and boundary contracts.
-2. **Application Orchestration Layer (`application`):** Autonomous agent ecosystem, memory hierarchy management, MCP protocol handlers, use-case workflows, and multi-model router orchestration.
+2. **Application Orchestration Layer (`application`):** Autonomous agent ecosystem, memory hierarchy management, MCP protocol handlers, use-case workflows, and multimodel router orchestration.
 3. **Infrastructure Layer (Outer Hexagon - `infrastructure`):** PostgreSQL JPA entities (Flyway migrations), zero-copy NVMe SSD memory-mapped buffer adapters (`MappedByteBuffer`), Redis context cache, and distributed/in-process event publishers.
 4. **Primary Adapters (`api`):** Spring Boot 4.1.1 executable bootJar (`com.oenexa.api.OenexaApiApplication`) with Virtual Threads, REST controllers (`/api/v4/*`, `/api/v1/*`), and OpenAPI documentation.
 
@@ -167,12 +167,12 @@ flowchart TB
 
 The backend is organized into 4 strictly bounded Gradle modules:
 
-| Module | Architectural Role | Responsibilities & Capabilities | Test Gate |
-|:---|:---|:---|:---|
-| **`:domain`** | Inner Hexagon | Pure Java 25 business models, immutable records, sealed interfaces, and domain events. Zero external framework dependencies. Contains 10-Agent persona contracts, 7-Layer memory hierarchy definitions, MCP v1.0 protocol schemas, multimodal voice/media contracts, and subscription quota rules. | **100% Zero-Mock Verification (100% Lines & Branches)** |
-| **`:application`** | Use-Cases & Orchestration | Orchestration services: `EnterpriseAgentEcosystemService` (10-agent DAG scheduler), `EnterpriseMemoryHierarchyService` (7 memory layers with NVMe SSD context cache), `ModelContextProtocolService` (MCP tool execution), `IntelligentConversationService`, `EnterpriseSubscriptionService`, `EnterpriseVoiceService`, `EnterpriseMediaService`. | **100% Zero-Mock Verification (100% Lines & Branches)** |
-| **`:infrastructure`** | Outer Adapters | Spring Data JPA entities, Flyway database migrations (`V1` to `V6`), zero-copy `MappedByteBuffer` file cache for out-of-RAM context buffer, Redis adapters, and event publishers. | **100% Zero-Mock Verification (100% Lines & Branches)** |
-| **`:api`** | Primary Inbound Adapter | Spring Boot 4.1.1 executable application (`OenexaApiApplication`) with Virtual Threads. Exposes REST controllers for all V4 endpoints (`/api/v4/*`), V1 endpoints (`/api/v1/*`), global RFC 7807 problem details error handling, and Actuator probes. | **100% Zero-Mock Verification (100% Lines & Branches)** |
+| Module                | Architectural Role        | Responsibilities & Capabilities                                                                                                                                                                                                                                                                                                                  | Test Gate                                               |
+|:----------------------|:--------------------------|:-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:--------------------------------------------------------|
+| **`:domain`**         | Inner Hexagon             | Pure Java 25 business models, immutable records, sealed interfaces, and domain events. Zero external framework dependencies. Contains 10-Agent persona contracts, 7-Layer memory hierarchy definitions, MCP v1.0 protocol schemas, multimodal voice/media contracts, and subscription quota rules.                                               | **100% Zero-Mock Verification (100% Lines & Branches)** |
+| **`:application`**    | Use-Cases & Orchestration | Orchestration services: `EnterpriseAgentEcosystemService` (10-agent DAG scheduler), `EnterpriseMemoryHierarchyService` (7 memory layers with NVMe SSD context cache), `ModelContextProtocolService` (MCP tool execution), `IntelligentConversationService`, `EnterpriseSubscriptionService`, `EnterpriseVoiceService`, `EnterpriseMediaService`. | **100% Zero-Mock Verification (100% Lines & Branches)** |
+| **`:infrastructure`** | Outer Adapters            | Spring Data JPA entities, Flyway database migrations (`V1` to `V6`), zero-copy `MappedByteBuffer` file cache for out-of-RAM context buffer, Redis adapters, and event publishers.                                                                                                                                                                | **100% Zero-Mock Verification (100% Lines & Branches)** |
+| **`:api`**            | Primary Inbound Adapter   | Spring Boot 4.1.1 executable application (`OenexaApiApplication`) with Virtual Threads. Exposes REST controllers for all V4 endpoints (`/api/v4/*`), V1 endpoints (`/api/v1/*`), global RFC 7807 problem details error handling, and Actuator probes.                                                                                            | **100% Zero-Mock Verification (100% Lines & Branches)** |
 
 ---
 
@@ -240,7 +240,7 @@ graph TD
 
 ## 6. Model Context Protocol (MCP v1.0) Architecture
 
-OENEXA AI Core acts as a compliant MCP v1.0 Server, enabling bi-directional tool calling, resource URI resolution, and prompt schema distribution:
+OENEXA AI Core acts as a compliant MCP v1.0 Server, enabling bidirectional tool calling, resource URI resolution, and prompt schema distribution:
 
 - **Protocol Endpoints:**
   - `GET /api/v4/mcp/tools`: Lists all registered MCP tools with JSON schemas (`ast_analyzer`, `security_scanner`, `test_synthesizer`, `code_refactoring`, `architecture_diagram`, `voice_transcriber`, `svg_generator`).
