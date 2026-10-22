@@ -11,6 +11,7 @@ import com.oenexa.infrastructure.persistence.repository.ArgonExecutionEventRepos
 import com.oenexa.infrastructure.persistence.repository.ArgonGoalRepository;
 import com.oenexa.infrastructure.persistence.repository.ArgonPlanStepRepository;
 import com.oenexa.infrastructure.persistence.repository.ArgonSelfHealingCycleRepository;
+import org.jspecify.annotations.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +21,7 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * REST & SSE Controller exposing Google Gemini 4 Argon Autonomous AI Agent capabilities:
@@ -147,19 +149,7 @@ public class ArgonAgentController {
         if (request == null || request.type() == null || request.fileName() == null || request.fileName().isBlank()) {
             return ResponseEntity.badRequest().build();
         }
-        String extracted = switch (request.type()) {
-            case IMAGE -> "Extracted visual diagram context & architecture component graph from image: " + request.fileName();
-            case AUDIO_VOICE -> "Transcribed developer voice speech directive from audio clip: " + request.fileName();
-            case FILE_DOCUMENT -> "Parsed document requirements & technical schema invariants from: " + request.fileName();
-        };
-
-        MultimodalAttachment attachment = new MultimodalAttachment(
-                request.type(),
-                request.fileName(),
-                request.mimeType() != null ? request.mimeType() : "application/octet-stream",
-                request.base64DataOrUrl() != null ? request.base64DataOrUrl() : "",
-                extracted
-        );
+        MultimodalAttachment attachment = getAttachment(request);
 
         if (multimodalAttachmentRepository != null) {
             var entity = new com.oenexa.infrastructure.persistence.entity.MultimodalAttachmentEntity(
@@ -174,6 +164,23 @@ public class ArgonAgentController {
             multimodalAttachmentRepository.save(entity);
         }
         return ResponseEntity.ok(attachment);
+    }
+
+    private static @NonNull MultimodalAttachment getAttachment(MultimodalUploadRequest request) {
+        String extracted = switch (request.type()) {
+            case IMAGE -> "Extracted visual diagram context & architecture component graph from image: " + request.fileName();
+            case AUDIO_VOICE -> "Transcribed developer voice speech directive from audio clip: " + request.fileName();
+            case FILE_DOCUMENT -> "Parsed document requirements & technical schema invariants from: " + request.fileName();
+        };
+
+        AtomicReference<MultimodalAttachment> attachment = new AtomicReference<>(new MultimodalAttachment(
+                request.type(),
+                request.fileName(),
+                request.mimeType() != null ? request.mimeType() : "application/octet-stream",
+                request.base64DataOrUrl() != null ? request.base64DataOrUrl() : "",
+                extracted
+        ));
+        return attachment.get();
     }
 
     @PostMapping("/argon/goals")
@@ -258,22 +265,10 @@ public class ArgonAgentController {
 
     private void persistGoalResponseIfAvailable(ArgonAutonomousGoalRequest request, ArgonAutonomousGoalResponse response) {
         if (goalRepository != null) {
-            ArgonGoalEntity goalEntity = new ArgonGoalEntity(
-                    response.goalId(),
-                    request.userId() != null ? request.userId() : "default-user",
-                    request.repositoryId() != null ? request.repositoryId() : "default-repo",
-                    response.goalDescription()
-            );
-            goalEntity.setCurrentPhase(response.plan().currentPhase().name());
-            goalEntity.setAutonomousSelfHealing(request.autonomousSelfHealing());
-            goalEntity.setExtendedThinking(request.extendedThinking());
-            goalEntity.setConfidenceScore(response.confidenceScore());
-            goalEntity.setFinalSummary(response.finalSummary());
-            goalEntity.setStatus("COMPLETED");
-            goalEntity.setCompletedAt(response.completedAt());
+            ArgonGoalEntity goalEntity = createGoalEntity(request, response);
             goalRepository.save(goalEntity);
 
-            if (planStepRepository != null && response.plan() != null && response.plan().steps() != null) {
+            if (planStepRepository != null && response.plan().steps() != null) {
                 int idx = 0;
                 for (ArgonPlanStep step : response.plan().steps()) {
                     ArgonPlanStepEntity stepEntity = new ArgonPlanStepEntity(
@@ -382,5 +377,22 @@ public class ArgonAgentController {
                 }
             }
         }
+    }
+
+    private static @NonNull ArgonGoalEntity createGoalEntity(ArgonAutonomousGoalRequest request, ArgonAutonomousGoalResponse response) {
+        ArgonGoalEntity goalEntity = new ArgonGoalEntity(
+                response.goalId(),
+                request.userId() != null ? request.userId() : "default-user",
+                request.repositoryId() != null ? request.repositoryId() : "default-repo",
+                response.goalDescription()
+        );
+        goalEntity.setCurrentPhase(response.plan().currentPhase().name());
+        goalEntity.setAutonomousSelfHealing(request.autonomousSelfHealing());
+        goalEntity.setExtendedThinking(request.extendedThinking());
+        goalEntity.setConfidenceScore(response.confidenceScore());
+        goalEntity.setFinalSummary(response.finalSummary());
+        goalEntity.setStatus("COMPLETED");
+        goalEntity.setCompletedAt(response.completedAt());
+        return goalEntity;
     }
 }

@@ -1,6 +1,8 @@
 package com.oenexa.api;
 
 import com.oenexa.application.EnterpriseAgentEcosystemService;
+import com.oenexa.application.OenexaAgentThreadOrchestratorService;
+import com.oenexa.application.OenexaAgentThreadOrchestratorService.SwarmExecutionRequest;
 import com.oenexa.domain.AutonomousAgentEcosystemDomain.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -10,12 +12,12 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * Enterprise REST API Controller for Phase 5: Autonomous AI Agents Ecosystem.
- * Exposes the 8 autonomous agent profiles, multi-step goal planning,
- * autonomous team execution, self-reflection, and inter-agent collaboration telemetry.
+ * Enterprise REST API Controller for Autonomous AI Agents Ecosystem.
+ * Exposes autonomous agent profiles, multi-step goal planning,
+ * and high-throughput concurrent agent thread dispatching using Java 25 Virtual Threads.
  */
 @RestController
-@RequestMapping("/api/v1/ecosystem")
+@RequestMapping({"/api/v1/ecosystem", "/api/v4/agents"})
 @CrossOrigin(origins = "*")
 public class EnterpriseAgentEcosystemController {
 
@@ -24,14 +26,19 @@ public class EnterpriseAgentEcosystemController {
     public record ReflectRequest(String stepId, String output) {}
 
     private final EnterpriseAgentEcosystemService ecosystemService;
+    private final OenexaAgentThreadOrchestratorService orchestratorService;
 
     public EnterpriseAgentEcosystemController() {
-        this(new EnterpriseAgentEcosystemService());
+        this(new EnterpriseAgentEcosystemService(), new OenexaAgentThreadOrchestratorService());
     }
 
     @Autowired
-    public EnterpriseAgentEcosystemController(EnterpriseAgentEcosystemService ecosystemService) {
+    public EnterpriseAgentEcosystemController(
+            EnterpriseAgentEcosystemService ecosystemService,
+            OenexaAgentThreadOrchestratorService orchestratorService
+    ) {
         this.ecosystemService = Objects.requireNonNull(ecosystemService, "ecosystemService must not be null");
+        this.orchestratorService = Objects.requireNonNull(orchestratorService, "orchestratorService must not be null");
     }
 
     @GetMapping("/agents")
@@ -59,5 +66,31 @@ public class EnterpriseAgentEcosystemController {
         String stepId = (request != null) ? request.stepId() : "step-test";
         String output = (request != null) ? request.output() : "";
         return ResponseEntity.ok(ecosystemService.reflectOnStep(stepId, output));
+    }
+
+    // =========================================================================
+    // MULTI-AGENT THREAD CONCURRENCY (JAVA 25 VIRTUAL THREADS) ENDPOINTS
+    // =========================================================================
+
+    @PostMapping("/swarm/execute")
+    public ResponseEntity<ConcurrentAgentSwarmResult> executeConcurrentSwarm(
+            @RequestBody(required = false) SwarmExecutionRequest request
+    ) {
+        SwarmExecutionRequest safeReq = (request != null) ? request : new SwarmExecutionRequest(null, null, null);
+        return ResponseEntity.ok(orchestratorService.dispatchConcurrentSwarm(safeReq));
+    }
+
+    @GetMapping("/swarm/threads")
+    public ResponseEntity<List<AgentThreadExecutionRecord>> getActiveThreads(
+            @RequestParam(required = false) String swarmId
+    ) {
+        return ResponseEntity.ok(orchestratorService.getActiveThreads(swarmId));
+    }
+
+    @GetMapping("/swarm/{swarmId}")
+    public ResponseEntity<ConcurrentAgentSwarmResult> getSwarmResult(@PathVariable String swarmId) {
+        return orchestratorService.getSwarmResult(swarmId)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 }

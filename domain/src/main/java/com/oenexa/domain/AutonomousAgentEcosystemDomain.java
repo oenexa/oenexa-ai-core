@@ -125,4 +125,54 @@ public class AutonomousAgentEcosystemDomain {
             updatedAt = (updatedAt != null) ? updatedAt : Instant.now();
         }
     }
+
+    public enum AgentThreadState {
+        IDLE,
+        RUNNING,
+        WAITING,
+        COMPLETED,
+        FAILED
+    }
+
+    public record AgentThreadExecutionRecord(
+            String threadId,
+            String threadName,
+            EnterpriseAgentType agentType,
+            String taskDescription,
+            AgentThreadState state,
+            long startEpochMs,
+            long executionDurationMs,
+            String outputResult,
+            int memoryAllocatedKb
+    ) {
+        public AgentThreadExecutionRecord {
+            Objects.requireNonNull(threadId, "threadId must not be null");
+            Objects.requireNonNull(threadName, "threadName must not be null");
+            Objects.requireNonNull(agentType, "agentType must not be null");
+            Objects.requireNonNull(taskDescription, "taskDescription must not be null");
+            state = (state != null) ? state : AgentThreadState.IDLE;
+            outputResult = (outputResult != null) ? outputResult : "";
+        }
+    }
+
+    public record ConcurrentAgentSwarmResult(
+            String swarmId,
+            String goalTitle,
+            String concurrencyMode,
+            int activeThreadCount,
+            long wallClockDurationMs,
+            long sequentialDurationMs,
+            double speedupFactor,
+            List<AgentThreadExecutionRecord> threadRecords,
+            List<String> consolidatedArtifacts,
+            boolean allPassed
+    ) {
+        public ConcurrentAgentSwarmResult {
+            Objects.requireNonNull(swarmId, "swarmId must not be null");
+            Objects.requireNonNull(goalTitle, "goalTitle must not be null");
+            concurrencyMode = (concurrencyMode != null) ? concurrencyMode : "JAVA_25_STRUCTURED_VIRTUAL_THREADS";
+            threadRecords = (threadRecords != null) ? List.copyOf(threadRecords) : List.of();
+            consolidatedArtifacts = (consolidatedArtifacts != null) ? List.copyOf(consolidatedArtifacts) : List.of();
+        }
+    }
 }

@@ -1,6 +1,7 @@
 package com.oenexa.api;
 
 import com.oenexa.application.EnterpriseAgentEcosystemService;
+import com.oenexa.application.OenexaAgentThreadOrchestratorService;
 import com.oenexa.domain.AutonomousAgentEcosystemDomain.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -19,7 +20,10 @@ class EnterpriseAgentEcosystemControllerTest {
 
     @BeforeEach
     void setUp() {
-        controller = new EnterpriseAgentEcosystemController(new EnterpriseAgentEcosystemService());
+        controller = new EnterpriseAgentEcosystemController(
+                new EnterpriseAgentEcosystemService(),
+                new OenexaAgentThreadOrchestratorService()
+        );
     }
 
     @Test
@@ -68,5 +72,36 @@ class EnterpriseAgentEcosystemControllerTest {
         assertNotNull(response.getBody());
         assertTrue(response.getBody().passed());
         assertEquals(98, response.getBody().confidenceScore());
+    }
+
+    @Test
+    @DisplayName("Should execute concurrent multi-agent swarm via REST endpoint")
+    void shouldExecuteConcurrentSwarm() {
+        var req = new OenexaAgentThreadOrchestratorService.SwarmExecutionRequest(
+                "Build Distributed Cash Register",
+                "Execute multi-agent concurrent tasks",
+                List.of(EnterpriseAgentType.ARCHITECT, EnterpriseAgentType.SOFTWARE_ENGINEER, EnterpriseAgentType.SECURITY)
+        );
+
+        ResponseEntity<ConcurrentAgentSwarmResult> response = controller.executeConcurrentSwarm(req);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals(3, response.getBody().activeThreadCount());
+        assertTrue(response.getBody().allPassed());
+
+        // Test querying active threads
+        ResponseEntity<List<AgentThreadExecutionRecord>> threadResp = controller.getActiveThreads(response.getBody().swarmId());
+        assertEquals(HttpStatus.OK, threadResp.getStatusCode());
+        assertNotNull(threadResp.getBody());
+        assertEquals(3, threadResp.getBody().size());
+
+        // Test querying by swarm ID
+        ResponseEntity<ConcurrentAgentSwarmResult> getResp = controller.getSwarmResult(response.getBody().swarmId());
+        assertEquals(HttpStatus.OK, getResp.getStatusCode());
+        assertNotNull(getResp.getBody());
+
+        // Query missing swarm ID
+        ResponseEntity<ConcurrentAgentSwarmResult> missingResp = controller.getSwarmResult("missing-id");
+        assertEquals(HttpStatus.NOT_FOUND, missingResp.getStatusCode());
     }
 }

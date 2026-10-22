@@ -124,7 +124,7 @@ flowchart TB
     subgraph Ring3 ["Ring 3: Outer Persistence & System Adapters (Secondary Adapters)"]
         direction TB
         JPA["Spring Data JPA Repositories (PostgreSQL 15)"]
-        Flyway["Flyway V1..V6 Database Migrations"]
+        ./Flyway["Flyway V1..V6 Database Migrations"]
         MmapAdapter["NIO MappedByteBuffer NVMe Context Cache"]
         RedisAdapter["Redis Client Adapter"]
     end

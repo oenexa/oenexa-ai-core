@@ -72,4 +72,45 @@ class AutonomousAgentEcosystemDomainTest {
         assertEquals(1, plan.collaborationLog().size());
         assertEquals(1, plan.learnedMemories().size());
     }
+
+    @Test
+    @DisplayName("Should validate AgentThreadExecutionRecord and ConcurrentAgentSwarmResult")
+    void shouldValidateConcurrentAgentSwarmRecords() {
+        var threadRecord = new AgentThreadExecutionRecord(
+                "vthread-101",
+                "oenexa-worker-ARCHITECT-1",
+                EnterpriseAgentType.ARCHITECT,
+                "Model C4 system boundaries in parallel",
+                AgentThreadState.COMPLETED,
+                System.currentTimeMillis(),
+                32L,
+                "C4 model synthesized with zero circular dependencies",
+                512
+        );
+
+        assertEquals("vthread-101", threadRecord.threadId());
+        assertEquals(EnterpriseAgentType.ARCHITECT, threadRecord.agentType());
+        assertEquals(AgentThreadState.COMPLETED, threadRecord.state());
+        assertEquals(32L, threadRecord.executionDurationMs());
+
+        var swarmResult = new ConcurrentAgentSwarmResult(
+                "swarm-999",
+                "Build Resilient E-Commerce Platform",
+                "JAVA_25_STRUCTURED_VIRTUAL_THREADS",
+                6,
+                85L,
+                480L,
+                5.65,
+                List.of(threadRecord),
+                List.of("OrderService.java", "Architecture.puml"),
+                true
+        );
+
+        assertEquals("swarm-999", swarmResult.swarmId());
+        assertEquals(6, swarmResult.activeThreadCount());
+        assertEquals(85L, swarmResult.wallClockDurationMs());
+        assertEquals(480L, swarmResult.sequentialDurationMs());
+        assertTrue(swarmResult.speedupFactor() > 5.0);
+        assertTrue(swarmResult.allPassed());
+    }
 }
