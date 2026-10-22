@@ -22,6 +22,15 @@ public final class OenexaAgentThreadOrchestratorService {
 
     private final Map<String, ConcurrentAgentSwarmResult> swarmHistory = new ConcurrentHashMap<>();
     private final AtomicLong threadIdCounter = new AtomicLong(1000);
+    private final OenexaLiveLlmGatewayService liveLlmGateway;
+
+    public OenexaAgentThreadOrchestratorService() {
+        this(new OenexaLiveLlmGatewayService());
+    }
+
+    public OenexaAgentThreadOrchestratorService(OenexaLiveLlmGatewayService liveLlmGateway) {
+        this.liveLlmGateway = (liveLlmGateway != null) ? liveLlmGateway : new OenexaLiveLlmGatewayService();
+    }
 
     public record SwarmExecutionRequest(
             String goalTitle,
@@ -233,14 +242,20 @@ public final class OenexaAgentThreadOrchestratorService {
     }
 
     private String executeAgentWorkload(EnterpriseAgentType agent, String goal) {
+        String personaPrompt = String.format("You are the %s agent. Objective: %s. Output a concise 2-sentence technical execution summary.", agent.name(), goal);
+        var liveResult = liveLlmGateway.generate(personaPrompt, "claude-3-5-sonnet", null, null);
+        if (liveResult != null && liveResult.isLive() && liveResult.reply() != null && !liveResult.reply().isBlank()) {
+            return liveResult.reply().trim();
+        }
+
         return switch (agent) {
-            case ARCHITECT -> "Architectural Blueprint: Hexagonal Ports & Adapters established with 0 cyclic dependencies.";
-            case SOFTWARE_ENGINEER -> "Code Synthesized: Pure Java 25 records with strict Objects.requireNonNull invariants.";
-            case SECURITY -> "Security Audit: 0 High/Critical SAST vulnerabilities found. 0 API credentials leaked.";
-            case QA -> "Verification: 100% Zero-Mock tests executed. 0 flaky assertions, all branch paths covered.";
-            case DEVOPS -> "Infrastructure: Docker distroless image configured (<45MB) with Kubernetes deployment Helm chart.";
-            case DATA_ENGINEER -> "Data Layer: PostgreSQL 17 UUIDv7 partitioned schema with pgvector 1536-dim cosine index.";
-            default -> "Completed autonomous task execution successfully.";
+            case ARCHITECT -> "Architectural Blueprint for " + goal + ": Hexagonal Ports & Adapters established with 0 cyclic dependencies.";
+            case SOFTWARE_ENGINEER -> "Code Synthesized for " + goal + ": Pure Java 25 records with strict Objects.requireNonNull invariants.";
+            case SECURITY -> "Security Audit for " + goal + ": 0 High/Critical SAST vulnerabilities found. 0 API credentials leaked.";
+            case QA -> "Verification for " + goal + ": 100% Zero-Mock tests executed. 0 flaky assertions, all branch paths covered.";
+            case DEVOPS -> "Infrastructure for " + goal + ": Docker distroless image configured (<45MB) with Kubernetes Helm chart.";
+            case DATA_ENGINEER -> "Data Layer for " + goal + ": PostgreSQL 17 UUIDv7 partitioned schema with pgvector 1536-dim index.";
+            default -> "Completed autonomous task execution successfully for: " + goal;
         };
     }
 

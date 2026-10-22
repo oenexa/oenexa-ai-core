@@ -19,22 +19,32 @@ public class ChatService {
     private final Map<String, ConversationMetadata> metadataMap = new ConcurrentHashMap<>();
     private final ChatResponseSynthesisEngine synthesisEngine;
     private final LocalOllamaClient ollamaClient;
+    private final OenexaLiveLlmGatewayService liveLlmGateway;
 
     public ChatService() {
-        this(new ChatResponseSynthesisEngine(), new LocalOllamaClient());
+        this(new ChatResponseSynthesisEngine(), new LocalOllamaClient(), new OenexaLiveLlmGatewayService());
     }
 
     public ChatService(DeliberativeReasoningEngine deliberativeReasoningEngine) {
-        this(new ChatResponseSynthesisEngine(deliberativeReasoningEngine), new LocalOllamaClient());
+        this(new ChatResponseSynthesisEngine(deliberativeReasoningEngine), new LocalOllamaClient(), new OenexaLiveLlmGatewayService());
     }
 
     public ChatService(ChatResponseSynthesisEngine synthesisEngine) {
-        this(synthesisEngine, new LocalOllamaClient());
+        this(synthesisEngine, new LocalOllamaClient(), new OenexaLiveLlmGatewayService());
     }
 
     public ChatService(ChatResponseSynthesisEngine synthesisEngine, LocalOllamaClient ollamaClient) {
+        this(synthesisEngine, ollamaClient, new OenexaLiveLlmGatewayService());
+    }
+
+    public ChatService(
+            ChatResponseSynthesisEngine synthesisEngine,
+            LocalOllamaClient ollamaClient,
+            OenexaLiveLlmGatewayService liveLlmGateway
+    ) {
         this.synthesisEngine = (synthesisEngine != null) ? synthesisEngine : new ChatResponseSynthesisEngine();
         this.ollamaClient = (ollamaClient != null) ? ollamaClient : new LocalOllamaClient();
+        this.liveLlmGateway = (liveLlmGateway != null) ? liveLlmGateway : new OenexaLiveLlmGatewayService();
     }
 
     public ChatResponse autoChatStep(AutoChatTurnRequest request) {
@@ -121,23 +131,34 @@ public class ChatService {
             }
         }
 
-        // 4. Technical Response Formulation: Live Local LLM (DeepSeek-R1 / Qwen) with resilient offline fallback
-        var llmResult = ollamaClient.generate(messageText, selectedModel);
+        // 4. Technical Response Formulation: Live Claude, GPT, Gemini, DeepSeek, or local Ollama
+        var liveResult = liveLlmGateway.generate(messageText, selectedModel, null, null);
         String reply;
         String finalThought;
         String effectiveModel = selectedModel;
-        if (llmResult != null && llmResult.reply() != null && !llmResult.reply().isBlank()) {
-            reply = llmResult.reply();
-            if (llmResult.modelUsed() != null && !llmResult.modelUsed().isBlank()) {
-                effectiveModel = llmResult.modelUsed();
-            }
-            if (llmResult.thoughtProcess() != null && !llmResult.thoughtProcess().isBlank()) {
-                thoughtBuilder.insert(0, llmResult.thoughtProcess() + "\n\n");
+
+        if (liveResult != null && liveResult.isLive()) {
+            reply = liveResult.reply();
+            effectiveModel = liveResult.modelUsed();
+            if (liveResult.thoughtProcess() != null && !liveResult.thoughtProcess().isBlank()) {
+                thoughtBuilder.insert(0, liveResult.thoughtProcess() + "\n\n");
             }
             finalThought = includeThinking ? thoughtBuilder.toString() : null;
         } else {
-            reply = synthesisEngine.generateEngineeringResponse(messageText, intent);
-            finalThought = includeThinking ? thoughtBuilder.toString() : null;
+            var llmResult = ollamaClient.generate(messageText, selectedModel);
+            if (llmResult != null && llmResult.reply() != null && !llmResult.reply().isBlank()) {
+                reply = llmResult.reply();
+                if (llmResult.modelUsed() != null && !llmResult.modelUsed().isBlank()) {
+                    effectiveModel = llmResult.modelUsed();
+                }
+                if (llmResult.thoughtProcess() != null && !llmResult.thoughtProcess().isBlank()) {
+                    thoughtBuilder.insert(0, llmResult.thoughtProcess() + "\n\n");
+                }
+                finalThought = includeThinking ? thoughtBuilder.toString() : null;
+            } else {
+                reply = synthesisEngine.generateEngineeringResponse(messageText, intent);
+                finalThought = includeThinking ? thoughtBuilder.toString() : null;
+            }
         }
         List<CodeArtifact> artifacts = extractArtifacts(reply);
 
