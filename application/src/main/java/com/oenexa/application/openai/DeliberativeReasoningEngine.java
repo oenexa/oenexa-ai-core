@@ -65,7 +65,7 @@ public class DeliberativeReasoningEngine {
             traceBuilder.append("• ").append(step).append("\n");
         }
 
-        String synthesis = formatSynthesisResponse(userPrompt, hypotheses.get(0), confidence);
+        String synthesis = formatSynthesisResponse(userPrompt, hypotheses.getFirst(), confidence);
 
         DeliberativeReasoningTrace trace = new DeliberativeReasoningTrace(
                 CognitiveStage.ANSWER_SYNTHESIS,

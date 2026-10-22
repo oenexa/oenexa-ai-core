@@ -73,7 +73,7 @@ public class TestSynthesizerEngine {
                 codeBuilder.append("        var users = instance.listActiveUsers();\n")
                         .append("        assertNotNull(users);\n")
                         .append("        assertEquals(1, users.size());\n")
-                        .append("        assertEquals(\"engineer@oenexa.ai\", users.get(0).email());\n");
+                        .append("        assertEquals(\"engineer@oenexa.ai\", users.getFirst().email());\n");
             } else {
                 codeBuilder.append("        // Zero-mock concrete state boundary transition verification\n")
                         .append("        assertDoesNotThrow(() -> instance.toString());\n");

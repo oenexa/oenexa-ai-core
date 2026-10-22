@@ -46,7 +46,7 @@ public class OpenAiProtocolController {
         Executors.newVirtualThreadPerTaskExecutor().submit(() -> {
             try {
                 OpenAiChatCompletionResponse fullResp = localInferenceWorker.completeChat(request);
-                String fullContent = fullResp.choices().get(0).message().content();
+                String fullContent = fullResp.choices().getFirst().message().content();
                 String[] tokens = fullContent.split(" ");
 
                 for (int i = 0; i < tokens.length; i++) {

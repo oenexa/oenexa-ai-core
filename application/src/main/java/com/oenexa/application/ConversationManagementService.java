@@ -2,7 +2,6 @@ package com.oenexa.application;
 
 import com.oenexa.domain.ChatDomain.*;
 import com.oenexa.domain.ConversationCoreDomain.*;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -26,7 +25,6 @@ public class ConversationManagementService {
     private final Map<String, ConversationShare> shares = new ConcurrentHashMap<>();
     private final Map<String, List<MessageReaction>> reactions = new ConcurrentHashMap<>();
 
-    @Autowired
     public ConversationManagementService(ChatService chatService, DocumentIngestionService documentIngestionService) {
         this.chatService = Objects.requireNonNull(chatService, "chatService must not be null");
         this.documentIngestionService = Objects.requireNonNull(documentIngestionService, "documentIngestionService must not be null");

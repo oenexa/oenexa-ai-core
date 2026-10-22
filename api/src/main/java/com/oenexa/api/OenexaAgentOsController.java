@@ -1,6 +1,7 @@
 package com.oenexa.api;
 
 import com.oenexa.application.cognitive.OenexaAgentOperatingSystem;
+import com.oenexa.domain.OenexaAgentOsDomain.*;
 import com.oenexa.domain.OenexaCognitiveDomain.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

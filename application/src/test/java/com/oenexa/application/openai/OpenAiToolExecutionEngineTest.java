@@ -83,7 +83,7 @@ class OpenAiToolExecutionEngineTest {
     @Test
     @DisplayName("Should execute git_workflow_engine tool successfully")
     void testExecuteGitWorkflow() {
-        var call = new OpenAiToolCall("call-6", "function", new OpenAiFunctionCall("git_workflow_engine", "{\"branchName\":\"feature/argon\"}"));
+        var call = new OpenAiToolCall("call-6", "function", new OpenAiFunctionCall("git_workflow_engine", "{\"branchName\":\"feature/oenexa-core\"}"));
         var res = engine.executeTool(call);
         assertEquals("git_workflow_engine", res.toolName());
         assertTrue(res.success());

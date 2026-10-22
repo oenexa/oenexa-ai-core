@@ -1,5 +1,6 @@
 package com.oenexa.domain;
 
+import com.oenexa.domain.OpenAiAgentOsDomain.*;
 import com.oenexa.domain.OpenAiDomain.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

@@ -5,7 +5,6 @@ import com.oenexa.application.engine.InfrastructureAutomationEngine;
 import com.oenexa.application.engine.PullRequestReviewEngine;
 import com.oenexa.application.engine.RefactoringEngine;
 import com.oenexa.domain.AiEngineerDomain.*;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
@@ -27,7 +26,6 @@ public class AiSoftwareEngineerService {
         this(new PullRequestReviewEngine(), new ApiGeneratorEngine(), new RefactoringEngine(), new InfrastructureAutomationEngine());
     }
 
-    @Autowired
     public AiSoftwareEngineerService(
             PullRequestReviewEngine prReviewEngine,
             ApiGeneratorEngine apiGeneratorEngine,

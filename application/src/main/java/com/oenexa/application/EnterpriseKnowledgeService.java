@@ -170,7 +170,7 @@ public class EnterpriseKnowledgeService {
 
         KnowledgeGraph kbGraph = graphsByKb.getOrDefault(kbId, new KnowledgeGraph(List.of(), List.of()));
         long latency = Math.max(1, System.currentTimeMillis() - startTime);
-        double confidence = topResults.isEmpty() ? 50.0 : Math.min(99.0, topResults.get(0).score * 100.0);
+        double confidence = topResults.isEmpty() ? 50.0 : Math.min(99.0, topResults.getFirst().score * 100.0);
 
         return new SemanticSearchResult(
                 safeQuery,

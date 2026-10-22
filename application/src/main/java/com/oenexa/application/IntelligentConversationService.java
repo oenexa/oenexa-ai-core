@@ -103,7 +103,7 @@ public class IntelligentConversationService {
         // 8. Dynamic Follow-Up Generation
         List<String> followUps = new ArrayList<>(chatRes.suggestedFollowUps());
         if (!repoCitations.isEmpty()) {
-            followUps.add("Explain relevant symbol: " + repoCitations.get(0).filePath());
+            followUps.add("Explain relevant symbol: " + repoCitations.getFirst().filePath());
         }
 
         // 9. Response Ranking Calculation (0.90 to 0.99)

@@ -1,6 +1,7 @@
 package com.oenexa.application.cognitive;
 
 import com.oenexa.domain.ChatDomain.CodeArtifact;
+import com.oenexa.domain.OenexaAgentOsDomain.*;
 import com.oenexa.domain.OenexaCognitiveDomain.*;
 import org.springframework.stereotype.Service;
 

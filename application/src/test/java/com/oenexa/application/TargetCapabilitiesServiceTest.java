@@ -173,7 +173,7 @@ class TargetCapabilitiesServiceTest {
         assertTrue(overview.devinExecutionActive());
         assertTrue(overview.copilotCompletionActive());
         assertTrue(overview.operatorAutomationActive());
-        assertEquals("2.6.0-ARGON-MAX", overview.platformVersion());
+        assertEquals("2.6.0-OENEXA-MAX", overview.platformVersion());
         assertEquals(0.99, overview.overallConfidenceScore());
     }
 

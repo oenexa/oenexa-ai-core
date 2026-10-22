@@ -2,7 +2,6 @@ package com.oenexa.api;
 
 import com.oenexa.application.AiSoftwareEngineerService;
 import com.oenexa.domain.AiEngineerDomain.*;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,11 +19,6 @@ public class AiEngineerController {
 
     private final AiSoftwareEngineerService engineerService;
 
-    public AiEngineerController() {
-        this(new AiSoftwareEngineerService());
-    }
-
-    @Autowired
     public AiEngineerController(AiSoftwareEngineerService engineerService) {
         this.engineerService = Objects.requireNonNull(engineerService, "engineerService must not be null");
     }

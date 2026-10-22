@@ -1,6 +1,7 @@
 package com.oenexa.application.openai;
 
 import com.oenexa.domain.ChatDomain.CodeArtifact;
+import com.oenexa.domain.OpenAiAgentOsDomain.*;
 import com.oenexa.domain.OpenAiDomain.*;
 import org.springframework.stereotype.Service;
 

@@ -1,7 +1,6 @@
 package com.oenexa.application;
 
 import com.oenexa.domain.OenexaMemoryEngineV2Domain.*;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -57,7 +56,6 @@ public final class OenexaMemoryEngineV2Service {
         this(new OenexaContextCompressionEngine(), new OenexaIntelligentPrefetchEngine(), new OenexaRepositoryMemoryGraphService(), createDefaultMmapFile());
     }
 
-    @Autowired
     public OenexaMemoryEngineV2Service(
             OenexaContextCompressionEngine compressionEngine,
             OenexaIntelligentPrefetchEngine prefetchEngine,

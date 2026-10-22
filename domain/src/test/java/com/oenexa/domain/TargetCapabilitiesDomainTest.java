@@ -329,7 +329,7 @@ class TargetCapabilitiesDomainTest {
         assertTrue(overviewDefault.devinExecutionActive());
         assertTrue(overviewDefault.copilotCompletionActive());
         assertTrue(overviewDefault.operatorAutomationActive());
-        assertEquals("2.6.0-ARGON-MAX", overviewDefault.platformVersion());
+        assertEquals("2.6.0-OENEXA-MAX", overviewDefault.platformVersion());
         assertEquals(0.99, overviewDefault.overallConfidenceScore());
 
         TargetCapabilitiesDomain.TargetCapabilitiesOverview overviewCustom = new TargetCapabilitiesDomain.TargetCapabilitiesOverview(

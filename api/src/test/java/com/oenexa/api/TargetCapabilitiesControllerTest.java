@@ -151,7 +151,7 @@ class TargetCapabilitiesControllerTest {
     @DisplayName("Should generate Cursor atomic multi-file patch and return 200 OK")
     void shouldGenerateCursorPatch() {
         CursorPatchRequest request = new CursorPatchRequest(
-                "Refactor authentication to Argon token claims",
+                "Refactor authentication to Oenexa token claims",
                 List.of("src/AuthService.java", "src/SecurityConfig.java")
         );
         ResponseEntity<AtomicMultiFilePatch> response = controller.generateCursorPatch(request);
@@ -262,6 +262,6 @@ class TargetCapabilitiesControllerTest {
         assertTrue(response.getBody().devinExecutionActive());
         assertTrue(response.getBody().copilotCompletionActive());
         assertTrue(response.getBody().operatorAutomationActive());
-        assertEquals("2.6.0-ARGON-MAX", response.getBody().platformVersion());
+        assertEquals("2.6.0-OENEXA-MAX", response.getBody().platformVersion());
     }
 }

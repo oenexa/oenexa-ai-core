@@ -9,7 +9,6 @@ import com.oenexa.domain.CodeEngineeringDomain.SecurityScanRequest;
 import com.oenexa.domain.CodeEngineeringDomain.SecurityScanResponse;
 import com.oenexa.domain.CodeEngineeringDomain.TestGenerationRequest;
 import com.oenexa.domain.CodeEngineeringDomain.TestGenerationResponse;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
@@ -30,7 +29,6 @@ public class CodeEngineeringService {
         this(new AstAnalysisEngine(), new SecurityAuditEngine(), new TestSynthesizerEngine());
     }
 
-    @Autowired
     public CodeEngineeringService(
             AstAnalysisEngine astAnalysisEngine,
             SecurityAuditEngine securityAuditEngine,

@@ -258,7 +258,7 @@ public class TargetCapabilitiesDomain {
             double overallConfidenceScore
     ) {
         public TargetCapabilitiesOverview() {
-            this(true, true, true, true, true, true, "2.6.0-ARGON-MAX", 0.99);
+            this(true, true, true, true, true, true, "2.6.0-OENEXA-MAX", 0.99);
         }
     }
 }

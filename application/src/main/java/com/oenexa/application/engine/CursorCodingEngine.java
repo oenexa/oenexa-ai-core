@@ -25,8 +25,8 @@ public class CursorCodingEngine {
 
         CursorContextReference refSymbol = new CursorContextReference(
                 CursorContextType.SYMBOL,
-                "ArgonAutonomousAgentEngine.executeGoal",
-                "public ArgonAutonomousGoalResponse executeGoal(ArgonAutonomousGoalRequest request) { ... }"
+                "OenexaAutonomousAgentEngine.executeGoal",
+                "public OenexaAutonomousGoalResponse executeGoal(OenexaAutonomousGoalRequest request) { ... }"
         );
 
         CursorContextReference refGit = new CursorContextReference(

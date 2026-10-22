@@ -72,7 +72,7 @@ public class EnterpriseAgentEcosystemService {
 
         for (EnterpriseAgentType agent : agents) {
             AgentProfile profile = agentProfiles.getOrDefault(agent, agentProfiles.get(EnterpriseAgentType.SOFTWARE_ENGINEER));
-            String tool = profile.toolsAvailable().isEmpty() ? "default_tool" : profile.toolsAvailable().get(0);
+            String tool = profile.toolsAvailable().isEmpty() ? "default_tool" : profile.toolsAvailable().getFirst();
             String desc = switch (agent) {
                 case PRODUCT_MANAGER -> "Synthesize Product Requirements Document (PRD), user stories, and BDD acceptance criteria.";
                 case ARCHITECT -> "Model C4 system architecture, define hexagonal module boundaries, and enforce DDD invariants.";
