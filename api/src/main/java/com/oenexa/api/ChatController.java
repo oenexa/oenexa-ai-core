@@ -64,6 +64,14 @@ public class ChatController {
             @RequestParam(defaultValue = "gemini-2.5-flash") String model
     ) {
         SseEmitter emitter = new SseEmitter(120_000L);
+        emitter.onTimeout(() -> {
+            try {
+                emitter.send(SseEmitter.event().name("timeout").data(Map.of("code", "GATEWAY_TIMEOUT", "message", "Stream timed out after 120s")));
+            } catch (Exception ignored) {}
+            emitter.complete();
+        });
+        emitter.onError(ex -> emitter.complete());
+
         CompletableFuture.runAsync(() -> {
             try {
                 conversationManagementService.streamProgressiveResponse(conversationId, message, model, chunk -> {
@@ -75,6 +83,12 @@ public class ChatController {
                 });
                 emitter.complete();
             } catch (Exception e) {
+                try {
+                    emitter.send(SseEmitter.event().name("error").data(Map.of(
+                            "code", "STREAM_ERROR",
+                            "message", e.getMessage() != null ? e.getMessage() : "Stream execution failed"
+                    )));
+                } catch (Exception ignored) {}
                 emitter.completeWithError(e);
             }
         });
