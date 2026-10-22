@@ -1,36 +1,37 @@
 # =====================================================================
 # OENEXA AI ENGINEER - Comprehensive Test Execution Suite
 # Runs Unit Tests, BDD Cucumber Scenarios, and TDD Specifications Separately
+# Displays full live test logs, pass/fail status, and results in terminal
 # =====================================================================
 param(
     [Alias("T", "Category")]
     [ValidateSet("all", "unit", "bdd", "tdd", "separate")]
-    [string]$Type = "separate",
+    [string]$Type = "unit",
 
     [Alias("M")]
     [ValidateSet("all", "domain", "application", "infrastructure", "api")]
     [string]$Module = "all",
 
     [switch]$Coverage,
-    [switch]$Rerun,
+    [switch]$Cached,
     [switch]$Help
 )
 
 if ($Help) {
     Write-Host @"
 OENEXA AI Test Runner:
-  Usage: .\test-runner.ps1 [-Type <unit|bdd|tdd|separate|all>] [-Module <all|domain|application|infrastructure|api>] [-Coverage] [-Rerun]
+  Usage: .\test-runner.ps1 [-Type <unit|bdd|tdd|separate|all>] [-Module <all|domain|application|infrastructure|api>] [-Coverage] [-Cached]
 
 Options:
   -Type, -T       Test category to execute:
-                    'unit'     : Fast isolated unit tests (excludes BDD and TDD)
+                    'unit'     : Fast isolated unit tests (excludes BDD and TDD) - [Default]
                     'bdd'      : Behavior-Driven Development (Cucumber Gherkin scenarios)
                     'tdd'      : Test-Driven Development (Invariants, memory algorithms, contracts)
-                    'separate' : Executes Unit, BDD, and TDD in distinct separate phases (default)
+                    'separate' : Executes Unit, BDD, and TDD in distinct separate phases
                     'all'      : Executes all tests in a unified Gradle run
-  -Module, -M     Target module (default: 'all')
+  -Module, -M     Target module: domain, application, infrastructure, api, or all (default: 'all')
   -Coverage       Generate JaCoCo HTML & XML code coverage reports
-  -Rerun          Force fresh execution ignoring Gradle up-to-date cache
+  -Cached         Use Gradle cache instead of forcing fresh test execution
 "@
     exit 0
 }
@@ -56,16 +57,20 @@ function Run-Phase {
         [ConsoleColor]$Color = [ConsoleColor]::Yellow
     )
 
-    Write-Host "`n>>> [PHASE: $PhaseName] Starting execution..." -ForegroundColor $Color
+    Write-Host "`n>>> [PHASE: $PhaseName] Starting live test execution..." -ForegroundColor $Color
     $targetTask = if ($Module -eq "all") {
         $TaskName
     } else {
         ":$Module`:$TaskName"
     }
 
-    $arguments = @($targetTask)
-    if ($Rerun) { $arguments += "--rerun" }
-    if ($Coverage) { $arguments += "jacocoTestReport" }
+    $arguments = @($targetTask, "--console=plain")
+    if (-not $Cached) { 
+        $arguments += "--rerun" 
+    }
+    if ($Coverage) { 
+        $arguments += "jacocoTestReport" 
+    }
 
     Write-Host "Executing: $GradleCmd $($arguments -join ' ')" -ForegroundColor DarkGray
     $startTime = [System.Diagnostics.Stopwatch]::StartNew()
@@ -76,7 +81,7 @@ function Run-Phase {
 
     $duration = [math]::Round($startTime.Elapsed.TotalSeconds, 2)
     if ($exitCode -eq 0) {
-        Write-Host ">>> [PHASE: $PhaseName] SUCCESS in ${duration}s" -ForegroundColor Green
+        Write-Host "`n>>> [PHASE: $PhaseName] SUCCESS in ${duration}s" -ForegroundColor Green
         return [PSCustomObject]@{
             Phase    = $PhaseName
             Status   = "PASSED"
@@ -84,7 +89,7 @@ function Run-Phase {
             Task     = $targetTask
         }
     } else {
-        Write-Host ">>> [PHASE: $PhaseName] FAILED (exit code: $exitCode) in ${duration}s" -ForegroundColor Red
+        Write-Host "`n>>> [PHASE: $PhaseName] FAILED (exit code: $exitCode) in ${duration}s" -ForegroundColor Red
         return [PSCustomObject]@{
             Phase    = $PhaseName
             Status   = "FAILED"

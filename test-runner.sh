@@ -2,6 +2,7 @@
 # =====================================================================
 # OENEXA AI ENGINEER - Comprehensive Test Execution Suite (Bash / POSIX)
 # Runs Unit Tests, BDD Cucumber Scenarios, and TDD Specifications Separately
+# Displays full live test logs, pass/fail status, and results in terminal
 # =====================================================================
 
 set -e
@@ -9,25 +10,25 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$SCRIPT_DIR"
 
-TYPE="separate"
+TYPE="unit"
 MODULE="all"
 COVERAGE=false
-RERUN=false
+CACHED=false
 
 function print_help() {
     cat << EOF
 OENEXA AI Test Runner (Bash):
-  Usage: ./test-runner.sh [--unit | --bdd | --tdd | --separate | --all] [--module <domain|application|infrastructure|api>] [--coverage] [--rerun]
+  Usage: ./test-runner.sh [--unit | --bdd | --tdd | --separate | --all] [--module <domain|application|infrastructure|api>] [--coverage] [--cached]
 
 Options:
-  --unit        : Fast isolated unit tests (excludes BDD and TDD)
+  --unit        : Fast isolated unit tests (excludes BDD and TDD) - [Default]
   --bdd         : Behavior-Driven Development (Cucumber Gherkin scenarios)
   --tdd         : Test-Driven Development (Invariants, memory algorithms, contracts)
-  --separate    : Executes Unit, BDD, and TDD in distinct separate phases (default)
+  --separate    : Executes Unit, BDD, and TDD in distinct separate phases
   --all         : Executes all tests in a unified Gradle run
   --module, -m  : Target hexagonal module (default: all)
   --coverage    : Generate JaCoCo HTML & XML code coverage reports
-  --rerun       : Force fresh execution ignoring Gradle cache
+  --cached      : Use Gradle cache instead of forcing fresh test execution
   --help, -h    : Show this help message
 EOF
     exit 0
@@ -42,7 +43,7 @@ while [[ $# -gt 0 ]]; do
         --all) TYPE="all"; shift ;;
         -m|--module) MODULE="$2"; shift 2 ;;
         --coverage) COVERAGE=true; shift ;;
-        --rerun) RERUN=true; shift ;;
+        --cached) CACHED=true; shift ;;
         -h|--help) print_help ;;
         *) echo "Unknown option: $1"; print_help ;;
     esac
@@ -63,15 +64,15 @@ function run_phase() {
     local task_name="$2"
 
     echo ""
-    echo ">>> [PHASE: $phase_name] Starting execution..."
+    echo ">>> [PHASE: $phase_name] Starting live test execution..."
 
     local target_task="$task_name"
     if [[ "$MODULE" != "all" ]]; then
         target_task=":$MODULE:$task_name"
     fi
 
-    local args=("$target_task")
-    if [[ "$RERUN" == true ]]; then
+    local args=("$target_task" "--console=plain")
+    if [[ "$CACHED" != true ]]; then
         args+=("--rerun")
     fi
     if [[ "$COVERAGE" == true ]]; then

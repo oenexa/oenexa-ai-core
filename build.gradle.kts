@@ -51,6 +51,26 @@ subprojects {
 
     tasks.withType<Test>().configureEach {
         useJUnitPlatform()
+        testLogging {
+            events("passed", "skipped", "failed")
+            showExceptions = true
+            showCauses = true
+            showStackTraces = true
+            exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+        }
+        addTestListener(object : TestListener {
+            override fun beforeSuite(suite: TestDescriptor) {}
+            override fun beforeTest(testDescriptor: TestDescriptor) {}
+            override fun afterTest(testDescriptor: TestDescriptor, result: TestResult) {}
+            override fun afterSuite(suite: TestDescriptor, result: TestResult) {
+                if (suite.parent == null) {
+                    println("\n================================================================================")
+                    println("  MODULE: [${project.name}] - TASK: [$name] -> ${result.resultType}")
+                    println("  Tests: ${result.testCount} total | ${result.successfulTestCount} passed | ${result.failedTestCount} failed | ${result.skippedTestCount} skipped")
+                    println("================================================================================\n")
+                }
+            }
+        })
         finalizedBy("jacocoTestReport")
     }
 
