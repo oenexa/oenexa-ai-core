@@ -36,6 +36,9 @@ subprojects {
         "testImplementation"("org.springframework.boot:spring-boot-starter-test")
         "testImplementation"("org.springframework.boot:spring-boot-webtestclient")
         "testImplementation"("io.projectreactor:reactor-test")
+        "testImplementation"("org.junit.platform:junit-platform-suite")
+        "testImplementation"(rootProject.libs.cucumber.java)
+        "testImplementation"(rootProject.libs.cucumber.junit.platform.engine)
         "testRuntimeOnly"("org.junit.platform:junit-platform-launcher")
     }
 
@@ -51,6 +54,53 @@ subprojects {
         finalizedBy("jacocoTestReport")
     }
 
+    val testSourceSet = extensions.getByType<SourceSetContainer>()["test"]
+
+    tasks.register<Test>("testUnit") {
+        group = "verification"
+        description = "Runs unit tests across the module (excluding BDD and TDD suites)."
+        testClassesDirs = testSourceSet.output.classesDirs
+        classpath = testSourceSet.runtimeClasspath
+        useJUnitPlatform {
+            excludeTags("bdd", "tdd")
+            excludeEngines("junit-platform-suite", "cucumber")
+        }
+        filter {
+            isFailOnNoMatchingTests = false
+            excludeTestsMatching("*Cucumber*")
+            excludeTestsMatching("*Bdd*")
+            excludeTestsMatching("*Tdd*")
+        }
+    }
+
+    tasks.register<Test>("testBdd") {
+        group = "verification"
+        description = "Runs Behavior-Driven Development (BDD) Cucumber scenarios."
+        testClassesDirs = testSourceSet.output.classesDirs
+        classpath = testSourceSet.runtimeClasspath
+        useJUnitPlatform()
+        filter {
+            isFailOnNoMatchingTests = false
+            includeTestsMatching("*Cucumber*")
+            includeTestsMatching("*Bdd*")
+        }
+    }
+
+    tasks.register<Test>("testTdd") {
+        group = "verification"
+        description = "Runs Test-Driven Development (TDD) invariant specifications."
+        testClassesDirs = testSourceSet.output.classesDirs
+        classpath = testSourceSet.runtimeClasspath
+        useJUnitPlatform {
+            includeTags("tdd")
+            excludeEngines("junit-platform-suite", "cucumber")
+        }
+        filter {
+            isFailOnNoMatchingTests = false
+            includeTestsMatching("*Tdd*")
+        }
+    }
+
     tasks.withType<JacocoReport>().configureEach {
         reports { xml.required.set(true); html.required.set(true) }
     }
@@ -63,4 +113,22 @@ subprojects {
         }
         tasks.named("check") { dependsOn("jacocoTestCoverageVerification") }
     }
+}
+
+tasks.register("testUnit") {
+    group = "verification"
+    description = "Executes unit tests across all hexagonal modules (excluding BDD and TDD)."
+    dependsOn(subprojects.map { "${it.path}:testUnit" })
+}
+
+tasks.register("testBdd") {
+    group = "verification"
+    description = "Executes BDD Cucumber feature scenarios across all modules."
+    dependsOn(subprojects.map { "${it.path}:testBdd" })
+}
+
+tasks.register("testTdd") {
+    group = "verification"
+    description = "Executes TDD contract and invariant specifications across all modules."
+    dependsOn(subprojects.map { "${it.path}:testTdd" })
 }

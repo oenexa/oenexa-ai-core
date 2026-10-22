@@ -6,6 +6,7 @@ import com.oenexa.domain.UserRegistration;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import org.junit.jupiter.api.Tag;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -14,6 +15,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * Why: Connects human-readable Gherkin scenarios to real domain and service execution.
  * How: Directly invokes real UserService without mocks.
  */
+@Tag("bdd")
 public class UserRegistrationSteps {
 
     private final UserService userService = new UserService();

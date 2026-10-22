@@ -1,3 +1,4 @@
+@bdd
 Feature: User Registration Management
   As an application user
   I want to register an account
