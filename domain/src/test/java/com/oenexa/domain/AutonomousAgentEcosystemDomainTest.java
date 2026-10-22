@@ -90,8 +90,25 @@ class AutonomousAgentEcosystemDomainTest {
 
         assertEquals("vthread-101", threadRecord.threadId());
         assertEquals(EnterpriseAgentType.ARCHITECT, threadRecord.agentType());
+        assertEquals("Parallel Swarm", threadRecord.stageName());
         assertEquals(AgentThreadState.COMPLETED, threadRecord.state());
         assertEquals(32L, threadRecord.executionDurationMs());
+
+        var phasedRecord = new AgentThreadExecutionRecord(
+                "vthread-102",
+                "oenexa-worker-SECURITY-2",
+                EnterpriseAgentType.SECURITY,
+                "Stage 2: Core Engineering & Security",
+                "Execute OWASP SAST scan",
+                AgentThreadState.COMPLETED,
+                System.currentTimeMillis(),
+                45L,
+                "0 vulnerabilities found",
+                384
+        );
+        assertEquals("Stage 2: Core Engineering & Security", phasedRecord.stageName());
+        assertEquals(SwarmExecutionStrategy.PHASED_PIPELINE, SwarmExecutionStrategy.valueOf("PHASED_PIPELINE"));
+        assertEquals(SwarmExecutionStrategy.PARALLEL_MAX_SPEED, SwarmExecutionStrategy.valueOf("PARALLEL_MAX_SPEED"));
 
         var swarmResult = new ConcurrentAgentSwarmResult(
                 "swarm-999",

@@ -134,10 +134,16 @@ public class AutonomousAgentEcosystemDomain {
         FAILED
     }
 
+    public enum SwarmExecutionStrategy {
+        PARALLEL_MAX_SPEED,
+        PHASED_PIPELINE
+    }
+
     public record AgentThreadExecutionRecord(
             String threadId,
             String threadName,
             EnterpriseAgentType agentType,
+            String stageName,
             String taskDescription,
             AgentThreadState state,
             long startEpochMs,
@@ -149,9 +155,24 @@ public class AutonomousAgentEcosystemDomain {
             Objects.requireNonNull(threadId, "threadId must not be null");
             Objects.requireNonNull(threadName, "threadName must not be null");
             Objects.requireNonNull(agentType, "agentType must not be null");
+            stageName = (stageName != null && !stageName.isBlank()) ? stageName : "Parallel Swarm";
             Objects.requireNonNull(taskDescription, "taskDescription must not be null");
             state = (state != null) ? state : AgentThreadState.IDLE;
             outputResult = (outputResult != null) ? outputResult : "";
+        }
+
+        public AgentThreadExecutionRecord(
+                String threadId,
+                String threadName,
+                EnterpriseAgentType agentType,
+                String taskDescription,
+                AgentThreadState state,
+                long startEpochMs,
+                long executionDurationMs,
+                String outputResult,
+                int memoryAllocatedKb
+        ) {
+            this(threadId, threadName, agentType, "Parallel Swarm", taskDescription, state, startEpochMs, executionDurationMs, outputResult, memoryAllocatedKb);
         }
     }
 

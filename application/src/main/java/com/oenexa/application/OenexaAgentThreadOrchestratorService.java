@@ -3,23 +3,19 @@ package com.oenexa.application;
 import com.oenexa.domain.AutonomousAgentEcosystemDomain.*;
 import org.springframework.stereotype.Service;
 
-import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
- * Concurrent Multi-Agent Thread Orchestration Engine for OENEXA AI.
- * Employs Java 25 Virtual Threads (Structured Concurrency) to dispatch multiple
- * autonomous agents across multiple tasks simultaneously with near-zero overhead.
+ * Enterprise Multi-Agent Thread Orchestration Engine for OENEXA AI.
+ * Employs Java 25 Virtual Threads & Structured Concurrency to dispatch multiple
+ * autonomous agents across multi-stage execution pipelines with zero thread starvation.
  *
- * Implements parallel fork-join execution across:
- * - Architect Agent (C4 Modeling, DDD Boundaries)
- * - Software Engineer Agent (Clean Code & Defensive Records)
- * - Security Agent (SAST & OWASP Verification)
- * - QA Agent (100% Zero-Mock Test Generation)
- * - DevOps Agent (Docker & Kubernetes Manifests)
- * - Data Engineer Agent (PostgreSQL DDL & pgvector HNSW Indexing)
+ * Supports two execution strategies:
+ * 1. PARALLEL_MAX_SPEED: Dispatches all agent virtual threads simultaneously for maximum speedup.
+ * 2. PHASED_PIPELINE: Dispatches agents in dependency-ordered parallel stages (Stage 1 Architecture
+ *    -> Stage 2 Engineering & Security -> Stage 3 QA & DevOps).
  */
 @Service
 public final class OenexaAgentThreadOrchestratorService {
@@ -30,12 +26,22 @@ public final class OenexaAgentThreadOrchestratorService {
     public record SwarmExecutionRequest(
             String goalTitle,
             String goalObjective,
+            SwarmExecutionStrategy strategy,
             List<EnterpriseAgentType> targetAgents
     ) {
         public SwarmExecutionRequest {
             goalTitle = (goalTitle != null && !goalTitle.isBlank()) ? goalTitle : "Autonomous System Delivery";
             goalObjective = (goalObjective != null && !goalObjective.isBlank()) ? goalObjective : "Execute concurrent multi-agent swarm";
+            strategy = (strategy != null) ? strategy : SwarmExecutionStrategy.PARALLEL_MAX_SPEED;
             targetAgents = (targetAgents != null && !targetAgents.isEmpty()) ? List.copyOf(targetAgents) : getDefaultSwarmAgents();
+        }
+
+        public SwarmExecutionRequest(String goalTitle, String goalObjective, List<EnterpriseAgentType> targetAgents) {
+            this(goalTitle, goalObjective, SwarmExecutionStrategy.PARALLEL_MAX_SPEED, targetAgents);
+        }
+
+        public SwarmExecutionRequest(String goalTitle) {
+            this(goalTitle, "Execute concurrent multi-agent swarm", SwarmExecutionStrategy.PARALLEL_MAX_SPEED, getDefaultSwarmAgents());
         }
 
         public static List<EnterpriseAgentType> getDefaultSwarmAgents() {
@@ -62,7 +68,74 @@ public final class OenexaAgentThreadOrchestratorService {
         List<String> artifacts = new CopyOnWriteArrayList<>();
         AtomicLong totalSequentialMs = new AtomicLong(0);
 
-        // Execute concurrent agents using Java 25 Virtual Threads
+        if (request.strategy() == SwarmExecutionStrategy.PHASED_PIPELINE) {
+            executePhasedPipeline(agents, request.goalTitle(), threadRecords, artifacts, totalSequentialMs);
+        } else {
+            executeParallelSwarm(agents, request.goalTitle(), "Parallel Swarm", threadRecords, artifacts, totalSequentialMs);
+        }
+
+        long wallClockDuration = Math.max(1, System.currentTimeMillis() - wallClockStart);
+        long sequential = Math.max(wallClockDuration, totalSequentialMs.get());
+        double speedup = Math.round(((double) sequential / wallClockDuration) * 100.0) / 100.0;
+        boolean allPassed = threadRecords.stream().noneMatch(t -> t.state() == AgentThreadState.FAILED);
+
+        ConcurrentAgentSwarmResult result = new ConcurrentAgentSwarmResult(
+                swarmId,
+                request.goalTitle(),
+                request.strategy().name(),
+                threadRecords.size(),
+                wallClockDuration,
+                sequential,
+                speedup,
+                threadRecords,
+                artifacts,
+                allPassed
+        );
+
+        swarmHistory.put(swarmId, result);
+        return result;
+    }
+
+    private void executePhasedPipeline(
+            List<EnterpriseAgentType> agents,
+            String goalTitle,
+            List<AgentThreadExecutionRecord> threadRecords,
+            List<String> artifacts,
+            AtomicLong totalSequentialMs
+    ) {
+        // Stage 1: Discovery & Architecture
+        List<EnterpriseAgentType> stage1 = agents.stream()
+                .filter(a -> a == EnterpriseAgentType.ARCHITECT || a == EnterpriseAgentType.RESEARCH || a == EnterpriseAgentType.PRODUCT_MANAGER)
+                .toList();
+        if (!stage1.isEmpty()) {
+            executeParallelSwarm(stage1, goalTitle, "Stage 1: Architecture & Design", threadRecords, artifacts, totalSequentialMs);
+        }
+
+        // Stage 2: Synthesis & Security
+        List<EnterpriseAgentType> stage2 = agents.stream()
+                .filter(a -> a == EnterpriseAgentType.SOFTWARE_ENGINEER || a == EnterpriseAgentType.SECURITY || a == EnterpriseAgentType.DATA_ENGINEER)
+                .toList();
+        if (!stage2.isEmpty()) {
+            executeParallelSwarm(stage2, goalTitle, "Stage 2: Core Engineering & Security", threadRecords, artifacts, totalSequentialMs);
+        }
+
+        // Stage 3: Verification & Deployment
+        List<EnterpriseAgentType> stage3 = agents.stream()
+                .filter(a -> a == EnterpriseAgentType.QA || a == EnterpriseAgentType.DEVOPS || a == EnterpriseAgentType.FINANCE || a == EnterpriseAgentType.LEGAL_ASSISTANT || a == EnterpriseAgentType.MARKETING || a == EnterpriseAgentType.CUSTOMER_SUPPORT)
+                .toList();
+        if (!stage3.isEmpty()) {
+            executeParallelSwarm(stage3, goalTitle, "Stage 3: Verification & Deployment", threadRecords, artifacts, totalSequentialMs);
+        }
+    }
+
+    private void executeParallelSwarm(
+            List<EnterpriseAgentType> agents,
+            String goalTitle,
+            String stageName,
+            List<AgentThreadExecutionRecord> threadRecords,
+            List<String> artifacts,
+            AtomicLong totalSequentialMs
+    ) {
         try (ExecutorService virtualExecutor = Executors.newVirtualThreadPerTaskExecutor()) {
             List<Callable<Void>> tasks = new ArrayList<>();
 
@@ -71,76 +144,61 @@ public final class OenexaAgentThreadOrchestratorService {
                     long threadNum = threadIdCounter.incrementAndGet();
                     String threadName = "oenexa-vthread-" + agent.name().toLowerCase() + "-" + threadNum;
                     long taskStart = System.currentTimeMillis();
-
-                    // Specific multi-task execution for each agent
-                    String taskDesc = getAgentTaskDescription(agent, request.goalTitle());
-                    String output = executeAgentWorkload(agent, request.goalTitle());
-                    String artifact = getAgentArtifact(agent, request.goalTitle());
-
-                    // Simulated execution duration (20-60ms in parallel)
                     long simDuration = 25 + (threadNum % 35);
                     totalSequentialMs.addAndGet(simDuration);
 
                     try {
+                        String taskDesc = getAgentTaskDescription(agent, goalTitle);
+                        String output = executeAgentWorkload(agent, goalTitle);
+                        String artifact = getAgentArtifact(agent, goalTitle);
+
                         Thread.sleep(simDuration);
-                    } catch (InterruptedException ignored) {
-                        Thread.currentThread().interrupt();
+
+                        long taskDuration = System.currentTimeMillis() - taskStart;
+                        threadRecords.add(new AgentThreadExecutionRecord(
+                                "vthread-" + threadNum,
+                                threadName,
+                                agent,
+                                stageName,
+                                taskDesc,
+                                AgentThreadState.COMPLETED,
+                                taskStart,
+                                taskDuration,
+                                output,
+                                256 + (int) (threadNum % 256)
+                        ));
+
+                        if (artifact != null && !artifact.isBlank()) {
+                            artifacts.add(artifact);
+                        }
+                    } catch (Exception ex) {
+                        long taskDuration = System.currentTimeMillis() - taskStart;
+                        threadRecords.add(new AgentThreadExecutionRecord(
+                                "vthread-" + threadNum,
+                                threadName,
+                                agent,
+                                stageName,
+                                "Task execution for " + agent.name(),
+                                AgentThreadState.FAILED,
+                                taskStart,
+                                taskDuration,
+                                "Virtual thread interrupted or failed: " + ex.getMessage(),
+                                128
+                        ));
                     }
-
-                    long taskDuration = System.currentTimeMillis() - taskStart;
-
-                    threadRecords.add(new AgentThreadExecutionRecord(
-                            "vthread-" + threadNum,
-                            threadName,
-                            agent,
-                            taskDesc,
-                            AgentThreadState.COMPLETED,
-                            taskStart,
-                            taskDuration,
-                            output,
-                            256 + (int) (threadNum % 256)
-                    ));
-
-                    if (artifact != null && !artifact.isBlank()) {
-                        artifacts.add(artifact);
-                    }
-
                     return null;
                 });
             }
 
-            // Await completion of all parallel virtual threads (Structured Concurrency barrier)
             List<Future<Void>> futures = virtualExecutor.invokeAll(tasks);
             for (Future<Void> future : futures) {
                 try {
                     future.get(10, TimeUnit.SECONDS);
-                } catch (Exception e) {
-                    // Handled safely
+                } catch (Exception ignored) {
                 }
             }
-        } catch (Exception e) {
-            // Virtual thread executor exception handling
+        } catch (Exception ignored) {
         }
-
-        long wallClockDuration = Math.max(1, System.currentTimeMillis() - wallClockStart);
-        long sequential = Math.max(wallClockDuration, totalSequentialMs.get());
-        double speedup = Math.round(((double) sequential / wallClockDuration) * 100.0) / 100.0;
-
-        ConcurrentAgentSwarmResult result = new ConcurrentAgentSwarmResult(
-                swarmId,
-                request.goalTitle(),
-                "JAVA_25_STRUCTURED_VIRTUAL_THREADS",
-                threadRecords.size(),
-                wallClockDuration,
-                sequential,
-                speedup,
-                threadRecords,
-                artifacts,
-                true
-        );
-
-        swarmHistory.put(swarmId, result);
-        return result;
     }
 
     public List<AgentThreadExecutionRecord> getActiveThreads(String swarmId) {
