@@ -24,7 +24,7 @@ import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
- * REST & SSE Controller exposing Google Gemini 4 Argon Autonomous AI Agent capabilities:
+ * REST & SSE Controller exposing OENEXA Autonomous AI Agent capabilities:
  * Goal decomposition, plan DAG execution across 7 personas, real-time trace streaming,
  * and self-healing compilation reflection cycles.
  */
@@ -87,7 +87,7 @@ public class ArgonAgentController {
         this(engine, null, null, null, null);
     }
 
-    @GetMapping("/argon/privacy")
+    @GetMapping({"/autonomous/privacy", "/argon/privacy"})
     public ResponseEntity<LocalPrivacyConfig> getPrivacyStatus() {
         if (localAgentAuditLogRepository != null) {
             var latestLog = localAgentAuditLogRepository.findTopByOrderByCreatedAtDesc();
@@ -106,7 +106,7 @@ public class ArgonAgentController {
         return ResponseEntity.ok(new LocalPrivacyConfig());
     }
 
-    @PostMapping("/argon/prd")
+    @PostMapping({"/autonomous/prd", "/argon/prd"})
     public ResponseEntity<ProductRequirementsDocument> generatePrd(@RequestBody GeneratePrdRequest request) {
         if (request == null || request.goal() == null || request.goal().isBlank()) {
             return ResponseEntity.badRequest().build();
@@ -144,7 +144,7 @@ public class ArgonAgentController {
         return ResponseEntity.ok(prd);
     }
 
-    @PostMapping("/argon/multimodal/upload")
+    @PostMapping({"/autonomous/multimodal/upload", "/argon/multimodal/upload"})
     public ResponseEntity<MultimodalAttachment> uploadMultimodalAttachment(@RequestBody MultimodalUploadRequest request) {
         if (request == null || request.type() == null || request.fileName() == null || request.fileName().isBlank()) {
             return ResponseEntity.badRequest().build();
@@ -183,7 +183,7 @@ public class ArgonAgentController {
         return attachment.get();
     }
 
-    @PostMapping("/argon/goals")
+    @PostMapping({"/autonomous/goals", "/argon/goals"})
     public ResponseEntity<ArgonAutonomousGoalResponse> executeGoal(@RequestBody ArgonAutonomousGoalRequest request) {
         if (request == null || request.goal() == null || request.goal().isBlank()) {
             return ResponseEntity.badRequest().build();
@@ -193,7 +193,7 @@ public class ArgonAgentController {
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping(value = "/argon/goals/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    @PostMapping(value = {"/autonomous/goals/stream", "/argon/goals/stream"}, produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public SseEmitter streamGoal(@RequestBody ArgonAutonomousGoalRequest request) {
         SseEmitter emitter = new SseEmitter(120_000L);
         if (request == null || request.goal() == null || request.goal().isBlank()) {
@@ -204,13 +204,13 @@ public class ArgonAgentController {
         try {
             ArgonAutonomousGoalResponse response = engine.streamGoalExecution(request, event -> {
                 try {
-                    emitter.send(SseEmitter.event().name("argon-event").data(event));
+                    emitter.send(SseEmitter.event().name("oenexa-agent-event").data(event));
                 } catch (IOException e) {
                     emitter.completeWithError(e);
                 }
             });
             persistGoalResponseIfAvailable(request, response);
-            emitter.send(SseEmitter.event().name("argon-completed").data(response));
+            emitter.send(SseEmitter.event().name("oenexa-agent-completed").data(response));
             emitter.complete();
         } catch (Exception e) {
             emitter.completeWithError(e);
@@ -218,29 +218,29 @@ public class ArgonAgentController {
         return emitter;
     }
 
-    @GetMapping("/argon/goals")
+    @GetMapping({"/autonomous/goals", "/argon/goals"})
     public ResponseEntity<List<ArgonAutonomousGoalResponse>> getAllGoals() {
         return ResponseEntity.ok(engine.getAllGoals());
     }
 
-    @GetMapping("/argon/goals/{goalId}")
+    @GetMapping({"/autonomous/goals/{goalId}", "/argon/goals/{goalId}"})
     public ResponseEntity<ArgonAutonomousGoalResponse> getGoal(@PathVariable String goalId) {
         return engine.getGoal(goalId)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @GetMapping("/argon/goals/{goalId}/events")
+    @GetMapping({"/autonomous/goals/{goalId}/events", "/argon/goals/{goalId}/events"})
     public ResponseEntity<List<ArgonExecutionEvent>> getGoalEvents(@PathVariable String goalId) {
         return ResponseEntity.ok(engine.getGoalEvents(goalId));
     }
 
-    @GetMapping("/argon/goals/{goalId}/healing-cycles")
+    @GetMapping({"/autonomous/goals/{goalId}/healing-cycles", "/argon/goals/{goalId}/healing-cycles"})
     public ResponseEntity<List<ArgonSelfHealingCycle>> getGoalHealingCycles(@PathVariable String goalId) {
         return ResponseEntity.ok(engine.getGoalHealingCycles(goalId));
     }
 
-    @PostMapping("/argon/goals/{goalId}/heal")
+    @PostMapping({"/autonomous/goals/{goalId}/heal", "/argon/goals/{goalId}/heal"})
     public ResponseEntity<ArgonSelfHealingCycle> triggerSelfHealing(
             @PathVariable String goalId,
             @RequestBody ArgonManualHealRequest request

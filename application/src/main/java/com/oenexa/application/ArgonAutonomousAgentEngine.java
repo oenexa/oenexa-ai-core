@@ -9,7 +9,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
 /**
- * Enterprise Autonomous AI Agent Engine modeled after Google Gemini 4 and Argon AI.
+ * Enterprise Autonomous AI Agent Engine for OENEXA AI.
  * Implements autonomous goal decomposition, dynamic DAG execution across 7 specialized software personas,
  * real-time trace streaming, and a self-healing compilation/test reflection loop.
  */
@@ -35,7 +35,7 @@ public class ArgonAutonomousAgentEngine {
     }
 
     /**
-     * Executes an autonomous engineering goal through the full Gemini 4 / Argon reasoning lifecycle:
+     * Executes an autonomous engineering goal through the full OENEXA autonomous reasoning lifecycle:
      * PLANNING -> DECOMPOSITION -> TOOL_EXECUTION -> SELF_HEALING_VERIFICATION -> REFLECTION -> COMPLETED.
      */
     public ArgonAutonomousGoalResponse executeGoal(ArgonAutonomousGoalRequest request) {

@@ -18,7 +18,7 @@ OENEXA AI is an enterprise AI Operating System engineered for high-concurrency a
 sequenceDiagram
     autonumber
     actor User as User / Enterprise Client
-    participant UI as [AI-WEB] Antigravity Cockpit
+    participant UI as [AI-WEB] OENEXA Swarm Cockpit
     participant API as [AI-CORE] Enterprise REST API
     participant Orch as Virtual Thread Orchestrator
     participant VThreads as Java 25 Virtual Threads (Per-Agent)
