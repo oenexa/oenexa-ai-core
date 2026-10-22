@@ -76,4 +76,20 @@ class AiEngineerControllerTest {
         assertNotNull(response.getBody());
         assertEquals("oenexa-core", response.getBody().applicationName());
     }
+
+    @Test
+    @DisplayName("Should handle null requests across all endpoints safely")
+    void shouldHandleNullRequestsSafely() {
+        assertNotNull(controller.reviewPullRequest(null).getBody());
+        assertNotNull(controller.generateApi(null).getBody());
+        assertNotNull(controller.refactorCode(null).getBody());
+        assertNotNull(controller.fixBug(null).getBody());
+        assertNotNull(controller.generateInfrastructure(null).getBody());
+    }
+
+    @Test
+    @DisplayName("Should reject null service in constructor")
+    void shouldRejectNullService() {
+        assertThrows(NullPointerException.class, () -> new AiEngineerController(null));
+    }
 }

@@ -27,6 +27,14 @@ class EnterpriseAgentEcosystemControllerTest {
     }
 
     @Test
+    @DisplayName("Should test default no-arg constructor")
+    void shouldTestNoArgConstructor() {
+        EnterpriseAgentEcosystemController defaultCtrl = new EnterpriseAgentEcosystemController();
+        assertNotNull(defaultCtrl);
+        assertEquals(12, defaultCtrl.listAgents().getBody().size());
+    }
+
+    @Test
     @DisplayName("Should list all agents via REST endpoint")
     void shouldListAgents() {
         ResponseEntity<List<AgentProfile>> response = controller.listAgents();
@@ -60,6 +68,9 @@ class EnterpriseAgentEcosystemControllerTest {
         assertNotNull(response.getBody());
         assertTrue(response.getBody().completed());
         assertEquals("COMPLETED", response.getBody().currentPhase());
+
+        // Null execute request fallback
+        assertNotNull(controller.executePlan(null).getBody());
     }
 
     @Test
@@ -72,6 +83,9 @@ class EnterpriseAgentEcosystemControllerTest {
         assertNotNull(response.getBody());
         assertTrue(response.getBody().passed());
         assertEquals(98, response.getBody().confidenceScore());
+
+        // Null reflect request fallback
+        assertNotNull(controller.reflectOnStep(null).getBody());
     }
 
     @Test
@@ -95,6 +109,9 @@ class EnterpriseAgentEcosystemControllerTest {
         assertNotNull(threadResp.getBody());
         assertEquals(3, threadResp.getBody().size());
 
+        // Test querying active threads with null parameter
+        assertNotNull(controller.getActiveThreads(null).getBody());
+
         // Test querying by swarm ID
         ResponseEntity<ConcurrentAgentSwarmResult> getResp = controller.getSwarmResult(response.getBody().swarmId());
         assertEquals(HttpStatus.OK, getResp.getStatusCode());
@@ -103,5 +120,8 @@ class EnterpriseAgentEcosystemControllerTest {
         // Query missing swarm ID
         ResponseEntity<ConcurrentAgentSwarmResult> missingResp = controller.getSwarmResult("missing-id");
         assertEquals(HttpStatus.NOT_FOUND, missingResp.getStatusCode());
+
+        // Null swarm execution request fallback
+        assertNotNull(controller.executeConcurrentSwarm(null).getBody());
     }
 }

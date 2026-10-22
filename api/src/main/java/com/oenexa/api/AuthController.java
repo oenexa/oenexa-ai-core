@@ -162,7 +162,7 @@ public class AuthController {
         try {
             TokenPair tokens = enterpriseAuthService.loginWithTwoFactor(request);
             return ResponseEntity.ok(tokens);
-        } catch (SecurityException e) {
+        } catch (SecurityException | IllegalStateException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", e.getMessage()));
         }
     }

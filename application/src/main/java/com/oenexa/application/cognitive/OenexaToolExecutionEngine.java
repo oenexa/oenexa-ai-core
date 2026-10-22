@@ -160,12 +160,29 @@ public class OenexaToolExecutionEngine {
                         Optional.of(dockerArtifact)
                 );
             }
+            case "workspace_patch_engine" -> {
+                CodeArtifact patchArtifact = new CodeArtifact(
+                        "art-patch-" + UUID.randomUUID(),
+                        "fix.patch",
+                        "patch/fix.patch",
+                        "DIFF",
+                        "--- a/App.java\n+++ b/App.java\n@@ -1 +1 @@\n-// old\n+// new",
+                        "PATCH"
+                );
+                return new OenexaToolExecutionResult(
+                        toolCall.id(),
+                        funcName,
+                        "Workspace patch generated successfully.",
+                        true,
+                        Optional.of(patchArtifact)
+                );
+            }
             default -> {
                 return new OenexaToolExecutionResult(
                         toolCall.id(),
                         funcName,
-                        "Tool executed successfully in sandboxed Java 25 runtime.",
-                        true,
+                        "Unknown tool: " + funcName,
+                        false,
                         Optional.empty()
                 );
             }

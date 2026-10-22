@@ -24,6 +24,14 @@ class ModelContextProtocolControllerTest {
     }
 
     @Test
+    @DisplayName("Should test no-arg constructor")
+    void shouldTestNoArgConstructor() {
+        ModelContextProtocolController defaultCtrl = new ModelContextProtocolController();
+        assertNotNull(defaultCtrl);
+        assertFalse(defaultCtrl.listTools().getBody().isEmpty());
+    }
+
+    @Test
     @DisplayName("Should dispatch RPC request via /rpc endpoint")
     void shouldHandleRpc() {
         var req = new McpRequest("2.0", "tools/list", Map.of(), "req-100");
@@ -61,6 +69,10 @@ class ModelContextProtocolControllerTest {
         assertNotNull(response.getBody());
         assertFalse(response.getBody().isError());
         assertTrue(response.getBody().content().get(0).text().contains("Main.java"));
+
+        // Null arguments fallback
+        ResponseEntity<McpToolCallResult> nullArgs = controller.executeTool("oenexa_ast_refactor", null);
+        assertNotNull(nullArgs.getBody());
     }
 
     @Test
@@ -73,5 +85,11 @@ class ModelContextProtocolControllerTest {
         ResponseEntity<List<McpResourceDefinition>> resources = controller.listResources();
         assertEquals(HttpStatus.OK, resources.getStatusCode());
         assertFalse(resources.getBody().isEmpty());
+    }
+
+    @Test
+    @DisplayName("Should reject null service in constructor")
+    void shouldRejectNullService() {
+        assertThrows(NullPointerException.class, () -> new ModelContextProtocolController(null));
     }
 }

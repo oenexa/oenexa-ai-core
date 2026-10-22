@@ -254,5 +254,35 @@ class AuthControllerTest {
 
         ResponseEntity<?> auditResp = controller.auditLogs(authHeader);
         assertEquals(HttpStatus.OK, auditResp.getStatusCode());
+
+        ResponseEntity<?> revokeResp = controller.revokeSession(authHeader, "session-123");
+        assertEquals(HttpStatus.OK, revokeResp.getStatusCode());
+    }
+
+    @Test
+    @DisplayName("Should setup and verify two-factor authentication")
+    void shouldSetupAndVerifyTwoFactor() {
+        ResponseEntity<?> regResp = controller.register(new RegisterRequest("twofa_user", "twofa@test.com", "Pass12345!", "2FA User"));
+        TokenPair pair = (TokenPair) regResp.getBody();
+        String authHeader = "Bearer " + pair.accessToken();
+
+        ResponseEntity<?> setupResp = controller.setupTwoFactor(authHeader);
+        assertEquals(HttpStatus.OK, setupResp.getStatusCode());
+        TwoFactorSetupResponse setupData = (TwoFactorSetupResponse) setupResp.getBody();
+        assertNotNull(setupData.secret());
+        assertNotNull(setupData.otpauthUrl());
+
+        // Unauthorized setup without header
+        ResponseEntity<?> unauthSetup = controller.setupTwoFactor(null);
+        assertEquals(HttpStatus.UNAUTHORIZED, unauthSetup.getStatusCode());
+
+        // Verify invalid code
+        ResponseEntity<?> verifyResp = controller.verifyTwoFactor(new TwoFactorVerifyRequest("twofa_user", "999999", "secret123"));
+        assertEquals(HttpStatus.UNAUTHORIZED, verifyResp.getStatusCode());
+
+        // Unauthorized profile, sessions, and audit without valid header
+        assertEquals(HttpStatus.UNAUTHORIZED, controller.updateProfile(null, new UserProfileUpdateRequest(null, null, null, null, null, null, null, null, null)).getStatusCode());
+        assertEquals(HttpStatus.UNAUTHORIZED, controller.listSessions(null).getStatusCode());
+        assertEquals(HttpStatus.UNAUTHORIZED, controller.auditLogs(null).getStatusCode());
     }
 }
