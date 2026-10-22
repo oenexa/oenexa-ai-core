@@ -265,4 +265,120 @@ public final class OenexaAutonomousProblemSolverDomain {
             return accuracyPassed && logicalConsistencyPassed && securityPrivacyCompliant && overallQualityScore >= 0.85;
         }
     }
+
+    // =========================================================================
+    // 11. 7-Stage Autonomous Issue Handling & Self-Improvement Lifecycle
+    // =========================================================================
+
+    public enum DetectionCategory { QUERY, BUG, ERROR, ANOMALY, FEATURE_REQUEST, UNKNOWN_SCENARIO }
+
+    public record DetectStage(
+            DetectionCategory category,
+            String rawInput,
+            String summary,
+            Instant detectedAt
+    ) {
+        public DetectStage {
+            category = (category != null) ? category : DetectionCategory.QUERY;
+            rawInput = (rawInput != null) ? rawInput : "";
+            summary = (summary != null) ? summary : "";
+            detectedAt = (detectedAt != null) ? detectedAt : Instant.now();
+        }
+    }
+
+    public record AnalyzeStage(
+            String rootCause,
+            String impactAssessment,
+            boolean knowledgeBaseHit,
+            String relevantDocumentation
+    ) {
+        public AnalyzeStage {
+            rootCause = (rootCause != null) ? rootCause : "Under analysis";
+            impactAssessment = (impactAssessment != null) ? impactAssessment : "Low";
+            relevantDocumentation = (relevantDocumentation != null) ? relevantDocumentation : "Internal Knowledge Base";
+        }
+    }
+
+    public record ResolveStage(
+            String bestResponse,
+            boolean validated,
+            String validationMethod,
+            double initialConfidence
+    ) {
+        public ResolveStage {
+            bestResponse = (bestResponse != null) ? bestResponse : "";
+            validationMethod = (validationMethod != null) ? validationMethod : "Invariant Assertions";
+        }
+    }
+
+    public record LearnStage(
+            String learnedPatternId,
+            boolean knowledgeBaseUpdated,
+            String feedbackIncorporated
+    ) {
+        public LearnStage {
+            learnedPatternId = (learnedPatternId != null) ? learnedPatternId : "PAT-AUTO";
+            feedbackIncorporated = (feedbackIncorporated != null) ? feedbackIncorporated : "Autonomous Confirmation";
+        }
+    }
+
+    public record EscalateStage(
+            boolean escalated,
+            double escalationThreshold,
+            String deliberativeReasoningTrace,
+            List<String> alternativeSolutions
+    ) {
+        public EscalateStage {
+            deliberativeReasoningTrace = (deliberativeReasoningTrace != null) ? deliberativeReasoningTrace : "Not escalated";
+            alternativeSolutions = (alternativeSolutions != null) ? List.copyOf(alternativeSolutions) : List.of();
+        }
+    }
+
+    public record SelfUpgradeStage(
+            boolean upgradeTriggered,
+            String missingCapability,
+            String improvementDesign,
+            boolean testedAndValidated,
+            boolean safelyDeployed
+    ) {
+        public SelfUpgradeStage {
+            missingCapability = (missingCapability != null) ? missingCapability : "None";
+            improvementDesign = (improvementDesign != null) ? improvementDesign : "None";
+        }
+    }
+
+    public record ContinuousImprovementStage(
+            double latencyMs,
+            double responseQualityScore,
+            int repeatedErrorsReduced,
+            String speedAccuracyTrend
+    ) {
+        public ContinuousImprovementStage {
+            speedAccuracyTrend = (speedAccuracyTrend != null) ? speedAccuracyTrend : "Optimal (Virtual Thread Concurrency)";
+        }
+    }
+
+    public record AutonomousLifecycleResult(
+            String lifecycleId,
+            DetectStage detect,
+            AnalyzeStage analyze,
+            ResolveStage resolve,
+            LearnStage learn,
+            EscalateStage escalate,
+            SelfUpgradeStage selfUpgrade,
+            ContinuousImprovementStage continuousImprovement,
+            double overallConfidence,
+            boolean successful
+    ) {
+        public AutonomousLifecycleResult {
+            Objects.requireNonNull(lifecycleId, "lifecycleId must not be null");
+            detect = (detect != null) ? detect : new DetectStage(DetectionCategory.QUERY, "", "", Instant.now());
+            analyze = (analyze != null) ? analyze : new AnalyzeStage("", "", false, "");
+            resolve = (resolve != null) ? resolve : new ResolveStage("", false, "", 0.0);
+            learn = (learn != null) ? learn : new LearnStage("", false, "");
+            escalate = (escalate != null) ? escalate : new EscalateStage(false, 0.90, "", List.of());
+            selfUpgrade = (selfUpgrade != null) ? selfUpgrade : new SelfUpgradeStage(false, "", "", false, false);
+            continuousImprovement = (continuousImprovement != null) ? continuousImprovement : new ContinuousImprovementStage(0.0, 1.0, 0, "");
+        }
+    }
 }

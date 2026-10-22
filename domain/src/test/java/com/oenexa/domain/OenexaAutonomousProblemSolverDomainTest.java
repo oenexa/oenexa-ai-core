@@ -207,4 +207,66 @@ class OenexaAutonomousProblemSolverDomainTest {
         QualityStandardsReport failingSecurity = new QualityStandardsReport(true, true, true, true, false, 0.90, "Security issue");
         assertFalse(failingSecurity.isAcceptable());
     }
+
+    @Test
+    @DisplayName("7-Stage Lifecycle records should enforce contracts and apply safe defaults")
+    void testSevenStageLifecycleRecords() {
+        DetectStage detect = new DetectStage(null, null, null, null);
+        assertEquals(DetectionCategory.QUERY, detect.category());
+        assertEquals("", detect.rawInput());
+        assertEquals("", detect.summary());
+        assertNotNull(detect.detectedAt());
+
+        AnalyzeStage analyze = new AnalyzeStage(null, null, false, null);
+        assertEquals("Under analysis", analyze.rootCause());
+        assertEquals("Low", analyze.impactAssessment());
+        assertFalse(analyze.knowledgeBaseHit());
+        assertEquals("Internal Knowledge Base", analyze.relevantDocumentation());
+
+        ResolveStage resolve = new ResolveStage(null, true, null, 0.95);
+        assertEquals("", resolve.bestResponse());
+        assertTrue(resolve.validated());
+        assertEquals("Invariant Assertions", resolve.validationMethod());
+        assertEquals(0.95, resolve.initialConfidence());
+
+        LearnStage learn = new LearnStage(null, true, null);
+        assertEquals("PAT-AUTO", learn.learnedPatternId());
+        assertTrue(learn.knowledgeBaseUpdated());
+        assertEquals("Autonomous Confirmation", learn.feedbackIncorporated());
+
+        EscalateStage escalate = new EscalateStage(true, 0.90, null, null);
+        assertTrue(escalate.escalated());
+        assertEquals(0.90, escalate.escalationThreshold());
+        assertEquals("Not escalated", escalate.deliberativeReasoningTrace());
+        assertTrue(escalate.alternativeSolutions().isEmpty());
+
+        SelfUpgradeStage selfUpgrade = new SelfUpgradeStage(true, null, null, true, true);
+        assertTrue(selfUpgrade.upgradeTriggered());
+        assertEquals("None", selfUpgrade.missingCapability());
+        assertEquals("None", selfUpgrade.improvementDesign());
+        assertTrue(selfUpgrade.testedAndValidated());
+        assertTrue(selfUpgrade.safelyDeployed());
+
+        ContinuousImprovementStage ci = new ContinuousImprovementStage(12.5, 0.99, 5, null);
+        assertEquals(12.5, ci.latencyMs());
+        assertEquals(0.99, ci.responseQualityScore());
+        assertEquals(5, ci.repeatedErrorsReduced());
+        assertEquals("Optimal (Virtual Thread Concurrency)", ci.speedAccuracyTrend());
+
+        assertThrows(NullPointerException.class, () -> new AutonomousLifecycleResult(null, detect, analyze, resolve, learn, escalate, selfUpgrade, ci, 0.95, true));
+
+        AutonomousLifecycleResult result = new AutonomousLifecycleResult(
+                "LC-1", null, null, null, null, null, null, null, 0.98, true
+        );
+        assertEquals("LC-1", result.lifecycleId());
+        assertNotNull(result.detect());
+        assertNotNull(result.analyze());
+        assertNotNull(result.resolve());
+        assertNotNull(result.learn());
+        assertNotNull(result.escalate());
+        assertNotNull(result.selfUpgrade());
+        assertNotNull(result.continuousImprovement());
+        assertEquals(0.98, result.overallConfidence());
+        assertTrue(result.successful());
+    }
 }
