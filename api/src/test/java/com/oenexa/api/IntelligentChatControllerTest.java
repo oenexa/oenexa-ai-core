@@ -1,5 +1,7 @@
 package com.oenexa.api;
 
+import com.oenexa.api.controller.*;
+import com.oenexa.api.exception.*;
 import com.oenexa.application.*;
 import com.oenexa.domain.ChatDomain.*;
 import org.junit.jupiter.api.BeforeEach;

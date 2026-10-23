@@ -1,4 +1,4 @@
-package com.oenexa.api;
+package com.oenexa.api.controller;
 
 import com.oenexa.application.EnterpriseBillingService;
 import com.oenexa.domain.EnterpriseBillingDomain.*;

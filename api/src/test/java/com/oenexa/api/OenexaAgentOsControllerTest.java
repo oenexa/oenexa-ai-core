@@ -1,5 +1,7 @@
 package com.oenexa.api;
 
+import com.oenexa.api.controller.*;
+import com.oenexa.api.exception.*;
 import com.oenexa.application.cognitive.OenexaAgentOperatingSystem;
 import com.oenexa.domain.OenexaAgentOsDomain.*;
 import com.oenexa.domain.OenexaCognitiveDomain.*;

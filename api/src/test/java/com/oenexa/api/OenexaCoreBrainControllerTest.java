@@ -1,5 +1,7 @@
 package com.oenexa.api;
 
+import com.oenexa.api.controller.*;
+import com.oenexa.api.exception.*;
 import com.oenexa.application.core.OenexaAiGatewayEngine;
 import com.oenexa.application.core.OenexaCoreBrain;
 import com.oenexa.application.core.OenexaObservabilityEngine;

@@ -1,6 +1,8 @@
 package com.oenexa.api;
 
-import com.oenexa.api.TargetCapabilitiesController.*;
+import com.oenexa.api.controller.*;
+import com.oenexa.api.exception.*;
+import com.oenexa.api.controller.TargetCapabilitiesController.*;
 import com.oenexa.application.TargetCapabilitiesService;
 import com.oenexa.domain.ChatDomain.MultimodalAttachment;
 import com.oenexa.domain.ChatDomain.MultimodalType;

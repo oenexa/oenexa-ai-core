@@ -1,4 +1,4 @@
-package com.oenexa.api;
+package com.oenexa.api.controller;
 
 import com.oenexa.application.openai.AgentOperatingSystem;
 import com.oenexa.domain.OpenAiAgentOsDomain.*;

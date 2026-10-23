@@ -1,4 +1,4 @@
-package com.oenexa.api;
+package com.oenexa.api.controller;
 
 import com.oenexa.application.CollaborativeAgentService;
 import com.oenexa.application.OenexaAutonomousAgentEngine;

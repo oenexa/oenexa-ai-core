@@ -1,4 +1,4 @@
-package com.oenexa.api;
+package com.oenexa.api.controller;
 
 import com.oenexa.api.dto.ApiResponse;
 import com.oenexa.api.dto.auth.AuthDtos.LoginRequestDto;

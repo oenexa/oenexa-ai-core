@@ -1,5 +1,7 @@
 package com.oenexa.api;
 
+import com.oenexa.api.controller.*;
+import com.oenexa.api.exception.*;
 import com.oenexa.application.ChatService;
 import com.oenexa.application.ConversationManagementService;
 import com.oenexa.application.DocumentIngestionService;

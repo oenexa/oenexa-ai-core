@@ -12,7 +12,7 @@ import java.util.Optional;
  * Secondary adapter implementing UserStoragePort backed by Spring Data JPA UserRepository.
  */
 @Component
-public class JpaUserStorageAdapter implements UserStoragePort {
+public class JpaUserStorageAdapter implements UserStoragePort, com.oenexa.application.port.UserStoragePort {
 
     private final UserRepository repository;
 

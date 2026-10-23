@@ -1,5 +1,7 @@
 package com.oenexa.api;
 
+import com.oenexa.api.controller.*;
+import com.oenexa.api.exception.*;
 import com.oenexa.domain.PlatformModule;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

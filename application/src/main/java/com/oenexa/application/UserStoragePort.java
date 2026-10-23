@@ -1,17 +1,9 @@
 package com.oenexa.application;
 
-import com.oenexa.domain.User;
-import java.util.Optional;
-
 /**
  * Outbound Port for User persistence.
  * Follows Hexagonal Architecture: core application logic is completely decoupled from JPA.
+ * Canonical port definition is located in {@link com.oenexa.application.port.UserStoragePort}.
  */
-public interface UserStoragePort {
-    Optional<User> findById(Long id);
-    Optional<User> findByUsername(String username);
-    Optional<User> findByEmail(String email);
-    User save(User user);
-    boolean existsByUsername(String username);
-    boolean existsByEmail(String email);
+public interface UserStoragePort extends com.oenexa.application.port.UserStoragePort {
 }

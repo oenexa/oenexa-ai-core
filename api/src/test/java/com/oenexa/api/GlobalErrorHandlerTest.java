@@ -1,7 +1,9 @@
 package com.oenexa.api;
 
-import com.oenexa.api.GlobalErrorHandler.ErrorResponse;
-import com.oenexa.api.GlobalErrorHandler.FieldErrorDetail;
+import com.oenexa.api.controller.*;
+import com.oenexa.api.exception.*;
+import com.oenexa.api.exception.GlobalErrorHandler.ErrorResponse;
+import com.oenexa.api.exception.GlobalErrorHandler.FieldErrorDetail;
 import com.oenexa.domain.ErrorCode;
 import com.oenexa.domain.OenexaException;
 import com.oenexa.domain.OenexaExceptions.OenexaNotFoundException;

@@ -1,5 +1,7 @@
 package com.oenexa.api;
 
+import com.oenexa.api.controller.*;
+import com.oenexa.api.exception.*;
 import com.oenexa.application.CollaborativeAgentService;
 import com.oenexa.application.MemoryService;
 import com.oenexa.application.OenexaAutonomousAgentEngine;

@@ -1,4 +1,4 @@
-package com.oenexa.api;
+package com.oenexa.api.exception;
 
 import com.oenexa.domain.ErrorCode;
 import com.oenexa.domain.OenexaException;

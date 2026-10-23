@@ -1,4 +1,4 @@
-package com.oenexa.api;
+package com.oenexa.api.controller;
 
 import com.oenexa.domain.OpenAiDomain.*;
 import com.oenexa.domain.OpenAiMediaDomain.*;
