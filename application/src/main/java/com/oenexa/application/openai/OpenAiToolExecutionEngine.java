@@ -6,6 +6,7 @@ import com.oenexa.application.engine.TestSynthesizerEngine;
 import com.oenexa.domain.ChatDomain.CodeArtifact;
 import com.oenexa.domain.CodeEngineeringDomain.*;
 import com.oenexa.domain.OpenAiDomain.*;
+import com.oenexa.domain.OpenAiToolProtocolDomain.*;
 import org.springframework.stereotype.Service;
 
 import java.util.*;

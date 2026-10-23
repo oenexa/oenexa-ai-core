@@ -1,6 +1,7 @@
 package com.oenexa.application.openai;
 
 import com.oenexa.domain.OpenAiDomain.*;
+import com.oenexa.domain.OpenAiReasoningDomain.*;
 import org.springframework.stereotype.Service;
 
 import java.util.*;

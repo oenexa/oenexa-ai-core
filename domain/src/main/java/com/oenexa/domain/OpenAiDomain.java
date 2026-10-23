@@ -1,12 +1,15 @@
 package com.oenexa.domain;
 
+import com.oenexa.domain.OpenAiToolProtocolDomain.OpenAiResponseFormat;
+import com.oenexa.domain.OpenAiToolProtocolDomain.OpenAiToolCall;
+import com.oenexa.domain.OpenAiToolProtocolDomain.OpenAiToolDefinition;
+
 import java.time.Instant;
 import java.util.*;
 
 /**
  * Enterprise Domain Records & Invariants for OENEXA Neo-GPT Native OpenAI Engine.
- * Provides 100% wire-compatibility with OpenAI REST specification, o1/o3 deliberative reasoning,
- * and the 10-persona Autonomous Agent Operating System.
+ * Provides 100% wire-compatibility with OpenAI Chat Completion and Model/Embedding protocols.
  */
 public final class OpenAiDomain {
 
@@ -221,196 +224,6 @@ public final class OpenAiDomain {
             data = (data != null) ? List.copyOf(data) : List.of();
             Objects.requireNonNull(model, "model must not be null");
             Objects.requireNonNull(usage, "usage must not be null");
-        }
-    }
-
-    // =========================================================================
-    // 3. Tool Calling & Structured Output Specification
-    // =========================================================================
-
-    public record OpenAiToolDefinition(
-            String type,
-            OpenAiFunctionDefinition function
-    ) {
-        public OpenAiToolDefinition {
-            type = (type != null) ? type : "function";
-            Objects.requireNonNull(function, "function must not be null");
-        }
-
-        public static OpenAiToolDefinition function(String name, String description, Map<String, Object> parameters) {
-            return new OpenAiToolDefinition("function", new OpenAiFunctionDefinition(name, description, parameters));
-        }
-    }
-
-    public record OpenAiFunctionDefinition(
-            String name,
-            String description,
-            Map<String, Object> parameters
-    ) {
-        public OpenAiFunctionDefinition {
-            Objects.requireNonNull(name, "name must not be null");
-            description = (description != null) ? description : "";
-            parameters = (parameters != null) ? Map.copyOf(parameters) : Map.of();
-        }
-    }
-
-    public record OpenAiToolCall(
-            String id,
-            String type,
-            OpenAiFunctionCall function
-    ) {
-        public OpenAiToolCall {
-            Objects.requireNonNull(id, "id must not be null");
-            type = (type != null) ? type : "function";
-            Objects.requireNonNull(function, "function must not be null");
-        }
-    }
-
-    public record OpenAiFunctionCall(
-            String name,
-            String arguments
-    ) {
-        public OpenAiFunctionCall {
-            Objects.requireNonNull(name, "name must not be null");
-            arguments = (arguments != null) ? arguments : "{}";
-        }
-    }
-
-    public record OpenAiResponseFormat(
-            String type,
-            Map<String, Object> jsonSchema
-    ) {
-        public OpenAiResponseFormat {
-            type = (type != null) ? type : "text";
-            jsonSchema = (jsonSchema != null) ? Map.copyOf(jsonSchema) : Map.of();
-        }
-    }
-
-    public record OpenAiResponsesRequest(
-            String model,
-            String input,
-            List<OpenAiToolDefinition> tools,
-            String reasoningEffort
-    ) {
-        public OpenAiResponsesRequest {
-            model = (model != null && !model.isBlank()) ? model : "oenexa-neo-gpt-o1";
-            input = (input != null) ? input : "";
-            tools = (tools != null) ? List.copyOf(tools) : List.of();
-            reasoningEffort = (reasoningEffort != null && !reasoningEffort.isBlank()) ? reasoningEffort : "high";
-        }
-    }
-
-    public record OpenAiResponseOutputItem(
-            String type,
-            String role,
-            String content
-    ) {
-        public OpenAiResponseOutputItem {
-            type = (type != null) ? type : "message";
-            role = (role != null) ? role : "assistant";
-            content = (content != null) ? content : "";
-        }
-    }
-
-    public record OpenAiResponsesResponse(
-            String id,
-            String object,
-            long createdAt,
-            String model,
-            List<OpenAiResponseOutputItem> output,
-            String status,
-            OpenAiUsage usage
-    ) {
-        public OpenAiResponsesResponse {
-            Objects.requireNonNull(id, "id must not be null");
-            object = (object != null) ? object : "response";
-            model = (model != null) ? model : "oenexa-neo-gpt-o1";
-            output = (output != null) ? List.copyOf(output) : List.of();
-            status = (status != null) ? status : "completed";
-            Objects.requireNonNull(usage, "usage must not be null");
-        }
-    }
-
-    // =========================================================================
-    // 4. Multimodal & Audio/Files Specification
-    // =========================================================================
-
-    public record OpenAiTranscriptionResponse(
-            String text,
-            String language,
-            double duration,
-            String task
-    ) {
-        public OpenAiTranscriptionResponse {
-            Objects.requireNonNull(text, "text must not be null");
-            language = (language != null) ? language : "en";
-            task = (task != null) ? task : "transcribe";
-        }
-    }
-
-    public record OpenAiImageData(
-            String b64Json,
-            String url,
-            String revisedPrompt
-    ) {}
-
-    public record OpenAiImageResponse(
-            long created,
-            List<OpenAiImageData> data
-    ) {
-        public OpenAiImageResponse {
-            data = (data != null) ? List.copyOf(data) : List.of();
-        }
-    }
-
-    public record OpenAiFileObject(
-            String id,
-            long bytes,
-            long createdAt,
-            String filename,
-            String purpose
-    ) {
-        public OpenAiFileObject {
-            Objects.requireNonNull(id, "id must not be null");
-            Objects.requireNonNull(filename, "filename must not be null");
-            purpose = (purpose != null) ? purpose : "assistants";
-        }
-    }
-
-    public record OpenAiFileList(
-            String object,
-            List<OpenAiFileObject> data
-    ) {
-        public OpenAiFileList {
-            object = (object != null) ? object : "list";
-            data = (data != null) ? List.copyOf(data) : List.of();
-        }
-    }
-
-    // =========================================================================
-    // 5. o3 Deliberative Reasoning & Cognitive Architecture
-    // =========================================================================
-
-    public enum CognitiveStage {
-        INTENT_UNDERSTANDING,
-        MULTI_HYPOTHESIS_EXPLORATION,
-        DEEP_ANALYTICAL_REASONING,
-        SELF_CRITIQUE_ENGINE,
-        ANSWER_SYNTHESIS
-    }
-
-    public record DeliberativeReasoningTrace(
-            CognitiveStage stage,
-            int hypothesesCount,
-            boolean selfCritiquePassed,
-            double confidenceScore,
-            String reasoningSummary,
-            List<String> thoughtSteps
-    ) {
-        public DeliberativeReasoningTrace {
-            Objects.requireNonNull(stage, "stage must not be null");
-            reasoningSummary = (reasoningSummary != null) ? reasoningSummary : "";
-            thoughtSteps = (thoughtSteps != null) ? List.copyOf(thoughtSteps) : List.of();
         }
     }
 }

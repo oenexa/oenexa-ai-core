@@ -4,6 +4,7 @@ import com.oenexa.application.engine.AstAnalysisEngine;
 import com.oenexa.application.engine.SecurityAuditEngine;
 import com.oenexa.application.engine.TestSynthesizerEngine;
 import com.oenexa.domain.OpenAiDomain.*;
+import com.oenexa.domain.OpenAiToolProtocolDomain.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

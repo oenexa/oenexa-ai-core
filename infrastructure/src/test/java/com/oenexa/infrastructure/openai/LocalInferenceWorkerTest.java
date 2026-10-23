@@ -2,6 +2,8 @@ package com.oenexa.infrastructure.openai;
 
 import com.oenexa.application.openai.DeliberativeReasoningEngine;
 import com.oenexa.domain.OpenAiDomain.*;
+import com.oenexa.domain.OpenAiMediaDomain.*;
+import com.oenexa.domain.OpenAiToolProtocolDomain.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

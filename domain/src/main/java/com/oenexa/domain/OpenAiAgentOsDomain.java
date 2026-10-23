@@ -88,7 +88,7 @@ public final class OpenAiAgentOsDomain {
             String executionId,
             String goal,
             String status,
-            OpenAiDomain.DeliberativeReasoningTrace deliberativeTrace,
+            OpenAiReasoningDomain.DeliberativeReasoningTrace deliberativeTrace,
             List<AgentOsTaskStep> executedSteps,
             List<ChatDomain.CodeArtifact> synthesizedArtifacts,
             AgentOsMetrics metrics

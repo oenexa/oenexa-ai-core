@@ -3,6 +3,8 @@ package com.oenexa.api;
 import com.oenexa.application.openai.AgentOperatingSystem;
 import com.oenexa.domain.OpenAiAgentOsDomain.*;
 import com.oenexa.domain.OpenAiDomain.*;
+import com.oenexa.domain.OpenAiReasoningDomain.*;
+import com.oenexa.domain.OpenAiToolProtocolDomain.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;

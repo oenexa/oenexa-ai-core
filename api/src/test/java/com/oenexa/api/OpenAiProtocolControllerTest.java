@@ -1,6 +1,8 @@
 package com.oenexa.api;
 
 import com.oenexa.domain.OpenAiDomain.*;
+import com.oenexa.domain.OpenAiMediaDomain.*;
+import com.oenexa.domain.OpenAiToolProtocolDomain.*;
 import com.oenexa.infrastructure.openai.LocalInferenceWorker;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

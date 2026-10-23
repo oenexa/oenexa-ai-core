@@ -3,6 +3,8 @@ package com.oenexa.api;
 import com.oenexa.application.openai.AgentOperatingSystem;
 import com.oenexa.domain.OpenAiAgentOsDomain.*;
 import com.oenexa.domain.OpenAiDomain.*;
+import com.oenexa.domain.OpenAiReasoningDomain.*;
+import com.oenexa.domain.OpenAiToolProtocolDomain.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

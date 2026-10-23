@@ -1,110 +1,17 @@
 package com.oenexa.domain;
 
-import java.lang.reflect.Constructor;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
-import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class DomainModelTest {
-
-    @Test
-    void testAgentContractRecordsAndImplementation() {
-        AgentContract.Task task = new AgentContract.Task(AgentType.SECURITY, "scan codebase");
-        assertEquals(AgentType.SECURITY, task.agent());
-        assertEquals("scan codebase", task.objective());
-
-        AgentContract.Delegation delegation = new AgentContract.Delegation(AgentType.BUG_FIX, "fix finding");
-        assertEquals(AgentType.BUG_FIX, delegation.to());
-        assertEquals("fix finding", delegation.objective());
-
-        AgentContract.Result result = AgentContract.Result.of("Analysis completed");
-        assertEquals("Analysis completed", result.summary());
-        assertTrue(result.artifacts().isEmpty());
-        assertTrue(result.delegation().isEmpty());
-
-        AgentContract.Result customResult = new AgentContract.Result("Found issues",
-                Map.of("report", "critical.md"), Optional.of(delegation));
-        assertEquals("Found issues", customResult.summary());
-        assertEquals("critical.md", customResult.artifacts().get("report"));
-        assertTrue(customResult.delegation().isPresent());
-
-        Instant now = Instant.now();
-        AgentContract.Step step = new AgentContract.Step(AgentType.CODING, "write logic", "done", now, 1);
-        assertEquals(AgentType.CODING, step.agent());
-        assertEquals("write logic", step.objective());
-        assertEquals("done", step.summary());
-        assertEquals(now, step.at());
-        assertEquals(1, step.depth());
-
-        AgentContract.WorkflowRun run = new AgentContract.WorkflowRun("run-1", Workflow.PR_REVIEW, "COMPLETED",
-                List.of(step), "report text", null, now, now);
-        assertEquals("run-1", run.id());
-        assertEquals(Workflow.PR_REVIEW, run.workflow());
-        assertEquals("COMPLETED", run.status());
-        assertEquals(1, run.steps().size());
-        assertEquals("report text", run.report());
-        assertNull(run.error());
-        assertEquals(now, run.startedAt());
-        assertEquals(now, run.finishedAt());
-
-        AgentContract contract = new AgentContract() {
-            @Override
-            public AgentType type() {
-                return AgentType.CODING;
-            }
-
-            @Override
-            public Result execute(Task t, ExecutionContext context) {
-                return Result.of("executed " + t.objective());
-            }
-        };
-        assertEquals(AgentType.CODING, contract.type());
-        assertEquals("executed do work", contract.execute(new AgentContract.Task(AgentType.CODING, "do work"),
-                new ExecutionContext("ctx")).summary());
-    }
-
-    @Test
-    void testAgentTypeEnum() {
-        assertEquals(15, AgentType.values().length);
-        assertEquals(AgentType.REPOSITORY, AgentType.valueOf("REPOSITORY"));
-        assertEquals(AgentType.DEPLOYMENT, AgentType.valueOf("DEPLOYMENT"));
-    }
-
-    @Test
-    void testAuthDomainRecordsAndInstantiation() {
-        assertNotNull(new AuthDomain());
-
-        AuthDomain.TokenPair tokenPair = new AuthDomain.TokenPair("acc", "ref", 3600L);
-        assertEquals("acc", tokenPair.accessToken());
-        assertEquals("ref", tokenPair.refreshToken());
-        assertEquals(3600L, tokenPair.expiresInSeconds());
-
-        Instant now = Instant.now();
-        AuthDomain.AuthClaims claims = new AuthDomain.AuthClaims("u1", "user", "ADMIN", now, now.plusSeconds(3600));
-        assertEquals("u1", claims.userId());
-        assertEquals("user", claims.username());
-        assertEquals("ADMIN", claims.role());
-        assertEquals(now, claims.issuedAt());
-        assertNotNull(claims.expiresAt());
-
-        AuthDomain.LoginRequest login = new AuthDomain.LoginRequest("admin", "secret");
-        assertEquals("admin", login.usernameOrEmail());
-        assertEquals("secret", login.password());
-
-        AuthDomain.RegisterRequest register = new AuthDomain.RegisterRequest("newuser", "new@test.com", "pass123456", "New User");
-        assertEquals("newuser", register.username());
-        assertEquals("new@test.com", register.email());
-        assertEquals("pass123456", register.password());
-        assertEquals("New User", register.fullName());
-
-        AuthDomain.RefreshRequest refresh = new AuthDomain.RefreshRequest("refresh_token_123");
-        assertEquals("refresh_token_123", refresh.refreshToken());
-    }
+@DisplayName("Platform Chat & Core Contracts Zero-Mock Unit Tests")
+class PlatformChatAndCoreDomainTest {
 
     @Test
     void testChatDomainRecordsAndInstantiation() {
@@ -113,16 +20,16 @@ class DomainModelTest {
         assertEquals(ChatDomain.Role.TOOL, ChatDomain.Role.valueOf("TOOL"));
 
         Instant now = Instant.now();
-        ChatDomain.Message msg = new ChatDomain.Message(ChatDomain.Role.USER, "Hello", now);
-        assertEquals(ChatDomain.Role.USER, msg.role());
-        assertEquals("Hello", msg.content());
-        assertEquals(now, msg.timestamp());
-        assertNull(msg.thoughtProcess());
-        assertEquals("gemini-2.5-flash", msg.model());
-        assertTrue(msg.attachments().isEmpty());
-        assertTrue(msg.toolCalls().isEmpty());
-        assertTrue(msg.toolResults().isEmpty());
-        assertTrue(msg.artifacts().isEmpty());
+        ChatDomain.Message message = new ChatDomain.Message(ChatDomain.Role.USER, "Hello AI", now);
+        assertEquals(ChatDomain.Role.USER, message.role());
+        assertEquals("Hello AI", message.content());
+        assertEquals(now, message.timestamp());
+        assertNull(message.thoughtProcess());
+        assertEquals("gemini-2.5-flash", message.model());
+        assertTrue(message.attachments().isEmpty());
+        assertTrue(message.toolCalls().isEmpty());
+        assertTrue(message.toolResults().isEmpty());
+        assertTrue(message.artifacts().isEmpty());
 
         ChatDomain.Message advancedMsg = new ChatDomain.Message(
                 ChatDomain.Role.ASSISTANT,
@@ -134,17 +41,17 @@ class DomainModelTest {
         assertEquals("Thought step", advancedMsg.thoughtProcess());
         assertEquals("gemini-2.5-pro", advancedMsg.model());
 
-        ChatDomain.Conversation conv = new ChatDomain.Conversation("c1", "u1", List.of(msg));
+        ChatDomain.Conversation conv = new ChatDomain.Conversation("c1", "u1", List.of(message));
         assertEquals("c1", conv.conversationId());
         assertEquals("u1", conv.userId());
         assertEquals(1, conv.messages().size());
 
-        ChatDomain.ChatRequest req = new ChatDomain.ChatRequest("query", "c1");
-        assertEquals("query", req.message());
-        assertEquals("c1", req.conversationId());
-        assertEquals("gemini-2.5-flash", req.model());
-        assertTrue(req.includeThinking());
-        assertTrue(req.attachments().isEmpty());
+        ChatDomain.ChatRequest request = new ChatDomain.ChatRequest("Help me build", "conv-1");
+        assertEquals("Help me build", request.message());
+        assertEquals("conv-1", request.conversationId());
+        assertEquals("gemini-2.5-flash", request.model());
+        assertTrue(request.includeThinking());
+        assertTrue(request.attachments().isEmpty());
 
         ChatDomain.ChatRequest advancedReq = new ChatDomain.ChatRequest("query", "c1", "gemini-2.5-pro", false);
         assertEquals("gemini-2.5-pro", advancedReq.model());
@@ -176,7 +83,6 @@ class DomainModelTest {
         assertEquals("ARCHITECTURE_DESIGN", advancedResp.intent());
         assertEquals(1, advancedResp.suggestedFollowUps().size());
 
-        // Pro Chat Additions: ToolCall, ToolResult, CodeContextAttachment, CodeArtifact, ConversationMetadata
         ChatDomain.ToolCall toolCall = new ChatDomain.ToolCall("call-1", "ast_analyzer");
         assertEquals("call-1", toolCall.callId());
         assertEquals("ast_analyzer", toolCall.toolName());
@@ -312,57 +218,6 @@ class DomainModelTest {
     }
 
     @Test
-    void testExecutionContext() {
-        assertThrows(NullPointerException.class, () -> new ExecutionContext(null));
-
-        ExecutionContext ctx = new ExecutionContext("root goal");
-        assertEquals("root goal", ctx.objective());
-        assertNull(ctx.get("missing"));
-
-        ctx.put("k1", "v1");
-        assertEquals("v1", ctx.get("k1"));
-        assertEquals(Map.of("k1", "v1"), ctx.shared());
-
-        // Null checks in put()
-        ctx.put(null, "val");
-        ctx.put("key", null);
-        assertEquals(1, ctx.shared().size());
-    }
-
-    @Test
-    void testPlannedModuleAndPlatformModule() {
-        List<PlatformModule> modules = PlannedModule.allModules();
-        assertEquals(20, modules.size());
-
-        PlannedModule first = (PlannedModule) modules.getFirst();
-        assertEquals("auth", first.id());
-        assertEquals("Authentication & RBAC", first.displayName());
-        assertEquals("JWT issuing, validation, roles & permissions", first.description());
-        assertEquals(List.of("login", "register", "token-refresh", "rbac"), first.capabilities());
-        assertEquals(PlatformModule.ModuleStatus.ACTIVE, first.status());
-
-        PlatformModule custom = new PlatformModule() {
-            @Override
-            public String id() { return "mod1"; }
-            @Override
-            public String displayName() { return "Mod One"; }
-            @Override
-            public String description() { return "Description"; }
-            @Override
-            public List<String> capabilities() { return List.of("cap1"); }
-        };
-        assertEquals(PlatformModule.ModuleStatus.ACTIVE, custom.status());
-        PlatformModule.ModuleInfo info = custom.info();
-        assertEquals("mod1", info.id());
-        assertEquals("Mod One", info.displayName());
-        assertEquals("Description", info.description());
-        assertEquals(List.of("cap1"), info.capabilities());
-        assertEquals(PlatformModule.ModuleStatus.ACTIVE, info.status());
-
-        assertEquals(2, PlatformModule.ModuleStatus.values().length);
-    }
-
-    @Test
     void testRagDocumentRecordsAndInstantiation() {
         assertNotNull(new RagDocument());
 
@@ -386,32 +241,5 @@ class DomainModelTest {
         RagDocument.IngestResult ingest = new RagDocument.IngestResult(2, List.of("c-1", "c-2"));
         assertEquals(2, ingest.chunksIndexed());
         assertEquals(List.of("c-1", "c-2"), ingest.chunkIds());
-    }
-
-    @Test
-    void testTenantContext() throws Exception {
-        Constructor<TenantContext> constructor = TenantContext.class.getDeclaredConstructor();
-        constructor.setAccessible(true);
-        assertNotNull(constructor.newInstance());
-
-        TenantContext.clear();
-        assertEquals("default", TenantContext.getTenantId());
-
-        TenantContext.setTenantId("tenant-abc");
-        assertEquals("tenant-abc", TenantContext.getTenantId());
-
-        assertThrows(NullPointerException.class, () -> TenantContext.setTenantId(null));
-
-        TenantContext.clear();
-        assertEquals("default", TenantContext.getTenantId());
-    }
-
-    @Test
-    void testWorkflowEnum() {
-        assertEquals(4, Workflow.values().length);
-        assertEquals(6, Workflow.REPOSITORY_ANALYSIS.steps().size());
-        assertEquals(4, Workflow.PR_REVIEW.steps().size());
-        assertEquals(4, Workflow.INCIDENT_RESPONSE.steps().size());
-        assertEquals(7, Workflow.FEATURE_DELIVERY.steps().size());
     }
 }

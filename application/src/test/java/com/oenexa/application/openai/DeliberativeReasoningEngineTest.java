@@ -1,6 +1,6 @@
 package com.oenexa.application.openai;
 
-import com.oenexa.domain.OpenAiDomain.CognitiveStage;
+import com.oenexa.domain.OpenAiReasoningDomain.CognitiveStage;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
