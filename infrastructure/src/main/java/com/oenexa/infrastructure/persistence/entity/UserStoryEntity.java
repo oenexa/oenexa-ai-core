@@ -4,9 +4,13 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.Instant;
 
+@Setter
+@Getter
 @Entity
 @Table(name = "user_stories")
 public class UserStoryEntity {
@@ -57,24 +61,4 @@ public class UserStoryEntity {
         this.createdAt = Instant.now();
     }
 
-    public String getId() { return id; }
-    public void setId(String id) { this.id = id; }
-    public String getPrdId() { return prdId; }
-    public void setPrdId(String prdId) { this.prdId = prdId; }
-    public String getTitle() { return title; }
-    public void setTitle(String title) { this.title = title; }
-    public String getAsA() { return asA; }
-    public void setAsA(String asA) { this.asA = asA; }
-    public String getIWant() { return iWant; }
-    public void setIWant(String iWant) { this.iWant = iWant; }
-    public String getSoThat() { return soThat; }
-    public void setSoThat(String soThat) { this.soThat = soThat; }
-    public String getAcceptanceCriteria() { return acceptanceCriteria; }
-    public void setAcceptanceCriteria(String acceptanceCriteria) { this.acceptanceCriteria = acceptanceCriteria; }
-    public int getStoryPoints() { return storyPoints; }
-    public void setStoryPoints(int storyPoints) { this.storyPoints = storyPoints; }
-    public String getStatus() { return status; }
-    public void setStatus(String status) { this.status = status; }
-    public Instant getCreatedAt() { return createdAt; }
-    public void setCreatedAt(Instant createdAt) { this.createdAt = createdAt; }
 }

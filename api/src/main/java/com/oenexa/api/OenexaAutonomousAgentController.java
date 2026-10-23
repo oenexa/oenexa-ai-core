@@ -2,6 +2,8 @@ package com.oenexa.api;
 
 import com.oenexa.application.CollaborativeAgentService;
 import com.oenexa.application.OenexaAutonomousAgentEngine;
+import com.oenexa.application.security.AgentSecurityPolicy;
+import com.oenexa.application.validation.AgentGoalValidator;
 import com.oenexa.domain.ChatDomain.*;
 import com.oenexa.infrastructure.persistence.entity.*;
 import com.oenexa.infrastructure.persistence.repository.*;
@@ -39,6 +41,8 @@ public class OenexaAutonomousAgentController {
     private final UserStoryRepository userStoryRepository;
     private final MultimodalAttachmentRepository multimodalAttachmentRepository;
     private final LocalAgentAuditLogRepository localAgentAuditLogRepository;
+    private final AgentGoalValidator goalValidator = new AgentGoalValidator();
+    private final AgentSecurityPolicy securityPolicy = new AgentSecurityPolicy();
 
     @Autowired
     public OenexaAutonomousAgentController(
@@ -165,6 +169,8 @@ public class OenexaAutonomousAgentController {
         if (request == null || request.goal() == null || request.goal().isBlank()) {
             return ResponseEntity.badRequest().build();
         }
+        securityPolicy.verifyCommandSafety(request.goal());
+        goalValidator.validateGoalRequest(request);
         OenexaAutonomousGoalResponse response = engine.executeGoal(request);
         persistGoalResponseIfAvailable(request, response);
         return ResponseEntity.ok(response);
@@ -177,6 +183,8 @@ public class OenexaAutonomousAgentController {
             emitter.completeWithError(new IllegalArgumentException("Goal must not be empty"));
             return emitter;
         }
+        securityPolicy.verifyCommandSafety(request.goal());
+        goalValidator.validateGoalRequest(request);
 
         try {
             OenexaAutonomousGoalResponse response = engine.streamGoalExecution(request, event -> {

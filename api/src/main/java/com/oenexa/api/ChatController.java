@@ -1,8 +1,15 @@
 package com.oenexa.api;
 
+import com.oenexa.api.dto.ApiResponse;
+import com.oenexa.api.dto.chat.ChatDtos.ChatTurnResponseDto;
+import com.oenexa.api.dto.chat.ChatDtos.ConversationSummaryDto;
+import com.oenexa.api.dto.chat.ChatDtos.SendMessageRequestDto;
+import com.oenexa.api.mapper.ChatApiMapper;
 import com.oenexa.application.ChatService;
 import com.oenexa.application.ConversationManagementService;
 import com.oenexa.application.DocumentIngestionService;
+import com.oenexa.application.security.ChatSecurityPolicy;
+import com.oenexa.application.validation.ChatValidator;
 import com.oenexa.domain.ChatDomain.*;
 import com.oenexa.domain.ConversationCoreDomain.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +21,7 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -31,15 +39,72 @@ public class ChatController {
 
     private final ChatService chatService;
     private final ConversationManagementService conversationManagementService;
+    private final ChatValidator chatValidator;
+    private final ChatSecurityPolicy chatSecurityPolicy;
+    private final ChatApiMapper chatApiMapper;
 
     public ChatController(ChatService chatService) {
-        this(chatService, new ConversationManagementService(chatService, new DocumentIngestionService()));
+        this(chatService, new ConversationManagementService(chatService, new DocumentIngestionService()),
+                new ChatValidator(), new ChatSecurityPolicy(), new ChatApiMapper());
+    }
+
+    public ChatController(ChatService chatService, ConversationManagementService conversationManagementService) {
+        this(chatService, conversationManagementService,
+                new ChatValidator(), new ChatSecurityPolicy(), new ChatApiMapper());
     }
 
     @Autowired
-    public ChatController(ChatService chatService, ConversationManagementService conversationManagementService) {
-        this.chatService = chatService;
-        this.conversationManagementService = conversationManagementService;
+    public ChatController(
+            ChatService chatService,
+            ConversationManagementService conversationManagementService,
+            ChatValidator chatValidator,
+            ChatSecurityPolicy chatSecurityPolicy,
+            ChatApiMapper chatApiMapper
+    ) {
+        this.chatService = Objects.requireNonNull(chatService, "chatService must not be null");
+        this.conversationManagementService = Objects.requireNonNull(conversationManagementService, "conversationManagementService must not be null");
+        this.chatValidator = chatValidator != null ? chatValidator : new ChatValidator();
+        this.chatSecurityPolicy = chatSecurityPolicy != null ? chatSecurityPolicy : new ChatSecurityPolicy();
+        this.chatApiMapper = chatApiMapper != null ? chatApiMapper : new ChatApiMapper();
+    }
+
+    public ChatValidator getChatValidator() {
+        return chatValidator;
+    }
+
+    public ChatSecurityPolicy getChatSecurityPolicy() {
+        return chatSecurityPolicy;
+    }
+
+    public ChatApiMapper getChatApiMapper() {
+        return chatApiMapper;
+    }
+
+    @PostMapping("/v2/messages")
+    public ResponseEntity<ApiResponse<ChatTurnResponseDto>> sendMessageV2(@RequestBody SendMessageRequestDto requestDto) {
+        if (requestDto == null || requestDto.message() == null || requestDto.message().isBlank()) {
+            return ResponseEntity.badRequest().build();
+        }
+        chatSecurityPolicy.verifyPromptIntegrity(requestDto.message());
+        ChatRequest request = chatApiMapper.toDomainRequest(requestDto);
+        chatValidator.validateChatRequest(request);
+        ChatResponse response = chatService.processMessage(
+                request.conversationId(),
+                request.message(),
+                request.model(),
+                request.includeThinking(),
+                request.attachments()
+        );
+        return ResponseEntity.ok(ApiResponse.ok("Message processed successfully", chatApiMapper.toTurnResponseDto(response)));
+    }
+
+    @GetMapping("/v2/conversations/{id}/summary")
+    public ResponseEntity<ApiResponse<ConversationSummaryDto>> getConversationSummaryV2(@PathVariable String id) {
+        ConversationMetadata metadata = chatService.getMetadata(id);
+        if (metadata == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(ApiResponse.ok("Conversation summary retrieved", chatApiMapper.toSummaryDto(metadata)));
     }
 
     @PostMapping("/messages")
@@ -47,6 +112,8 @@ public class ChatController {
         if (request.message() == null || request.message().isBlank()) {
             return ResponseEntity.badRequest().build();
         }
+        chatSecurityPolicy.verifyPromptIntegrity(request.message());
+        chatValidator.validateChatRequest(request);
         ChatResponse response = chatService.processMessage(
                 request.conversationId(),
                 request.message(),

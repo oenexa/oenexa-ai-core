@@ -1,8 +1,18 @@
 package com.oenexa.api;
 
+import com.oenexa.api.dto.ApiResponse;
+import com.oenexa.api.dto.auth.AuthDtos.LoginRequestDto;
+import com.oenexa.api.dto.auth.AuthDtos.RegisterRequestDto;
+import com.oenexa.api.dto.auth.AuthDtos.TokenResponseDto;
+import com.oenexa.api.dto.auth.AuthDtos.UserProfileDto;
+import com.oenexa.api.mapper.AuthApiMapper;
 import com.oenexa.application.EnterpriseAuthService;
 import com.oenexa.application.TokenService;
+import com.oenexa.application.security.AuthSecurityPolicy;
+import com.oenexa.application.validation.AuthValidator;
 import com.oenexa.domain.AuthDomain.*;
+import com.oenexa.domain.OenexaExceptions.OenexaAuthenticationException;
+import com.oenexa.domain.OenexaExceptions.OenexaValidationException;
 import com.oenexa.infrastructure.adapter.JpaUserStorageAdapter;
 import com.oenexa.infrastructure.persistence.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +23,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Enterprise Banking-Grade Authentication REST Controller.
@@ -26,6 +37,9 @@ public class AuthController {
     private final TokenService tokenService;
     private final UserRepository userRepository;
     private final EnterpriseAuthService enterpriseAuthService;
+    private final AuthValidator authValidator;
+    private final AuthSecurityPolicy authSecurityPolicy;
+    private final AuthApiMapper authApiMapper;
     private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     public AuthController(TokenService tokenService, UserRepository userRepository) {
@@ -37,15 +51,71 @@ public class AuthController {
                         (raw, stored) -> new BCryptPasswordEncoder().matches(raw, stored) || "admin".equals(raw)
                 ),
                 tokenService,
-                userRepository
+                userRepository,
+                new AuthValidator(),
+                new AuthSecurityPolicy(),
+                new AuthApiMapper()
         );
     }
 
-    @Autowired
     public AuthController(EnterpriseAuthService enterpriseAuthService, TokenService tokenService, UserRepository userRepository) {
-        this.enterpriseAuthService = enterpriseAuthService;
-        this.tokenService = tokenService;
+        this(enterpriseAuthService, tokenService, userRepository, new AuthValidator(), new AuthSecurityPolicy(), new AuthApiMapper());
+    }
+
+    @Autowired
+    public AuthController(
+            EnterpriseAuthService enterpriseAuthService,
+            TokenService tokenService,
+            UserRepository userRepository,
+            AuthValidator authValidator,
+            AuthSecurityPolicy authSecurityPolicy,
+            AuthApiMapper authApiMapper
+    ) {
+        this.enterpriseAuthService = Objects.requireNonNull(enterpriseAuthService, "enterpriseAuthService must not be null");
+        this.tokenService = Objects.requireNonNull(tokenService, "tokenService must not be null");
         this.userRepository = userRepository;
+        this.authValidator = authValidator != null ? authValidator : new AuthValidator();
+        this.authSecurityPolicy = authSecurityPolicy != null ? authSecurityPolicy : new AuthSecurityPolicy();
+        this.authApiMapper = authApiMapper != null ? authApiMapper : new AuthApiMapper();
+    }
+
+    public AuthValidator getAuthValidator() {
+        return authValidator;
+    }
+
+    public AuthSecurityPolicy getAuthSecurityPolicy() {
+        return authSecurityPolicy;
+    }
+
+    public AuthApiMapper getAuthApiMapper() {
+        return authApiMapper;
+    }
+
+    @PostMapping("/v2/login")
+    public ResponseEntity<ApiResponse<TokenResponseDto>> loginV2(@RequestBody LoginRequestDto requestDto) {
+        LoginRequest request = authApiMapper.toDomainLogin(requestDto);
+        authValidator.validateLogin(request);
+        TokenPair tokens = enterpriseAuthService.login(request);
+        return ResponseEntity.ok(ApiResponse.ok("Authentication successful", authApiMapper.toTokenDto(tokens)));
+    }
+
+    @PostMapping("/v2/register")
+    public ResponseEntity<ApiResponse<TokenResponseDto>> registerV2(@RequestBody RegisterRequestDto requestDto) {
+        RegisterRequest request = authApiMapper.toDomainRegister(requestDto);
+        authValidator.validateRegister(request);
+        TokenPair tokens = enterpriseAuthService.register(request);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApiResponse.ok("User registration successful", authApiMapper.toTokenDto(tokens)));
+    }
+
+    @GetMapping("/v2/me")
+    public ResponseEntity<ApiResponse<UserProfileDto>> meV2(@RequestHeader(value = "Authorization", required = false) String authHeader) {
+        Long userId = extractUserId(authHeader);
+        if (userId == null) {
+            throw new OenexaAuthenticationException("Missing or invalid Authorization header");
+        }
+        UserProfile profile = enterpriseAuthService.getUserProfile(userId);
+        return ResponseEntity.ok(ApiResponse.ok("User profile retrieved", authApiMapper.toProfileDto(profile)));
     }
 
     @PostMapping("/login")
@@ -55,8 +125,11 @@ public class AuthController {
         }
 
         try {
+            authValidator.validateLogin(request);
             TokenPair tokens = enterpriseAuthService.login(request);
             return ResponseEntity.ok(tokens);
+        } catch (OenexaValidationException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         } catch (SecurityException e) {
             if (e.getMessage() != null && e.getMessage().startsWith("2FA_REQUIRED")) {
                 return ResponseEntity.status(HttpStatus.ACCEPTED)

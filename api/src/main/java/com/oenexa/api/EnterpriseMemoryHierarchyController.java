@@ -1,10 +1,17 @@
 package com.oenexa.api;
 
+import com.oenexa.api.dto.ApiResponse;
+import com.oenexa.api.dto.memory.MemoryDtos.MemoryHierarchyStatsDto;
+import com.oenexa.api.dto.memory.MemoryDtos.MemoryLookupResponseDto;
+import com.oenexa.api.dto.memory.MemoryDtos.MemoryStoreRequestDto;
+import com.oenexa.api.mapper.MemoryApiMapper;
 import com.oenexa.application.EnterpriseMemoryHierarchyService;
 import com.oenexa.application.OenexaContextCompressionEngine;
 import com.oenexa.application.OenexaIntelligentPrefetchEngine;
 import com.oenexa.application.OenexaMemoryEngineV2Service;
 import com.oenexa.application.OenexaRepositoryMemoryGraphService;
+import com.oenexa.application.security.MemorySecurityPolicy;
+import com.oenexa.application.validation.MemoryValidator;
 import com.oenexa.domain.EnterpriseMemoryHierarchyDomain.*;
 import com.oenexa.domain.OenexaMemoryEngineV2Domain.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,6 +55,9 @@ public class EnterpriseMemoryHierarchyController {
     private final OenexaContextCompressionEngine compressionEngine;
     private final OenexaIntelligentPrefetchEngine prefetchEngine;
     private final OenexaRepositoryMemoryGraphService memoryGraphService;
+    private final MemoryValidator memoryValidator;
+    private final MemorySecurityPolicy memorySecurityPolicy;
+    private final MemoryApiMapper memoryApiMapper;
 
     public EnterpriseMemoryHierarchyController() {
         this(
@@ -55,8 +65,22 @@ public class EnterpriseMemoryHierarchyController {
                 new OenexaMemoryEngineV2Service(),
                 new OenexaContextCompressionEngine(),
                 new OenexaIntelligentPrefetchEngine(),
-                new OenexaRepositoryMemoryGraphService()
+                new OenexaRepositoryMemoryGraphService(),
+                new MemoryValidator(),
+                new MemorySecurityPolicy(),
+                new MemoryApiMapper()
         );
+    }
+
+    public EnterpriseMemoryHierarchyController(
+            EnterpriseMemoryHierarchyService memoryHierarchyService,
+            OenexaMemoryEngineV2Service memoryEngineV2Service,
+            OenexaContextCompressionEngine compressionEngine,
+            OenexaIntelligentPrefetchEngine prefetchEngine,
+            OenexaRepositoryMemoryGraphService memoryGraphService
+    ) {
+        this(memoryHierarchyService, memoryEngineV2Service, compressionEngine, prefetchEngine, memoryGraphService,
+                new MemoryValidator(), new MemorySecurityPolicy(), new MemoryApiMapper());
     }
 
     @Autowired
@@ -65,13 +89,68 @@ public class EnterpriseMemoryHierarchyController {
             OenexaMemoryEngineV2Service memoryEngineV2Service,
             OenexaContextCompressionEngine compressionEngine,
             OenexaIntelligentPrefetchEngine prefetchEngine,
-            OenexaRepositoryMemoryGraphService memoryGraphService
+            OenexaRepositoryMemoryGraphService memoryGraphService,
+            MemoryValidator memoryValidator,
+            MemorySecurityPolicy memorySecurityPolicy,
+            MemoryApiMapper memoryApiMapper
     ) {
         this.memoryHierarchyService = Objects.requireNonNull(memoryHierarchyService, "memoryHierarchyService must not be null");
         this.memoryEngineV2Service = Objects.requireNonNull(memoryEngineV2Service, "memoryEngineV2Service must not be null");
         this.compressionEngine = Objects.requireNonNull(compressionEngine, "compressionEngine must not be null");
         this.prefetchEngine = Objects.requireNonNull(prefetchEngine, "prefetchEngine must not be null");
         this.memoryGraphService = Objects.requireNonNull(memoryGraphService, "memoryGraphService must not be null");
+        this.memoryValidator = memoryValidator != null ? memoryValidator : new MemoryValidator();
+        this.memorySecurityPolicy = memorySecurityPolicy != null ? memorySecurityPolicy : new MemorySecurityPolicy();
+        this.memoryApiMapper = memoryApiMapper != null ? memoryApiMapper : new MemoryApiMapper();
+    }
+
+    public MemoryValidator getMemoryValidator() {
+        return memoryValidator;
+    }
+
+    public MemorySecurityPolicy getMemorySecurityPolicy() {
+        return memorySecurityPolicy;
+    }
+
+    public MemoryApiMapper getMemoryApiMapper() {
+        return memoryApiMapper;
+    }
+
+    @PostMapping("/v2/store")
+    public ResponseEntity<ApiResponse<HierarchicalMemoryRecord>> storeMemoryV2(@RequestBody MemoryStoreRequestDto dto) {
+        if (dto == null || dto.key() == null || dto.content() == null) {
+            return ResponseEntity.badRequest().build();
+        }
+        MemoryLayerTier tier = MemoryLayerTier.valueOf(dto.tier() != null ? dto.tier().toUpperCase() : "L2_JVM_HEAP_RAM");
+        memorySecurityPolicy.verifyTierAccess(tier, false);
+        memoryValidator.validateKeyAndTier(dto.key(), tier);
+        HierarchicalMemoryRecord record = memoryHierarchyService.store(
+                "default-ws",
+                "default-user",
+                dto.key(),
+                dto.content(),
+                List.of(),
+                tier
+        );
+        return ResponseEntity.ok(ApiResponse.ok("Hierarchical memory stored", record));
+    }
+
+    @GetMapping("/v2/lookup")
+    public ResponseEntity<ApiResponse<MemoryLookupResponseDto>> lookupMemoryV2(
+            @RequestParam(defaultValue = "default-ws") String workspaceId,
+            @RequestParam String key
+    ) {
+        if (key == null || key.isBlank()) {
+            return ResponseEntity.badRequest().build();
+        }
+        MemoryRetrievalResult result = memoryHierarchyService.retrieve(workspaceId, key);
+        return ResponseEntity.ok(ApiResponse.ok("Memory lookup result", memoryApiMapper.toLookupDto(result)));
+    }
+
+    @GetMapping("/v2/hierarchy-stats")
+    public ResponseEntity<ApiResponse<MemoryHierarchyStatsDto>> hierarchyStatsV2() {
+        MemoryHierarchyStats stats = memoryHierarchyService.getHierarchyStats();
+        return ResponseEntity.ok(ApiResponse.ok("Memory hierarchy telemetry stats", memoryApiMapper.toStatsDto(stats)));
     }
 
     @PostMapping("/store")
@@ -79,6 +158,8 @@ public class EnterpriseMemoryHierarchyController {
         if (request == null || request.workspaceId() == null || request.key() == null || request.content() == null) {
             return ResponseEntity.badRequest().build();
         }
+        memorySecurityPolicy.verifyTierAccess(request.tier(), false);
+        memoryValidator.validateKeyAndTier(request.key(), request.tier() != null ? request.tier() : MemoryLayerTier.L2_JVM_HEAP_RAM);
         return ResponseEntity.ok(memoryHierarchyService.store(
                 request.workspaceId(),
                 request.userId(),
