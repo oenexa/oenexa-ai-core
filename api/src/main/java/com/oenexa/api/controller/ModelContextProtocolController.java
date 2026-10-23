@@ -1,6 +1,11 @@
 package com.oenexa.api.controller;
 
+import com.oenexa.api.dto.ApiResponse;
+import com.oenexa.api.dto.mcp.McpDtos.*;
+import com.oenexa.api.mapper.McpApiMapper;
+import com.oenexa.application.security.McpSecurityPolicy;
 import com.oenexa.application.service.orchestration.ModelContextProtocolService;
+import com.oenexa.application.validation.McpValidator;
 import com.oenexa.domain.model.orchestration.ModelContextProtocolDomain.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -12,8 +17,8 @@ import java.util.Objects;
 
 /**
  * REST & JSON-RPC 2.0 API Controller for Model Context Protocol (MCP v1.0).
- * Exposes standardized endpoints for IDE plugins (VS Code / JetBrains),
- * CLI tools, and agent runtimes.
+ * Supports standard 11-Layer Clean Hexagonal Architecture:
+ * Controller -> DTO -> Validation -> Security -> Mapper -> Service -> ApiResponse<T>.
  */
 @RestController
 @RequestMapping("/api/v4/mcp")
@@ -21,14 +26,29 @@ import java.util.Objects;
 public class ModelContextProtocolController {
 
     private final ModelContextProtocolService mcpService;
+    private final McpValidator validator;
+    private final McpSecurityPolicy securityPolicy;
+    private final McpApiMapper mapper;
 
     public ModelContextProtocolController() {
         this(new ModelContextProtocolService());
     }
 
-    @Autowired
     public ModelContextProtocolController(ModelContextProtocolService mcpService) {
+        this(mcpService, new McpValidator(), new McpSecurityPolicy(), new McpApiMapper());
+    }
+
+    @Autowired
+    public ModelContextProtocolController(
+            ModelContextProtocolService mcpService,
+            McpValidator validator,
+            McpSecurityPolicy securityPolicy,
+            McpApiMapper mapper
+    ) {
         this.mcpService = Objects.requireNonNull(mcpService, "mcpService must not be null");
+        this.validator = Objects.requireNonNull(validator, "validator must not be null");
+        this.securityPolicy = Objects.requireNonNull(securityPolicy, "securityPolicy must not be null");
+        this.mapper = Objects.requireNonNull(mapper, "mapper must not be null");
     }
 
     @PostMapping("/rpc")
@@ -61,6 +81,35 @@ public class ModelContextProtocolController {
     public ResponseEntity<List<McpResourceDefinition>> listResources() {
         return ResponseEntity.ok(mcpService.listResources());
     }
+
+    // ==========================================
+    // 11-Layer Clean Hexagonal Architecture v2 Endpoints
+    // ==========================================
+
+    @PostMapping("/v2/tools/{toolName}")
+    public ResponseEntity<ApiResponse<McpToolExecutionResultDto>> executeToolV2(
+            @PathVariable String toolName,
+            @RequestBody(required = false) McpToolExecutionRequestDto req,
+            @RequestHeader(value = "X-User-Role", defaultValue = "ROLE_USER") String role
+    ) {
+        validator.validateToolExecution(toolName);
+        securityPolicy.verifyToolAccess(toolName, role);
+
+        Map<String, Object> args = req != null && req.arguments() != null ? req.arguments() : Map.of();
+        String cmd = args.get("command") instanceof String s ? s : null;
+        securityPolicy.verifyToolSafety(toolName, cmd);
+
+        McpToolCallResult result = mcpService.executeTool(toolName, args);
+        return ResponseEntity.ok(ApiResponse.ok("MCP Tool execution successful", mapper.toToolExecutionResultDto(toolName, result)));
+    }
+
+    @PostMapping("/v2/rpc")
+    public ResponseEntity<ApiResponse<McpRpcResponseDto>> handleRpcV2(@RequestBody McpRpcRequestDto req) {
+        validator.validateRpcRequest(req.jsonrpc(), req.method());
+
+        McpRequest request = new McpRequest(req.jsonrpc(), req.method(), req.params(), req.id());
+        McpResponse response = mcpService.handleRpc(request);
+
+        return ResponseEntity.ok(ApiResponse.ok("MCP RPC processed", mapper.toRpcResponseDto(response)));
+    }
 }
-
-

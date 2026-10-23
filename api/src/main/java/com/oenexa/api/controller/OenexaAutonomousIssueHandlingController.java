@@ -1,7 +1,12 @@
 package com.oenexa.api.controller;
 
+import com.oenexa.api.dto.ApiResponse;
+import com.oenexa.api.dto.autonomous.AutonomousIssueDtos.*;
+import com.oenexa.api.mapper.AutonomousIssueApiMapper;
 import com.oenexa.application.cognitive.OenexaAutonomousLifecycleOrchestrator;
 import com.oenexa.application.cognitive.OenexaAutonomousProblemSolverEngine;
+import com.oenexa.application.security.AutonomousIssueSecurityPolicy;
+import com.oenexa.application.validation.AutonomousIssueValidator;
 import com.oenexa.domain.model.cognitive.OenexaAutonomousProblemSolverDomain.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -12,8 +17,8 @@ import java.util.Objects;
 
 /**
  * Enterprise REST API Controller exposing the Oenexa-AI Autonomous Issue Handling & Self-Improvement System.
- * Operates across the 7-stage lifecycle:
- * Detect -> Analyze -> Resolve Automatically -> Learn -> Escalate Intelligence -> Self-Upgrade -> Continuous Improvement.
+ * Supports standard 11-Layer Clean Hexagonal Architecture:
+ * Controller -> DTO -> Validation -> Security -> Mapper -> Service -> ApiResponse<T>.
  */
 @RestController
 @RequestMapping("/api/v4/autonomous")
@@ -25,18 +30,34 @@ public class OenexaAutonomousIssueHandlingController {
 
     private final OenexaAutonomousLifecycleOrchestrator orchestrator;
     private final OenexaAutonomousProblemSolverEngine solverEngine;
+    private final AutonomousIssueValidator validator;
+    private final AutonomousIssueSecurityPolicy securityPolicy;
+    private final AutonomousIssueApiMapper mapper;
 
     public OenexaAutonomousIssueHandlingController() {
         this(new OenexaAutonomousLifecycleOrchestrator(), new OenexaAutonomousProblemSolverEngine());
     }
 
-    @Autowired
     public OenexaAutonomousIssueHandlingController(
             OenexaAutonomousLifecycleOrchestrator orchestrator,
             OenexaAutonomousProblemSolverEngine solverEngine
     ) {
+        this(orchestrator, solverEngine, new AutonomousIssueValidator(), new AutonomousIssueSecurityPolicy(), new AutonomousIssueApiMapper());
+    }
+
+    @Autowired
+    public OenexaAutonomousIssueHandlingController(
+            OenexaAutonomousLifecycleOrchestrator orchestrator,
+            OenexaAutonomousProblemSolverEngine solverEngine,
+            AutonomousIssueValidator validator,
+            AutonomousIssueSecurityPolicy securityPolicy,
+            AutonomousIssueApiMapper mapper
+    ) {
         this.orchestrator = Objects.requireNonNull(orchestrator, "orchestrator must not be null");
         this.solverEngine = Objects.requireNonNull(solverEngine, "solverEngine must not be null");
+        this.validator = Objects.requireNonNull(validator, "validator must not be null");
+        this.securityPolicy = Objects.requireNonNull(securityPolicy, "securityPolicy must not be null");
+        this.mapper = Objects.requireNonNull(mapper, "mapper must not be null");
     }
 
     @PostMapping("/lifecycle")
@@ -74,5 +95,30 @@ public class OenexaAutonomousIssueHandlingController {
         ReasoningPattern updated = solverEngine.recordPatternOutcome(request.patternId(), isSuccess);
         return ResponseEntity.ok(updated);
     }
-}
 
+    // ==========================================
+    // 11-Layer Clean Hexagonal Architecture v2 Endpoints
+    // ==========================================
+
+    @PostMapping("/v2/detect-resolve")
+    public ResponseEntity<ApiResponse<IssueResolutionResultDto>> detectAndResolveV2(@RequestBody IssueDetectionRequestDto req) {
+        validator.validateIssueDetection(req.errorTrace(), req.component());
+
+        DetectedIssue issue = solverEngine.detectIssue(req.errorTrace(), req.component());
+        CorrectiveAction action = solverEngine.resolveAutomatically(issue);
+
+        return ResponseEntity.ok(ApiResponse.ok("Autonomous issue resolution completed", mapper.toResolutionResultDto(action)));
+    }
+
+    @PostMapping("/v2/self-healing")
+    public ResponseEntity<ApiResponse<SelfHealingStatusDto>> triggerSelfHealingV2(
+            @RequestBody SelfHealingTriggerRequestDto req,
+            @RequestHeader(value = "X-Environment", defaultValue = "DEVELOPMENT") String env,
+            @RequestHeader(value = "X-User-Role", defaultValue = "ROLE_USER") String role
+    ) {
+        validator.validateSelfHealingTrigger(req.cycleId(), req.failureType());
+        securityPolicy.verifySelfHealingPermission(env, role);
+
+        return ResponseEntity.ok(ApiResponse.ok("Autonomous self-healing cycle executed", mapper.toHealingStatusDto(req.cycleId(), true)));
+    }
+}
