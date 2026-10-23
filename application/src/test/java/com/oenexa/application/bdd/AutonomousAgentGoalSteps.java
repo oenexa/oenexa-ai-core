@@ -1,10 +1,10 @@
 package com.oenexa.application.bdd;
 
-import com.oenexa.application.CollaborativeAgentService;
-import com.oenexa.application.MemoryService;
-import com.oenexa.application.OenexaAutonomousAgentEngine;
-import com.oenexa.application.RepositoryKnowledgeService;
-import com.oenexa.domain.ChatDomain.*;
+import com.oenexa.application.service.agent.CollaborativeAgentService;
+import com.oenexa.application.service.memory.MemoryService;
+import com.oenexa.application.service.agent.OenexaAutonomousAgentEngine;
+import com.oenexa.application.service.knowledge.RepositoryKnowledgeService;
+import com.oenexa.domain.model.chat.ChatDomain.*;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
@@ -94,3 +94,5 @@ public class AutonomousAgentGoalSteps {
         assertTrue(healingCycle.resolved());
     }
 }
+
+

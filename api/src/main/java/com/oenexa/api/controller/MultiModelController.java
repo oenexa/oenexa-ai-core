@@ -1,8 +1,8 @@
 package com.oenexa.api.controller;
 
-import com.oenexa.application.EnterpriseMultiModelOrchestrator;
-import com.oenexa.domain.ChatDomain.TaskType;
-import com.oenexa.domain.MultiModelDomain.*;
+import com.oenexa.application.service.orchestration.EnterpriseMultiModelOrchestrator;
+import com.oenexa.domain.model.chat.ChatDomain.TaskType;
+import com.oenexa.domain.model.orchestration.MultiModelDomain.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -76,3 +76,5 @@ public class MultiModelController {
         return ResponseEntity.ok(orchestrator.collaborateMultiModel(desc, ctx));
     }
 }
+
+

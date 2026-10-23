@@ -1,17 +1,17 @@
 package com.oenexa.application.mapper;
 
-import com.oenexa.domain.AuthDomain.AuthClaims;
-import com.oenexa.domain.AuthDomain.UserProfile;
-import com.oenexa.domain.ChatDomain.*;
-import com.oenexa.domain.CodeEngineeringDomain.CodeAnalysisResponse;
-import com.oenexa.domain.CodeEngineeringDomain.SecurityScanResponse;
-import com.oenexa.domain.EnterpriseMemoryHierarchyDomain.HierarchicalMemoryRecord;
-import com.oenexa.domain.EnterpriseMemoryHierarchyDomain.MemoryLayerTier;
-import com.oenexa.domain.EnterpriseMemoryHierarchyDomain.MemoryRetrievalResult;
-import com.oenexa.domain.RagDocument.Chunk;
-import com.oenexa.domain.RagDocument.DocumentInput;
-import com.oenexa.domain.RagDocument.SearchResult;
-import com.oenexa.domain.User;
+import com.oenexa.domain.model.auth.AuthDomain.AuthClaims;
+import com.oenexa.domain.model.auth.AuthDomain.UserProfile;
+import com.oenexa.domain.model.chat.ChatDomain.*;
+import com.oenexa.domain.model.code.CodeEngineeringDomain.CodeAnalysisResponse;
+import com.oenexa.domain.model.code.CodeEngineeringDomain.SecurityScanResponse;
+import com.oenexa.domain.model.memory.EnterpriseMemoryHierarchyDomain.HierarchicalMemoryRecord;
+import com.oenexa.domain.model.memory.EnterpriseMemoryHierarchyDomain.MemoryLayerTier;
+import com.oenexa.domain.model.memory.EnterpriseMemoryHierarchyDomain.MemoryRetrievalResult;
+import com.oenexa.domain.model.knowledge.RagDocument.Chunk;
+import com.oenexa.domain.model.knowledge.RagDocument.DocumentInput;
+import com.oenexa.domain.model.knowledge.RagDocument.SearchResult;
+import com.oenexa.domain.model.auth.User;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -124,3 +124,4 @@ class ApplicationMappersTest {
         assertEquals(0, sec.totalIssues());
     }
 }
+

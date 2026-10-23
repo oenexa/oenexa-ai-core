@@ -1,7 +1,7 @@
 package com.oenexa.application.engine;
 
-import com.oenexa.domain.CodeEngineeringDomain.CodeAnalysisRequest;
-import com.oenexa.domain.CodeEngineeringDomain.CodeAnalysisResponse;
+import com.oenexa.domain.model.code.CodeEngineeringDomain.CodeAnalysisRequest;
+import com.oenexa.domain.model.code.CodeEngineeringDomain.CodeAnalysisResponse;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -105,3 +105,4 @@ public class AstAnalysisEngine {
         );
     }
 }
+

@@ -1,12 +1,12 @@
 package com.oenexa.infrastructure.mapper;
 
-import com.oenexa.domain.ChatDomain.Message;
-import com.oenexa.domain.ChatDomain.OenexaAutonomousGoalResponse;
-import com.oenexa.domain.ChatDomain.Role;
-import com.oenexa.domain.CodeEngineeringDomain.CodeAnalysisResponse;
-import com.oenexa.domain.EnterpriseMemoryHierarchyDomain.HierarchicalMemoryRecord;
-import com.oenexa.domain.EnterpriseMemoryHierarchyDomain.MemoryLayerTier;
-import com.oenexa.domain.RagDocument.Chunk;
+import com.oenexa.domain.model.chat.ChatDomain.Message;
+import com.oenexa.domain.model.chat.ChatDomain.OenexaAutonomousGoalResponse;
+import com.oenexa.domain.model.chat.ChatDomain.Role;
+import com.oenexa.domain.model.code.CodeEngineeringDomain.CodeAnalysisResponse;
+import com.oenexa.domain.model.memory.EnterpriseMemoryHierarchyDomain.HierarchicalMemoryRecord;
+import com.oenexa.domain.model.memory.EnterpriseMemoryHierarchyDomain.MemoryLayerTier;
+import com.oenexa.domain.model.knowledge.RagDocument.Chunk;
 import com.oenexa.infrastructure.persistence.entity.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -114,3 +114,4 @@ class EntityMappersTest {
         assertTrue(summary.clean());
     }
 }
+

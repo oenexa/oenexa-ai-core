@@ -1,7 +1,7 @@
 package com.oenexa.application.tdd;
 
-import com.oenexa.application.OenexaContextCompressionEngine;
-import com.oenexa.application.OenexaContextCompressionEngine.CompressionResult;
+import com.oenexa.application.service.memory.OenexaContextCompressionEngine;
+import com.oenexa.application.service.memory.OenexaContextCompressionEngine.CompressionResult;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
@@ -80,3 +80,4 @@ public class OenexaContextCompressionTddTest {
         assertEquals(0, blankResult.compressedBytes().length);
     }
 }
+

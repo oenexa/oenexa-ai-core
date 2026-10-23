@@ -2,7 +2,7 @@ package com.oenexa.infrastructure.cognitive;
 
 import com.oenexa.application.cognitive.OenexaDeliberativeReasoningEngine;
 import com.oenexa.application.openai.neural.NeoGptAutonomousNeuralEngine;
-import com.oenexa.domain.OenexaCognitiveDomain.*;
+import com.oenexa.domain.model.cognitive.OenexaCognitiveDomain.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -157,3 +157,4 @@ public class OenexaLocalInferenceEngine {
         return airGappedOnly;
     }
 }
+

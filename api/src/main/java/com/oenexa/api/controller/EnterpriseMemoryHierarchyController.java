@@ -5,15 +5,15 @@ import com.oenexa.api.dto.memory.MemoryDtos.MemoryHierarchyStatsDto;
 import com.oenexa.api.dto.memory.MemoryDtos.MemoryLookupResponseDto;
 import com.oenexa.api.dto.memory.MemoryDtos.MemoryStoreRequestDto;
 import com.oenexa.api.mapper.MemoryApiMapper;
-import com.oenexa.application.EnterpriseMemoryHierarchyService;
-import com.oenexa.application.OenexaContextCompressionEngine;
-import com.oenexa.application.OenexaIntelligentPrefetchEngine;
-import com.oenexa.application.OenexaMemoryEngineV2Service;
-import com.oenexa.application.OenexaRepositoryMemoryGraphService;
+import com.oenexa.application.service.memory.EnterpriseMemoryHierarchyService;
+import com.oenexa.application.service.memory.OenexaContextCompressionEngine;
+import com.oenexa.application.service.memory.OenexaIntelligentPrefetchEngine;
+import com.oenexa.application.service.memory.OenexaMemoryEngineV2Service;
+import com.oenexa.application.service.memory.OenexaRepositoryMemoryGraphService;
 import com.oenexa.application.security.MemorySecurityPolicy;
 import com.oenexa.application.validation.MemoryValidator;
-import com.oenexa.domain.EnterpriseMemoryHierarchyDomain.*;
-import com.oenexa.domain.OenexaMemoryEngineV2Domain.*;
+import com.oenexa.domain.model.memory.EnterpriseMemoryHierarchyDomain.*;
+import com.oenexa.domain.model.memory.OenexaMemoryEngineV2Domain.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -244,3 +244,5 @@ public class EnterpriseMemoryHierarchyController {
         return ResponseEntity.ok(memoryEngineV2Service.getV2Stats());
     }
 }
+
+

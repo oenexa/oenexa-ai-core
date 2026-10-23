@@ -1,7 +1,7 @@
 package com.oenexa.infrastructure.adapter;
 
-import com.oenexa.application.UserStoragePort;
-import com.oenexa.domain.User;
+import com.oenexa.application.port.UserStoragePort;
+import com.oenexa.domain.model.auth.User;
 import com.oenexa.infrastructure.persistence.repository.UserRepository;
 import org.springframework.stereotype.Component;
 
@@ -12,7 +12,7 @@ import java.util.Optional;
  * Secondary adapter implementing UserStoragePort backed by Spring Data JPA UserRepository.
  */
 @Component
-public class JpaUserStorageAdapter implements UserStoragePort, com.oenexa.application.port.UserStoragePort {
+public class JpaUserStorageAdapter implements UserStoragePort {
 
     private final UserRepository repository;
 
@@ -50,3 +50,5 @@ public class JpaUserStorageAdapter implements UserStoragePort, com.oenexa.applic
         return repository.existsByEmail(email);
     }
 }
+
+

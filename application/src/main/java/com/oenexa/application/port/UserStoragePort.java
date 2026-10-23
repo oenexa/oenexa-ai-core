@@ -1,6 +1,6 @@
 package com.oenexa.application.port;
 
-import com.oenexa.domain.User;
+import com.oenexa.domain.model.auth.User;
 import java.util.Optional;
 
 /**
@@ -15,3 +15,4 @@ public interface UserStoragePort {
     boolean existsByUsername(String username);
     boolean existsByEmail(String email);
 }
+

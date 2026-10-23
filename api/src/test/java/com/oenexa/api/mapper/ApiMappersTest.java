@@ -19,22 +19,22 @@ import com.oenexa.api.dto.knowledge.KnowledgeDtos.DocumentIngestRequestDto;
 import com.oenexa.api.dto.knowledge.KnowledgeDtos.KnowledgeSearchResultDto;
 import com.oenexa.api.dto.memory.MemoryDtos.MemoryHierarchyStatsDto;
 import com.oenexa.api.dto.memory.MemoryDtos.MemoryLookupResponseDto;
-import com.oenexa.domain.AuthDomain.LoginRequest;
-import com.oenexa.domain.AuthDomain.RegisterRequest;
-import com.oenexa.domain.AuthDomain.TokenPair;
-import com.oenexa.domain.AuthDomain.UserProfile;
-import com.oenexa.domain.ChatDomain.*;
-import com.oenexa.domain.CodeEngineeringDomain.CodeAnalysisRequest;
-import com.oenexa.domain.CodeEngineeringDomain.CodeAnalysisResponse;
-import com.oenexa.domain.CodeEngineeringDomain.SecurityScanResponse;
-import com.oenexa.domain.CodeEngineeringDomain.TestGenerationResponse;
-import com.oenexa.domain.EnterpriseMemoryHierarchyDomain.MemoryHierarchyStats;
-import com.oenexa.domain.EnterpriseMemoryHierarchyDomain.MemoryLayerTier;
-import com.oenexa.domain.EnterpriseMemoryHierarchyDomain.MemoryRetrievalResult;
-import com.oenexa.domain.OenexaCoreBrainDomain.CoreBrainDirective;
-import com.oenexa.domain.RagDocument.Chunk;
-import com.oenexa.domain.RagDocument.DocumentInput;
-import com.oenexa.domain.RagDocument.SearchResult;
+import com.oenexa.domain.model.auth.AuthDomain.LoginRequest;
+import com.oenexa.domain.model.auth.AuthDomain.RegisterRequest;
+import com.oenexa.domain.model.auth.AuthDomain.TokenPair;
+import com.oenexa.domain.model.auth.AuthDomain.UserProfile;
+import com.oenexa.domain.model.chat.ChatDomain.*;
+import com.oenexa.domain.model.code.CodeEngineeringDomain.CodeAnalysisRequest;
+import com.oenexa.domain.model.code.CodeEngineeringDomain.CodeAnalysisResponse;
+import com.oenexa.domain.model.code.CodeEngineeringDomain.SecurityScanResponse;
+import com.oenexa.domain.model.code.CodeEngineeringDomain.TestGenerationResponse;
+import com.oenexa.domain.model.memory.EnterpriseMemoryHierarchyDomain.MemoryHierarchyStats;
+import com.oenexa.domain.model.memory.EnterpriseMemoryHierarchyDomain.MemoryLayerTier;
+import com.oenexa.domain.model.memory.EnterpriseMemoryHierarchyDomain.MemoryRetrievalResult;
+import com.oenexa.domain.model.cognitive.OenexaCoreBrainDomain.CoreBrainDirective;
+import com.oenexa.domain.model.knowledge.RagDocument.Chunk;
+import com.oenexa.domain.model.knowledge.RagDocument.DocumentInput;
+import com.oenexa.domain.model.knowledge.RagDocument.SearchResult;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -191,3 +191,4 @@ class ApiMappersTest {
         assertTrue(testDto.zeroMockVerified());
     }
 }
+

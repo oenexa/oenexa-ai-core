@@ -1,7 +1,7 @@
 package com.oenexa.api.controller;
 
-import com.oenexa.domain.PlannedModule;
-import com.oenexa.domain.PlatformModule;
+import com.oenexa.domain.model.common.PlannedModule;
+import com.oenexa.domain.model.common.PlatformModule;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,3 +31,4 @@ public class ModulesController {
         return ResponseEntity.ok(list);
     }
 }
+

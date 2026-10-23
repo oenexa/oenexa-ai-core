@@ -1,6 +1,6 @@
 package com.oenexa.application.core;
 
-import com.oenexa.domain.OenexaCoreBrainDomain.ObservabilitySpan;
+import com.oenexa.domain.model.cognitive.OenexaCoreBrainDomain.ObservabilitySpan;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -84,3 +84,4 @@ public class OenexaObservabilityEngine {
         );
     }
 }
+

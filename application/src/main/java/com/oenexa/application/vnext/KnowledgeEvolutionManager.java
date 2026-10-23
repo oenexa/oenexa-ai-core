@@ -1,6 +1,6 @@
 package com.oenexa.application.vnext;
 
-import com.oenexa.domain.OenexaVNextDomain.*;
+import com.oenexa.domain.model.cognitive.OenexaVNextDomain.*;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
@@ -32,3 +32,4 @@ public class KnowledgeEvolutionManager {
         return evolutionAuditLog.size();
     }
 }
+

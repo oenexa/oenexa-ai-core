@@ -4,7 +4,7 @@ import com.oenexa.application.core.OenexaAiGatewayEngine;
 import com.oenexa.application.core.OenexaCoreBrain;
 import com.oenexa.application.core.OenexaObservabilityEngine;
 import com.oenexa.application.core.OenexaSecurityEngine;
-import com.oenexa.domain.OenexaCoreBrainDomain.*;
+import com.oenexa.domain.model.cognitive.OenexaCoreBrainDomain.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -72,3 +72,4 @@ public class OenexaCoreBrainController {
         return ResponseEntity.ok(securityEngine.getAuditTrail(tenantId));
     }
 }
+

@@ -1,7 +1,7 @@
 package com.oenexa.infrastructure.mapper;
 
-import com.oenexa.domain.ChatDomain.Message;
-import com.oenexa.domain.ChatDomain.Role;
+import com.oenexa.domain.model.chat.ChatDomain.Message;
+import com.oenexa.domain.model.chat.ChatDomain.Role;
 import com.oenexa.infrastructure.persistence.entity.ChatMessageEntity;
 import org.springframework.stereotype.Component;
 
@@ -62,3 +62,4 @@ public class ChatMessageEntityMapper {
         );
     }
 }
+

@@ -1,6 +1,6 @@
 package com.oenexa.infrastructure.mapper;
 
-import com.oenexa.domain.CodeEngineeringDomain.CodeAnalysisResponse;
+import com.oenexa.domain.model.code.CodeEngineeringDomain.CodeAnalysisResponse;
 import com.oenexa.infrastructure.persistence.entity.RepositoryEntity;
 import org.springframework.stereotype.Component;
 
@@ -42,3 +42,4 @@ public class RepositoryEntityMapper {
         );
     }
 }
+

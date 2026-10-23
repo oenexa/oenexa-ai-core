@@ -1,10 +1,10 @@
 package com.oenexa.api.controller;
 
 import com.oenexa.application.openai.AgentOperatingSystem;
-import com.oenexa.domain.OpenAiAgentOsDomain.*;
-import com.oenexa.domain.OpenAiDomain.*;
-import com.oenexa.domain.OpenAiReasoningDomain.*;
-import com.oenexa.domain.OpenAiToolProtocolDomain.*;
+import com.oenexa.domain.model.agent.OpenAiAgentOsDomain.*;
+import com.oenexa.domain.model.orchestration.OpenAiDomain.*;
+import com.oenexa.domain.model.cognitive.OpenAiReasoningDomain.*;
+import com.oenexa.domain.model.orchestration.OpenAiToolProtocolDomain.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -57,3 +57,4 @@ public class OpenAiAutonomousAgentController {
         ));
     }
 }
+

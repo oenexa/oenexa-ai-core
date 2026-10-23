@@ -1,6 +1,6 @@
 package com.oenexa.application.vnext;
 
-import com.oenexa.domain.OenexaVNextDomain.*;
+import com.oenexa.domain.model.cognitive.OenexaVNextDomain.*;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
@@ -67,3 +67,4 @@ public class RootCauseEngine {
         return new RootCauseReport(issue.issueId(), probableCause, cwe, 0.95, evidence);
     }
 }
+

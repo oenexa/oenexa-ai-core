@@ -4,10 +4,10 @@ import com.oenexa.api.dto.code.CodeDtos.CodeAnalysisRequestDto;
 import com.oenexa.api.dto.code.CodeDtos.CodeAnalysisResultDto;
 import com.oenexa.api.dto.code.CodeDtos.SecurityAuditSummaryDto;
 import com.oenexa.api.dto.code.CodeDtos.TestSynthesisResultDto;
-import com.oenexa.domain.CodeEngineeringDomain.CodeAnalysisRequest;
-import com.oenexa.domain.CodeEngineeringDomain.CodeAnalysisResponse;
-import com.oenexa.domain.CodeEngineeringDomain.SecurityScanResponse;
-import com.oenexa.domain.CodeEngineeringDomain.TestGenerationResponse;
+import com.oenexa.domain.model.code.CodeEngineeringDomain.CodeAnalysisRequest;
+import com.oenexa.domain.model.code.CodeEngineeringDomain.CodeAnalysisResponse;
+import com.oenexa.domain.model.code.CodeEngineeringDomain.SecurityScanResponse;
+import com.oenexa.domain.model.code.CodeEngineeringDomain.TestGenerationResponse;
 import org.springframework.stereotype.Component;
 
 /**
@@ -65,3 +65,4 @@ public class CodeApiMapper {
         );
     }
 }
+

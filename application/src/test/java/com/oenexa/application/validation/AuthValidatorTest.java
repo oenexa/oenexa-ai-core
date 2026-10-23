@@ -1,8 +1,8 @@
 package com.oenexa.application.validation;
 
-import com.oenexa.domain.AuthDomain.LoginRequest;
-import com.oenexa.domain.AuthDomain.RegisterRequest;
-import com.oenexa.domain.OenexaExceptions.OenexaValidationException;
+import com.oenexa.domain.model.auth.AuthDomain.LoginRequest;
+import com.oenexa.domain.model.auth.AuthDomain.RegisterRequest;
+import com.oenexa.domain.exception.OenexaExceptions.OenexaValidationException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -44,3 +44,4 @@ class AuthValidatorTest {
         ));
     }
 }
+

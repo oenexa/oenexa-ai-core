@@ -1,6 +1,6 @@
 package com.oenexa.application.security;
 
-import com.oenexa.domain.OenexaExceptions.OenexaForbiddenException;
+import com.oenexa.domain.exception.OenexaExceptions.OenexaForbiddenException;
 import org.springframework.stereotype.Component;
 
 /**
@@ -25,3 +25,4 @@ public class KnowledgeSecurityPolicy {
         }
     }
 }
+

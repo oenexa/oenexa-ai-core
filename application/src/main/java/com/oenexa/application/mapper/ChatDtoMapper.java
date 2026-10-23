@@ -1,8 +1,8 @@
 package com.oenexa.application.mapper;
 
-import com.oenexa.domain.ChatDomain.ChatResponse;
-import com.oenexa.domain.ChatDomain.Message;
-import com.oenexa.domain.ChatDomain.Role;
+import com.oenexa.domain.model.chat.ChatDomain.ChatResponse;
+import com.oenexa.domain.model.chat.ChatDomain.Message;
+import com.oenexa.domain.model.chat.ChatDomain.Role;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
@@ -47,3 +47,4 @@ public class ChatDtoMapper {
         );
     }
 }
+

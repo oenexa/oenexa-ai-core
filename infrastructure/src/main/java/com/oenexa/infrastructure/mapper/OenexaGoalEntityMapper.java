@@ -1,9 +1,9 @@
 package com.oenexa.infrastructure.mapper;
 
-import com.oenexa.domain.ChatDomain.LocalPrivacyConfig;
-import com.oenexa.domain.ChatDomain.OenexaAgentPlan;
-import com.oenexa.domain.ChatDomain.OenexaAutonomousGoalResponse;
-import com.oenexa.domain.ChatDomain.OenexaExecutionPhase;
+import com.oenexa.domain.model.chat.ChatDomain.LocalPrivacyConfig;
+import com.oenexa.domain.model.chat.ChatDomain.OenexaAgentPlan;
+import com.oenexa.domain.model.chat.ChatDomain.OenexaAutonomousGoalResponse;
+import com.oenexa.domain.model.chat.ChatDomain.OenexaExecutionPhase;
 import com.oenexa.infrastructure.persistence.entity.OenexaGoalEntity;
 import org.springframework.stereotype.Component;
 
@@ -62,3 +62,4 @@ public class OenexaGoalEntityMapper {
         );
     }
 }
+

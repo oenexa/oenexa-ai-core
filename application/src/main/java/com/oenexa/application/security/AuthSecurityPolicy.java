@@ -1,8 +1,8 @@
 package com.oenexa.application.security;
 
-import com.oenexa.domain.OenexaExceptions.OenexaAuthenticationException;
-import com.oenexa.domain.OenexaExceptions.OenexaForbiddenException;
-import com.oenexa.domain.User;
+import com.oenexa.domain.exception.OenexaExceptions.OenexaAuthenticationException;
+import com.oenexa.domain.exception.OenexaExceptions.OenexaForbiddenException;
+import com.oenexa.domain.model.auth.User;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
@@ -48,3 +48,4 @@ public class AuthSecurityPolicy {
         return lastChangedAt.plusSeconds((long) maxAgeDays * 86400).isBefore(Instant.now().plusSeconds(86400 * 3));
     }
 }
+

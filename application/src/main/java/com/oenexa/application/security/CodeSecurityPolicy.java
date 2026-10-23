@@ -1,6 +1,6 @@
 package com.oenexa.application.security;
 
-import com.oenexa.domain.OenexaExceptions.OenexaValidationException;
+import com.oenexa.domain.exception.OenexaExceptions.OenexaValidationException;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -41,3 +41,4 @@ public class CodeSecurityPolicy {
         }
     }
 }
+

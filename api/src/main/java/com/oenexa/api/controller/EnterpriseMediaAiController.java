@@ -1,7 +1,7 @@
 package com.oenexa.api.controller;
 
-import com.oenexa.application.EnterpriseMediaAiService;
-import com.oenexa.domain.EnterpriseMediaAiDomain.*;
+import com.oenexa.application.service.orchestration.EnterpriseMediaAiService;
+import com.oenexa.domain.model.orchestration.EnterpriseMediaAiDomain.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -80,3 +80,5 @@ public class EnterpriseMediaAiController {
     public record VideoRequest(String videoBase64, String title) {}
     public record GenerateVideoRequest(String prompt, Double durationSec) {}
 }
+
+

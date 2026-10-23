@@ -5,13 +5,13 @@ import com.oenexa.api.dto.agent.AgentDtos.AgentDirectiveDto;
 import com.oenexa.api.dto.agent.AgentDtos.GoalExecutionStatusDto;
 import com.oenexa.api.dto.agent.AgentDtos.GoalSubmissionDto;
 import com.oenexa.api.mapper.AgentApiMapper;
-import com.oenexa.application.AgentCoordinatorService;
+import com.oenexa.application.service.agent.AgentCoordinatorService;
 import com.oenexa.application.security.AgentSecurityPolicy;
 import com.oenexa.application.validation.AgentGoalValidator;
-import com.oenexa.domain.AgentContract.WorkflowRun;
-import com.oenexa.domain.ChatDomain.OenexaAutonomousGoalRequest;
-import com.oenexa.domain.OenexaCoreBrainDomain.CoreBrainDirective;
-import com.oenexa.domain.Workflow;
+import com.oenexa.domain.model.agent.AgentContract.WorkflowRun;
+import com.oenexa.domain.model.chat.ChatDomain.OenexaAutonomousGoalRequest;
+import com.oenexa.domain.model.cognitive.OenexaCoreBrainDomain.CoreBrainDirective;
+import com.oenexa.domain.model.code.Workflow;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -143,3 +143,5 @@ public class AgentController {
         return ResponseEntity.ok(workflows);
     }
 }
+
+

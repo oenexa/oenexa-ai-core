@@ -1,10 +1,10 @@
 package com.oenexa.application.openai;
 
-import com.oenexa.domain.ChatDomain.CodeArtifact;
-import com.oenexa.domain.OpenAiAgentOsDomain.*;
-import com.oenexa.domain.OpenAiDomain.*;
-import com.oenexa.domain.OpenAiReasoningDomain.*;
-import com.oenexa.domain.OpenAiToolProtocolDomain.*;
+import com.oenexa.domain.model.chat.ChatDomain.CodeArtifact;
+import com.oenexa.domain.model.agent.OpenAiAgentOsDomain.*;
+import com.oenexa.domain.model.orchestration.OpenAiDomain.*;
+import com.oenexa.domain.model.cognitive.OpenAiReasoningDomain.*;
+import com.oenexa.domain.model.orchestration.OpenAiToolProtocolDomain.*;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -162,3 +162,4 @@ public class AgentOperatingSystem {
         return toolExecutionEngine;
     }
 }
+

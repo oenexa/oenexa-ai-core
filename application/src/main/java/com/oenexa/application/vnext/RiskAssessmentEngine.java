@@ -1,6 +1,6 @@
 package com.oenexa.application.vnext;
 
-import com.oenexa.domain.OenexaVNextDomain.*;
+import com.oenexa.domain.model.cognitive.OenexaVNextDomain.*;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
@@ -40,3 +40,4 @@ public class RiskAssessmentEngine {
         return new RiskAssessment(issue.issueId(), baseScore, level, immediate, impactAreas);
     }
 }
+

@@ -1,8 +1,8 @@
 package com.oenexa.application.mapper;
 
-import com.oenexa.domain.RagDocument.Chunk;
-import com.oenexa.domain.RagDocument.DocumentInput;
-import com.oenexa.domain.RagDocument.SearchResult;
+import com.oenexa.domain.model.knowledge.RagDocument.Chunk;
+import com.oenexa.domain.model.knowledge.RagDocument.DocumentInput;
+import com.oenexa.domain.model.knowledge.RagDocument.SearchResult;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -50,3 +50,4 @@ public class KnowledgeDtoMapper {
         );
     }
 }
+

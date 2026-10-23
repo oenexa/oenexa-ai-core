@@ -1,7 +1,7 @@
 package com.oenexa.domain.exception;
 
-import com.oenexa.domain.ErrorCode;
-import com.oenexa.domain.OenexaException;
+import com.oenexa.domain.exception.ErrorCode;
+import com.oenexa.domain.exception.OenexaException;
 
 /**
  * Domain-specific exception for Autonomous Agent and Cognitive Brain failures.
@@ -21,3 +21,4 @@ public class AgentGoalDomainException extends OenexaException {
         super(code != null ? code : ErrorCode.COGNITIVE_FAULT, message);
     }
 }
+

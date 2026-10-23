@@ -1,9 +1,9 @@
 package com.oenexa.infrastructure.openai;
 
 import com.oenexa.application.openai.DeliberativeReasoningEngine;
-import com.oenexa.domain.OpenAiDomain.*;
-import com.oenexa.domain.OpenAiMediaDomain.*;
-import com.oenexa.domain.OpenAiToolProtocolDomain.*;
+import com.oenexa.domain.model.orchestration.OpenAiDomain.*;
+import com.oenexa.domain.model.orchestration.OpenAiMediaDomain.*;
+import com.oenexa.domain.model.orchestration.OpenAiToolProtocolDomain.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -114,3 +114,4 @@ class LocalInferenceWorkerTest {
         assertFalse(custom.isAirGappedOnly());
     }
 }
+

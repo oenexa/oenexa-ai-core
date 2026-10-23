@@ -1,6 +1,6 @@
 package com.oenexa.application.engine;
 
-import com.oenexa.domain.TargetCapabilitiesDomain.*;
+import com.oenexa.domain.model.orchestration.TargetCapabilitiesDomain.*;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -47,3 +47,4 @@ public class OperatorWorkflowEngine {
         );
     }
 }
+

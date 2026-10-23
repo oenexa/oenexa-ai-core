@@ -6,13 +6,13 @@ import com.oenexa.api.dto.auth.AuthDtos.RegisterRequestDto;
 import com.oenexa.api.dto.auth.AuthDtos.TokenResponseDto;
 import com.oenexa.api.dto.auth.AuthDtos.UserProfileDto;
 import com.oenexa.api.mapper.AuthApiMapper;
-import com.oenexa.application.EnterpriseAuthService;
-import com.oenexa.application.TokenService;
+import com.oenexa.application.service.auth.EnterpriseAuthService;
+import com.oenexa.application.service.auth.TokenService;
 import com.oenexa.application.security.AuthSecurityPolicy;
 import com.oenexa.application.validation.AuthValidator;
-import com.oenexa.domain.AuthDomain.*;
-import com.oenexa.domain.OenexaExceptions.OenexaAuthenticationException;
-import com.oenexa.domain.OenexaExceptions.OenexaValidationException;
+import com.oenexa.domain.model.auth.AuthDomain.*;
+import com.oenexa.domain.exception.OenexaExceptions.OenexaAuthenticationException;
+import com.oenexa.domain.exception.OenexaExceptions.OenexaValidationException;
 import com.oenexa.infrastructure.adapter.JpaUserStorageAdapter;
 import com.oenexa.infrastructure.persistence.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -312,3 +312,5 @@ public class AuthController {
         }
     }
 }
+
+

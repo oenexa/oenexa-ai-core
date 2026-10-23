@@ -1,6 +1,6 @@
 package com.oenexa.application.cognitive;
 
-import com.oenexa.domain.OenexaAutonomousProblemSolverDomain.*;
+import com.oenexa.domain.model.cognitive.OenexaAutonomousProblemSolverDomain.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -192,3 +192,4 @@ class OenexaAutonomousProblemSolverEngineTest {
         assertFalse(withSecurity.securityPrivacyCompliant());
     }
 }
+

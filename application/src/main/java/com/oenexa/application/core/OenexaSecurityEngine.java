@@ -1,6 +1,6 @@
 package com.oenexa.application.core;
 
-import com.oenexa.domain.OenexaCoreBrainDomain.SecurityAssessment;
+import com.oenexa.domain.model.cognitive.OenexaCoreBrainDomain.SecurityAssessment;
 import org.springframework.stereotype.Service;
 
 import java.nio.charset.StandardCharsets;
@@ -75,3 +75,4 @@ public class OenexaSecurityEngine {
         }
     }
 }
+

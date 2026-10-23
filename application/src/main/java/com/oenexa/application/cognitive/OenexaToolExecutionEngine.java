@@ -3,9 +3,9 @@ package com.oenexa.application.cognitive;
 import com.oenexa.application.engine.AstAnalysisEngine;
 import com.oenexa.application.engine.SecurityAuditEngine;
 import com.oenexa.application.engine.TestSynthesizerEngine;
-import com.oenexa.domain.ChatDomain.CodeArtifact;
-import com.oenexa.domain.CodeEngineeringDomain.*;
-import com.oenexa.domain.OenexaCognitiveDomain.*;
+import com.oenexa.domain.model.chat.ChatDomain.CodeArtifact;
+import com.oenexa.domain.model.code.CodeEngineeringDomain.*;
+import com.oenexa.domain.model.cognitive.OenexaCognitiveDomain.*;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -189,3 +189,4 @@ public class OenexaToolExecutionEngine {
         }
     }
 }
+

@@ -1,6 +1,6 @@
 package com.oenexa.application.engine;
 
-import com.oenexa.domain.TargetCapabilitiesDomain.*;
+import com.oenexa.domain.model.orchestration.TargetCapabilitiesDomain.*;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -66,3 +66,4 @@ class CursorCodingEngineTest {
         assertEquals(2, patch.affectedSymbols().size());
     }
 }
+

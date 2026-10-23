@@ -1,8 +1,8 @@
 package com.oenexa.application.mapper;
 
-import com.oenexa.domain.EnterpriseMemoryHierarchyDomain.HierarchicalMemoryRecord;
-import com.oenexa.domain.EnterpriseMemoryHierarchyDomain.MemoryLayerTier;
-import com.oenexa.domain.EnterpriseMemoryHierarchyDomain.MemoryRetrievalResult;
+import com.oenexa.domain.model.memory.EnterpriseMemoryHierarchyDomain.HierarchicalMemoryRecord;
+import com.oenexa.domain.model.memory.EnterpriseMemoryHierarchyDomain.MemoryLayerTier;
+import com.oenexa.domain.model.memory.EnterpriseMemoryHierarchyDomain.MemoryRetrievalResult;
 import org.springframework.stereotype.Component;
 
 /**
@@ -39,3 +39,4 @@ public class MemoryDtoMapper {
         );
     }
 }
+

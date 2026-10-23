@@ -1,6 +1,6 @@
 package com.oenexa.application.engine;
 
-import com.oenexa.domain.TargetCapabilitiesDomain.DevinTaskExecutionPlan;
+import com.oenexa.domain.model.orchestration.TargetCapabilitiesDomain.DevinTaskExecutionPlan;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -49,3 +49,4 @@ class DevinExecutionEngineTest {
         assertTrue(plan.finalSummary().contains("**Zero-Mock Policy Enforced**: false"));
     }
 }
+

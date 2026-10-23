@@ -1,6 +1,6 @@
 package com.oenexa.application.cognitive;
 
-import com.oenexa.domain.OenexaAutonomousProblemSolverDomain.*;
+import com.oenexa.domain.model.cognitive.OenexaAutonomousProblemSolverDomain.*;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -330,3 +330,4 @@ public final class OenexaAutonomousProblemSolverEngine {
         );
     }
 }
+

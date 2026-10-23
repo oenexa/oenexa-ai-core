@@ -1,7 +1,7 @@
 package com.oenexa.application.security;
 
-import com.oenexa.domain.EnterpriseMemoryHierarchyDomain.MemoryLayerTier;
-import com.oenexa.domain.OenexaExceptions.OenexaForbiddenException;
+import com.oenexa.domain.model.memory.EnterpriseMemoryHierarchyDomain.MemoryLayerTier;
+import com.oenexa.domain.exception.OenexaExceptions.OenexaForbiddenException;
 import org.springframework.stereotype.Component;
 
 /**
@@ -35,3 +35,4 @@ public class MemorySecurityPolicy {
         }
     }
 }
+

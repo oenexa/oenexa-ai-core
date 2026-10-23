@@ -2,7 +2,7 @@ package com.oenexa.api;
 
 import com.oenexa.api.controller.*;
 import com.oenexa.api.exception.*;
-import com.oenexa.domain.User;
+import com.oenexa.domain.model.auth.User;
 import com.oenexa.infrastructure.persistence.entity.ProjectEntity;
 import com.oenexa.infrastructure.persistence.entity.RepositoryEntity;
 import com.oenexa.infrastructure.persistence.entity.RoleEntity;
@@ -87,3 +87,4 @@ class DatabaseSchemaIntegrationTest {
         assertEquals("oenexa-node", repos.get(0).getName());
     }
 }
+

@@ -1,7 +1,13 @@
 package com.oenexa.api.controller;
 
-import com.oenexa.application.*;
-import com.oenexa.domain.ChatDomain.*;
+import com.oenexa.application.service.agent.*;
+import com.oenexa.application.service.auth.*;
+import com.oenexa.application.service.chat.*;
+import com.oenexa.application.service.code.*;
+import com.oenexa.application.service.knowledge.*;
+import com.oenexa.application.service.memory.*;
+import com.oenexa.application.service.orchestration.*;
+import com.oenexa.domain.model.chat.ChatDomain.*;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -143,3 +149,6 @@ public class IntelligentChatController {
         return ResponseEntity.ok(agentService.getPipelineTasks(pipelineId));
     }
 }
+
+
+

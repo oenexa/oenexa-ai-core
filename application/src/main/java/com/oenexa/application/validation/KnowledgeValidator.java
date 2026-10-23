@@ -1,7 +1,7 @@
 package com.oenexa.application.validation;
 
-import com.oenexa.domain.OenexaExceptions.OenexaValidationException;
-import com.oenexa.domain.RagDocument.DocumentInput;
+import com.oenexa.domain.exception.OenexaExceptions.OenexaValidationException;
+import com.oenexa.domain.model.knowledge.RagDocument.DocumentInput;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -43,3 +43,4 @@ public class KnowledgeValidator {
         }
     }
 }
+

@@ -1,8 +1,8 @@
 package com.oenexa.application.cognitive;
 
-import com.oenexa.domain.ChatDomain.CodeArtifact;
-import com.oenexa.domain.OenexaAgentOsDomain.*;
-import com.oenexa.domain.OenexaCognitiveDomain.*;
+import com.oenexa.domain.model.chat.ChatDomain.CodeArtifact;
+import com.oenexa.domain.model.agent.OenexaAgentOsDomain.*;
+import com.oenexa.domain.model.cognitive.OenexaCognitiveDomain.*;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -145,3 +145,4 @@ public class OenexaAgentOperatingSystem {
         };
     }
 }
+

@@ -1,7 +1,7 @@
 package com.oenexa.application.security;
 
-import com.oenexa.domain.OenexaExceptions.OenexaForbiddenException;
-import com.oenexa.domain.OenexaExceptions.OenexaValidationException;
+import com.oenexa.domain.exception.OenexaExceptions.OenexaForbiddenException;
+import com.oenexa.domain.exception.OenexaExceptions.OenexaValidationException;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -47,3 +47,4 @@ public class ChatSecurityPolicy {
         }
     }
 }
+

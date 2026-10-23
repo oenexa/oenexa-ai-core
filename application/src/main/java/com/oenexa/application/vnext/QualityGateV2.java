@@ -1,6 +1,6 @@
 package com.oenexa.application.vnext;
 
-import com.oenexa.domain.OenexaVNextDomain.*;
+import com.oenexa.domain.model.cognitive.OenexaVNextDomain.*;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
@@ -60,3 +60,4 @@ public class QualityGateV2 {
         return new QualityGateV2Report(allPassed, score, checks, allPassed && score >= 0.85);
     }
 }
+

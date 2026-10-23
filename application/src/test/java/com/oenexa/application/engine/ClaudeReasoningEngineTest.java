@@ -1,6 +1,6 @@
 package com.oenexa.application.engine;
 
-import com.oenexa.domain.TargetCapabilitiesDomain.ClaudeReasoningTrace;
+import com.oenexa.domain.model.orchestration.TargetCapabilitiesDomain.ClaudeReasoningTrace;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -40,3 +40,4 @@ class ClaudeReasoningEngineTest {
         assertEquals(0.965, trace.selectedBranch().confidenceScore());
     }
 }
+

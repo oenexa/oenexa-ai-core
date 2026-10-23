@@ -1,7 +1,7 @@
 package com.oenexa.api.controller;
 
-import com.oenexa.application.EnterpriseBillingService;
-import com.oenexa.domain.EnterpriseBillingDomain.*;
+import com.oenexa.application.service.orchestration.EnterpriseBillingService;
+import com.oenexa.domain.model.orchestration.EnterpriseBillingDomain.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -78,3 +78,5 @@ public class EnterpriseBillingController {
     public record StripeCheckoutRequest(String userId, SubscriptionTier tier, BillingInterval interval, String successUrl, String cancelUrl) {}
     public record TopUpCreditsRequest(String userId, Double amountUsd) {}
 }
+
+

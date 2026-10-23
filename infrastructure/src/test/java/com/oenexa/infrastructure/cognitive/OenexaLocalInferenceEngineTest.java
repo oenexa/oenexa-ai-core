@@ -1,7 +1,7 @@
 package com.oenexa.infrastructure.cognitive;
 
 import com.oenexa.application.cognitive.OenexaDeliberativeReasoningEngine;
-import com.oenexa.domain.OenexaCognitiveDomain.*;
+import com.oenexa.domain.model.cognitive.OenexaCognitiveDomain.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -84,3 +84,4 @@ class OenexaLocalInferenceEngineTest {
         assertEquals("http://custom:9090", custom.getLocalEndpoint());
     }
 }
+

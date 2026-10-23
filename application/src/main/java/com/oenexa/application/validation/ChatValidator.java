@@ -1,7 +1,7 @@
 package com.oenexa.application.validation;
 
-import com.oenexa.domain.ChatDomain.ChatRequest;
-import com.oenexa.domain.OenexaExceptions.OenexaValidationException;
+import com.oenexa.domain.model.chat.ChatDomain.ChatRequest;
+import com.oenexa.domain.exception.OenexaExceptions.OenexaValidationException;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -37,3 +37,4 @@ public class ChatValidator {
         }
     }
 }
+

@@ -1,7 +1,7 @@
 package com.oenexa.application.engine;
 
-import com.oenexa.domain.ChatDomain.MultimodalAttachment;
-import com.oenexa.domain.TargetCapabilitiesDomain.*;
+import com.oenexa.domain.model.chat.ChatDomain.MultimodalAttachment;
+import com.oenexa.domain.model.orchestration.TargetCapabilitiesDomain.*;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
@@ -91,3 +91,4 @@ public class OenexaMultimodalEngine {
         return new MultimodalUnifiedContext(UUID.randomUUID().toString(), audio, vision, safeDocs, brief, java.time.Instant.now());
     }
 }
+

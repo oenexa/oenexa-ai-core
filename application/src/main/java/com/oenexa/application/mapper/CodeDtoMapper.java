@@ -1,7 +1,7 @@
 package com.oenexa.application.mapper;
 
-import com.oenexa.domain.CodeEngineeringDomain.CodeAnalysisResponse;
-import com.oenexa.domain.CodeEngineeringDomain.SecurityScanResponse;
+import com.oenexa.domain.model.code.CodeEngineeringDomain.CodeAnalysisResponse;
+import com.oenexa.domain.model.code.CodeEngineeringDomain.SecurityScanResponse;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
@@ -61,3 +61,4 @@ public class CodeDtoMapper {
         );
     }
 }
+

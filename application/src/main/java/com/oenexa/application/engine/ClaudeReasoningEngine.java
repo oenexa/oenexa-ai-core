@@ -1,6 +1,6 @@
 package com.oenexa.application.engine;
 
-import com.oenexa.domain.TargetCapabilitiesDomain.*;
+import com.oenexa.domain.model.orchestration.TargetCapabilitiesDomain.*;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -58,3 +58,4 @@ public class ClaudeReasoningEngine {
         return new ClaudeReasoningTrace(objective, hypotheses, branchHexagonal, tradeOffAnalysis, reflectionVerdict);
     }
 }
+

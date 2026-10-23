@@ -1,7 +1,7 @@
 package com.oenexa.application.tdd;
 
-import com.oenexa.application.OenexaMemoryEngineV2Service;
-import com.oenexa.domain.OenexaMemoryEngineV2Domain.*;
+import com.oenexa.application.service.memory.OenexaMemoryEngineV2Service;
+import com.oenexa.domain.model.memory.OenexaMemoryEngineV2Domain.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
@@ -119,3 +119,5 @@ public class OenexaMemoryHierarchyTddTest {
         assertTrue(stats.l1Count() > 0, "L1 cache count must increment upon promotion");
     }
 }
+
+

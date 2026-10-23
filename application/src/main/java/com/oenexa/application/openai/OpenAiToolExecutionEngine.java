@@ -3,10 +3,10 @@ package com.oenexa.application.openai;
 import com.oenexa.application.engine.AstAnalysisEngine;
 import com.oenexa.application.engine.SecurityAuditEngine;
 import com.oenexa.application.engine.TestSynthesizerEngine;
-import com.oenexa.domain.ChatDomain.CodeArtifact;
-import com.oenexa.domain.CodeEngineeringDomain.*;
-import com.oenexa.domain.OpenAiDomain.*;
-import com.oenexa.domain.OpenAiToolProtocolDomain.*;
+import com.oenexa.domain.model.chat.ChatDomain.CodeArtifact;
+import com.oenexa.domain.model.code.CodeEngineeringDomain.*;
+import com.oenexa.domain.model.orchestration.OpenAiDomain.*;
+import com.oenexa.domain.model.orchestration.OpenAiToolProtocolDomain.*;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -208,3 +208,4 @@ public class OpenAiToolExecutionEngine {
         return argsJson.substring(startQuote + 1, endQuote);
     }
 }
+

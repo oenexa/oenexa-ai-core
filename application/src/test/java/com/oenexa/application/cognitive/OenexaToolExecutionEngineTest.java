@@ -1,6 +1,6 @@
 package com.oenexa.application.cognitive;
 
-import com.oenexa.domain.OenexaCognitiveDomain.*;
+import com.oenexa.domain.model.cognitive.OenexaCognitiveDomain.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -109,3 +109,4 @@ class OenexaToolExecutionEngineTest {
         assertThrows(NullPointerException.class, () -> engine.executeTool(null));
     }
 }
+

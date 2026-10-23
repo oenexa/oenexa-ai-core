@@ -1,7 +1,7 @@
 package com.oenexa.api.controller;
 
-import com.oenexa.application.ModelContextProtocolService;
-import com.oenexa.domain.ModelContextProtocolDomain.*;
+import com.oenexa.application.service.orchestration.ModelContextProtocolService;
+import com.oenexa.domain.model.orchestration.ModelContextProtocolDomain.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -62,3 +62,5 @@ public class ModelContextProtocolController {
         return ResponseEntity.ok(mcpService.listResources());
     }
 }
+
+

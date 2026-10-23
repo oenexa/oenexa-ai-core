@@ -3,9 +3,9 @@ package com.oenexa.api.mapper;
 import com.oenexa.api.dto.agent.AgentDtos.AgentDirectiveDto;
 import com.oenexa.api.dto.agent.AgentDtos.GoalExecutionStatusDto;
 import com.oenexa.api.dto.agent.AgentDtos.GoalSubmissionDto;
-import com.oenexa.domain.ChatDomain.OenexaAutonomousGoalRequest;
-import com.oenexa.domain.ChatDomain.OenexaAutonomousGoalResponse;
-import com.oenexa.domain.OenexaCoreBrainDomain.CoreBrainDirective;
+import com.oenexa.domain.model.chat.ChatDomain.OenexaAutonomousGoalRequest;
+import com.oenexa.domain.model.chat.ChatDomain.OenexaAutonomousGoalResponse;
+import com.oenexa.domain.model.cognitive.OenexaCoreBrainDomain.CoreBrainDirective;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -72,3 +72,4 @@ public class AgentApiMapper {
         );
     }
 }
+

@@ -1,8 +1,8 @@
 package com.oenexa.api.exception;
 
-import com.oenexa.domain.ErrorCode;
-import com.oenexa.domain.OenexaException;
-import com.oenexa.domain.OenexaExceptions.*;
+import com.oenexa.domain.exception.ErrorCode;
+import com.oenexa.domain.exception.OenexaException;
+import com.oenexa.domain.exception.OenexaExceptions.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
 import org.slf4j.Logger;
@@ -225,3 +225,4 @@ public class GlobalErrorHandler {
         return UUID.randomUUID().toString();
     }
 }
+

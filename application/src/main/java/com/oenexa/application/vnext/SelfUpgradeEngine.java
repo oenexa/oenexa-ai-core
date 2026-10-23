@@ -1,6 +1,6 @@
 package com.oenexa.application.vnext;
 
-import com.oenexa.domain.OenexaVNextDomain.*;
+import com.oenexa.domain.model.cognitive.OenexaVNextDomain.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -60,3 +60,4 @@ public class SelfUpgradeEngine {
         return registeredCapabilities.size();
     }
 }
+

@@ -1,6 +1,6 @@
 package com.oenexa.infrastructure.mapper;
 
-import com.oenexa.domain.RagDocument.Chunk;
+import com.oenexa.domain.model.knowledge.RagDocument.Chunk;
 import com.oenexa.infrastructure.persistence.entity.ProjectKnowledgeChunkEntity;
 import org.springframework.stereotype.Component;
 
@@ -47,3 +47,4 @@ public class KnowledgeChunkEntityMapper {
         );
     }
 }
+

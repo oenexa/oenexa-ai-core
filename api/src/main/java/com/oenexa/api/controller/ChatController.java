@@ -5,13 +5,13 @@ import com.oenexa.api.dto.chat.ChatDtos.ChatTurnResponseDto;
 import com.oenexa.api.dto.chat.ChatDtos.ConversationSummaryDto;
 import com.oenexa.api.dto.chat.ChatDtos.SendMessageRequestDto;
 import com.oenexa.api.mapper.ChatApiMapper;
-import com.oenexa.application.ChatService;
-import com.oenexa.application.ConversationManagementService;
-import com.oenexa.application.DocumentIngestionService;
+import com.oenexa.application.service.chat.ChatService;
+import com.oenexa.application.service.chat.ConversationManagementService;
+import com.oenexa.application.service.knowledge.DocumentIngestionService;
 import com.oenexa.application.security.ChatSecurityPolicy;
 import com.oenexa.application.validation.ChatValidator;
-import com.oenexa.domain.ChatDomain.*;
-import com.oenexa.domain.ConversationCoreDomain.*;
+import com.oenexa.domain.model.chat.ChatDomain.*;
+import com.oenexa.domain.model.chat.ConversationCoreDomain.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -295,3 +295,5 @@ public class ChatController {
         return ResponseEntity.noContent().build();
     }
 }
+
+

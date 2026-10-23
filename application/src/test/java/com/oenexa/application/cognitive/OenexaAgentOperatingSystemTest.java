@@ -1,6 +1,6 @@
 package com.oenexa.application.cognitive;
 
-import com.oenexa.domain.OenexaAgentOsDomain.*;
+import com.oenexa.domain.model.agent.OenexaAgentOsDomain.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -68,3 +68,4 @@ class OenexaAgentOperatingSystemTest {
         assertThrows(NullPointerException.class, () -> agentOs.executeGoal(null));
     }
 }
+

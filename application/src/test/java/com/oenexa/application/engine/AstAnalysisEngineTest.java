@@ -1,7 +1,7 @@
 package com.oenexa.application.engine;
 
-import com.oenexa.domain.CodeEngineeringDomain.CodeAnalysisRequest;
-import com.oenexa.domain.CodeEngineeringDomain.CodeAnalysisResponse;
+import com.oenexa.domain.model.code.CodeEngineeringDomain.CodeAnalysisRequest;
+import com.oenexa.domain.model.code.CodeEngineeringDomain.CodeAnalysisResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -143,3 +143,4 @@ class AstAnalysisEngineTest {
         assertTrue(response.codeSmells().stream().anyMatch(s -> s.contains("Large File Size")));
     }
 }
+

@@ -20,14 +20,20 @@ import com.oenexa.api.dto.knowledge.KnowledgeDtos.KnowledgeSearchResultDto;
 import com.oenexa.api.dto.memory.MemoryDtos.MemoryLookupResponseDto;
 import com.oenexa.api.dto.memory.MemoryDtos.MemoryStoreRequestDto;
 import com.oenexa.api.mapper.*;
-import com.oenexa.application.*;
+import com.oenexa.application.service.agent.*;
+import com.oenexa.application.service.auth.*;
+import com.oenexa.application.service.chat.*;
+import com.oenexa.application.service.code.*;
+import com.oenexa.application.service.knowledge.*;
+import com.oenexa.application.service.memory.*;
+import com.oenexa.application.service.orchestration.*;
 import com.oenexa.application.security.*;
 import com.oenexa.application.validation.*;
-import com.oenexa.domain.CodeEngineeringDomain.SecurityScanRequest;
-import com.oenexa.domain.CodeEngineeringDomain.TestGenerationRequest;
-import com.oenexa.domain.EnterpriseMemoryHierarchyDomain.HierarchicalMemoryRecord;
-import com.oenexa.domain.OenexaExceptions.OenexaValidationException;
-import com.oenexa.domain.User;
+import com.oenexa.domain.model.code.CodeEngineeringDomain.SecurityScanRequest;
+import com.oenexa.domain.model.code.CodeEngineeringDomain.TestGenerationRequest;
+import com.oenexa.domain.model.memory.EnterpriseMemoryHierarchyDomain.HierarchicalMemoryRecord;
+import com.oenexa.domain.exception.OenexaExceptions.OenexaValidationException;
+import com.oenexa.domain.model.auth.User;
 import com.oenexa.infrastructure.adapter.JpaUserStorageAdapter;
 import com.oenexa.infrastructure.persistence.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -272,3 +278,6 @@ class CleanArchitecture11LayersIntegrationTest {
         assertTrue(testResp.getBody().data().zeroMockVerified());
     }
 }
+
+
+

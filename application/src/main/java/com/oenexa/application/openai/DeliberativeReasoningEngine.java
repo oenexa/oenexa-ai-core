@@ -1,7 +1,7 @@
 package com.oenexa.application.openai;
 
-import com.oenexa.domain.OpenAiDomain.*;
-import com.oenexa.domain.OpenAiReasoningDomain.*;
+import com.oenexa.domain.model.orchestration.OpenAiDomain.*;
+import com.oenexa.domain.model.cognitive.OpenAiReasoningDomain.*;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -103,3 +103,4 @@ public class DeliberativeReasoningEngine {
                 "All domain invariants preserved. Defensive null-guards validated.";
     }
 }
+

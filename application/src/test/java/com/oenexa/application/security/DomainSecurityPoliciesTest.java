@@ -1,10 +1,10 @@
 package com.oenexa.application.security;
 
-import com.oenexa.domain.EnterpriseMemoryHierarchyDomain.MemoryLayerTier;
-import com.oenexa.domain.OenexaExceptions.OenexaAuthenticationException;
-import com.oenexa.domain.OenexaExceptions.OenexaForbiddenException;
-import com.oenexa.domain.OenexaExceptions.OenexaValidationException;
-import com.oenexa.domain.User;
+import com.oenexa.domain.model.memory.EnterpriseMemoryHierarchyDomain.MemoryLayerTier;
+import com.oenexa.domain.exception.OenexaExceptions.OenexaAuthenticationException;
+import com.oenexa.domain.exception.OenexaExceptions.OenexaForbiddenException;
+import com.oenexa.domain.exception.OenexaExceptions.OenexaValidationException;
+import com.oenexa.domain.model.auth.User;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -90,3 +90,4 @@ class DomainSecurityPoliciesTest {
         assertThrows(OenexaValidationException.class, () -> policy.auditCodeSecurity("System.exit(0);"));
     }
 }
+

@@ -3,8 +3,8 @@ package com.oenexa.application.openai;
 import com.oenexa.application.engine.AstAnalysisEngine;
 import com.oenexa.application.engine.SecurityAuditEngine;
 import com.oenexa.application.engine.TestSynthesizerEngine;
-import com.oenexa.domain.OpenAiDomain.*;
-import com.oenexa.domain.OpenAiToolProtocolDomain.*;
+import com.oenexa.domain.model.orchestration.OpenAiDomain.*;
+import com.oenexa.domain.model.orchestration.OpenAiToolProtocolDomain.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -110,3 +110,4 @@ class OpenAiToolExecutionEngineTest {
         assertThrows(NullPointerException.class, () -> new OpenAiToolExecutionEngine(new AstAnalysisEngine(), new SecurityAuditEngine(), null));
     }
 }
+

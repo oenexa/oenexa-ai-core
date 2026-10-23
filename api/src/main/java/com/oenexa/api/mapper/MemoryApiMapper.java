@@ -2,8 +2,8 @@ package com.oenexa.api.mapper;
 
 import com.oenexa.api.dto.memory.MemoryDtos.MemoryHierarchyStatsDto;
 import com.oenexa.api.dto.memory.MemoryDtos.MemoryLookupResponseDto;
-import com.oenexa.domain.EnterpriseMemoryHierarchyDomain.MemoryHierarchyStats;
-import com.oenexa.domain.EnterpriseMemoryHierarchyDomain.MemoryRetrievalResult;
+import com.oenexa.domain.model.memory.EnterpriseMemoryHierarchyDomain.MemoryHierarchyStats;
+import com.oenexa.domain.model.memory.EnterpriseMemoryHierarchyDomain.MemoryRetrievalResult;
 import org.springframework.stereotype.Component;
 
 /**
@@ -39,3 +39,4 @@ public class MemoryApiMapper {
         );
     }
 }
+

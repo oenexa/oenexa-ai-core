@@ -1,6 +1,6 @@
 package com.oenexa.application.core;
 
-import com.oenexa.domain.OenexaCoreBrainDomain.PerformanceSnapshot;
+import com.oenexa.domain.model.cognitive.OenexaCoreBrainDomain.PerformanceSnapshot;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
@@ -61,3 +61,4 @@ public class OenexaPerformanceEngine {
         return l1Cache.size();
     }
 }
+

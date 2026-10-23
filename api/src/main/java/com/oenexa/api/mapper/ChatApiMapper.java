@@ -3,9 +3,9 @@ package com.oenexa.api.mapper;
 import com.oenexa.api.dto.chat.ChatDtos.ChatTurnResponseDto;
 import com.oenexa.api.dto.chat.ChatDtos.ConversationSummaryDto;
 import com.oenexa.api.dto.chat.ChatDtos.SendMessageRequestDto;
-import com.oenexa.domain.ChatDomain.ChatRequest;
-import com.oenexa.domain.ChatDomain.ChatResponse;
-import com.oenexa.domain.ChatDomain.ConversationMetadata;
+import com.oenexa.domain.model.chat.ChatDomain.ChatRequest;
+import com.oenexa.domain.model.chat.ChatDomain.ChatResponse;
+import com.oenexa.domain.model.chat.ChatDomain.ConversationMetadata;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
@@ -53,3 +53,4 @@ public class ChatApiMapper {
         );
     }
 }
+

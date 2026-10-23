@@ -1,8 +1,8 @@
 package com.oenexa.application.bdd;
 
-import com.oenexa.application.UserService;
-import com.oenexa.domain.User;
-import com.oenexa.domain.UserRegistration;
+import com.oenexa.application.service.auth.UserService;
+import com.oenexa.domain.model.auth.User;
+import com.oenexa.domain.model.auth.UserRegistration;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
@@ -59,3 +59,5 @@ public class UserRegistrationSteps {
         assertInstanceOf(NullPointerException.class, registrationError);
     }
 }
+
+

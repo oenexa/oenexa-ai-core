@@ -1,8 +1,8 @@
 package com.oenexa.application.validation;
 
-import com.oenexa.domain.ChatDomain.OenexaAutonomousGoalRequest;
-import com.oenexa.domain.OenexaCoreBrainDomain.CoreBrainDirective;
-import com.oenexa.domain.OenexaExceptions.OenexaValidationException;
+import com.oenexa.domain.model.chat.ChatDomain.OenexaAutonomousGoalRequest;
+import com.oenexa.domain.model.cognitive.OenexaCoreBrainDomain.CoreBrainDirective;
+import com.oenexa.domain.exception.OenexaExceptions.OenexaValidationException;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -45,3 +45,4 @@ public class AgentGoalValidator {
         }
     }
 }
+

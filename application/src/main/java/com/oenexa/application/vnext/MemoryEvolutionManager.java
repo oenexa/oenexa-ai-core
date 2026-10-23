@@ -1,6 +1,6 @@
 package com.oenexa.application.vnext;
 
-import com.oenexa.domain.OenexaVNextDomain.*;
+import com.oenexa.domain.model.cognitive.OenexaVNextDomain.*;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -49,3 +49,4 @@ public class MemoryEvolutionManager {
         return List.of(VNextMemoryTier.values());
     }
 }
+

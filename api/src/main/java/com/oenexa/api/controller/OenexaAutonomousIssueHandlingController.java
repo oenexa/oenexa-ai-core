@@ -2,7 +2,7 @@ package com.oenexa.api.controller;
 
 import com.oenexa.application.cognitive.OenexaAutonomousLifecycleOrchestrator;
 import com.oenexa.application.cognitive.OenexaAutonomousProblemSolverEngine;
-import com.oenexa.domain.OenexaAutonomousProblemSolverDomain.*;
+import com.oenexa.domain.model.cognitive.OenexaAutonomousProblemSolverDomain.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -75,3 +75,4 @@ public class OenexaAutonomousIssueHandlingController {
         return ResponseEntity.ok(updated);
     }
 }
+

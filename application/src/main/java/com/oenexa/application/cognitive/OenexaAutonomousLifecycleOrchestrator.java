@@ -1,6 +1,6 @@
 package com.oenexa.application.cognitive;
 
-import com.oenexa.domain.OenexaAutonomousProblemSolverDomain.*;
+import com.oenexa.domain.model.cognitive.OenexaAutonomousProblemSolverDomain.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -205,3 +205,4 @@ public class OenexaAutonomousLifecycleOrchestrator {
         return averageLatencyMs.get();
     }
 }
+

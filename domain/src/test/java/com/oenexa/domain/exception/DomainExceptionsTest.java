@@ -1,6 +1,6 @@
 package com.oenexa.domain.exception;
 
-import com.oenexa.domain.ErrorCode;
+import com.oenexa.domain.exception.ErrorCode;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -60,3 +60,4 @@ class DomainExceptionsTest {
         assertEquals(ErrorCode.VALIDATION, ex.code());
     }
 }
+

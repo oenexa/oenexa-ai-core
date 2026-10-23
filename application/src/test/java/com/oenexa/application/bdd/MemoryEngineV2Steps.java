@@ -1,8 +1,8 @@
 package com.oenexa.application.bdd;
 
-import com.oenexa.application.OenexaContextCompressionEngine;
-import com.oenexa.application.OenexaMemoryEngineV2Service;
-import com.oenexa.domain.OenexaMemoryEngineV2Domain.*;
+import com.oenexa.application.service.memory.OenexaContextCompressionEngine;
+import com.oenexa.application.service.memory.OenexaMemoryEngineV2Service;
+import com.oenexa.domain.model.memory.OenexaMemoryEngineV2Domain.*;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
@@ -89,3 +89,5 @@ public class MemoryEngineV2Steps {
         assertTrue(decompressed.contains("processOrder(String orderId)"));
     }
 }
+
+

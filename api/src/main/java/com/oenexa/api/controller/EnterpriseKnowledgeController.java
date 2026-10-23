@@ -1,7 +1,7 @@
 package com.oenexa.api.controller;
 
-import com.oenexa.application.EnterpriseKnowledgeService;
-import com.oenexa.domain.EnterpriseKnowledgeDomain.*;
+import com.oenexa.application.service.knowledge.EnterpriseKnowledgeService;
+import com.oenexa.domain.model.knowledge.EnterpriseKnowledgeDomain.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -76,3 +76,5 @@ public class EnterpriseKnowledgeController {
     public record CrawlWebsiteRequest(String url, int maxDepth, boolean crawlSubdomains) {}
     public record SearchKnowledgeRequest(String query, Integer topK) {}
 }
+
+

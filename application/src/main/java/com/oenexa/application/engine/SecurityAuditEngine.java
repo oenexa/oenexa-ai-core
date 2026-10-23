@@ -1,7 +1,7 @@
 package com.oenexa.application.engine;
 
-import com.oenexa.domain.CodeEngineeringDomain.SecurityScanRequest;
-import com.oenexa.domain.CodeEngineeringDomain.SecurityScanResponse;
+import com.oenexa.domain.model.code.CodeEngineeringDomain.SecurityScanRequest;
+import com.oenexa.domain.model.code.CodeEngineeringDomain.SecurityScanResponse;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
@@ -124,3 +124,4 @@ public class SecurityAuditEngine {
         return secret.substring(0, 4) + "...." + secret.substring(secret.length() - 4);
     }
 }
+

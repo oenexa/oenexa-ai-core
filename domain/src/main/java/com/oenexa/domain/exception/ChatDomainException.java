@@ -1,7 +1,7 @@
 package com.oenexa.domain.exception;
 
-import com.oenexa.domain.ErrorCode;
-import com.oenexa.domain.OenexaException;
+import com.oenexa.domain.exception.ErrorCode;
+import com.oenexa.domain.exception.OenexaException;
 
 /**
  * Domain-specific exception for Chat, Conversation, and Prompt Safety failures.
@@ -21,3 +21,4 @@ public class ChatDomainException extends OenexaException {
         super(code != null ? code : ErrorCode.BAD_REQUEST, message);
     }
 }
+

@@ -4,10 +4,10 @@ import com.oenexa.api.dto.auth.AuthDtos.LoginRequestDto;
 import com.oenexa.api.dto.auth.AuthDtos.RegisterRequestDto;
 import com.oenexa.api.dto.auth.AuthDtos.TokenResponseDto;
 import com.oenexa.api.dto.auth.AuthDtos.UserProfileDto;
-import com.oenexa.domain.AuthDomain.LoginRequest;
-import com.oenexa.domain.AuthDomain.RegisterRequest;
-import com.oenexa.domain.AuthDomain.TokenPair;
-import com.oenexa.domain.AuthDomain.UserProfile;
+import com.oenexa.domain.model.auth.AuthDomain.LoginRequest;
+import com.oenexa.domain.model.auth.AuthDomain.RegisterRequest;
+import com.oenexa.domain.model.auth.AuthDomain.TokenPair;
+import com.oenexa.domain.model.auth.AuthDomain.UserProfile;
 import org.springframework.stereotype.Component;
 
 /**
@@ -59,3 +59,4 @@ public class AuthApiMapper {
         );
     }
 }
+

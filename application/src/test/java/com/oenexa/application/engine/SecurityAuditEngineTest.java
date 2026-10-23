@@ -1,7 +1,7 @@
 package com.oenexa.application.engine;
 
-import com.oenexa.domain.CodeEngineeringDomain.SecurityScanRequest;
-import com.oenexa.domain.CodeEngineeringDomain.SecurityScanResponse;
+import com.oenexa.domain.model.code.CodeEngineeringDomain.SecurityScanRequest;
+import com.oenexa.domain.model.code.CodeEngineeringDomain.SecurityScanResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -168,3 +168,4 @@ class SecurityAuditEngineTest {
         assertNotNull(res.timestamp());
     }
 }
+

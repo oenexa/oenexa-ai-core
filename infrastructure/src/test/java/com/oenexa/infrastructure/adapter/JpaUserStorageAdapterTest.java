@@ -1,6 +1,6 @@
 package com.oenexa.infrastructure.adapter;
 
-import com.oenexa.domain.User;
+import com.oenexa.domain.model.auth.User;
 import com.oenexa.infrastructure.persistence.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -129,3 +129,4 @@ class JpaUserStorageAdapterTest {
         @Override public Page<User> findAll(Pageable pageable) { return Page.empty(); }
     }
 }
+

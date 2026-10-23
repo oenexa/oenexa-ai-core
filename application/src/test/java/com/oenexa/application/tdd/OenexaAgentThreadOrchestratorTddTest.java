@@ -1,8 +1,8 @@
 package com.oenexa.application.tdd;
 
-import com.oenexa.application.OenexaAgentThreadOrchestratorService;
-import com.oenexa.application.OenexaAgentThreadOrchestratorService.SwarmExecutionRequest;
-import com.oenexa.domain.AutonomousAgentEcosystemDomain.*;
+import com.oenexa.application.service.agent.OenexaAgentThreadOrchestratorService;
+import com.oenexa.application.service.agent.OenexaAgentThreadOrchestratorService.SwarmExecutionRequest;
+import com.oenexa.domain.model.agent.AutonomousAgentEcosystemDomain.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
@@ -82,3 +82,5 @@ public class OenexaAgentThreadOrchestratorTddTest {
         assertEquals(executed.goalTitle(), retrieved.get().goalTitle());
     }
 }
+
+

@@ -1,7 +1,7 @@
 package com.oenexa.application.engine;
 
-import com.oenexa.domain.TargetCapabilitiesDomain.OperatorActionType;
-import com.oenexa.domain.TargetCapabilitiesDomain.OperatorWorkflow;
+import com.oenexa.domain.model.orchestration.TargetCapabilitiesDomain.OperatorActionType;
+import com.oenexa.domain.model.orchestration.TargetCapabilitiesDomain.OperatorWorkflow;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -66,3 +66,4 @@ class OperatorWorkflowEngineTest {
         }
     }
 }
+

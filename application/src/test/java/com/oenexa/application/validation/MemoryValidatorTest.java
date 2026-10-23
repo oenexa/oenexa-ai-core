@@ -1,8 +1,8 @@
 package com.oenexa.application.validation;
 
-import com.oenexa.domain.EnterpriseMemoryHierarchyDomain.HierarchicalMemoryRecord;
-import com.oenexa.domain.EnterpriseMemoryHierarchyDomain.MemoryLayerTier;
-import com.oenexa.domain.OenexaExceptions.OenexaValidationException;
+import com.oenexa.domain.model.memory.EnterpriseMemoryHierarchyDomain.HierarchicalMemoryRecord;
+import com.oenexa.domain.model.memory.EnterpriseMemoryHierarchyDomain.MemoryLayerTier;
+import com.oenexa.domain.exception.OenexaExceptions.OenexaValidationException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -48,3 +48,4 @@ class MemoryValidatorTest {
         assertThrows(OenexaValidationException.class, () -> validator.validateKeyAndTier("key", null));
     }
 }
+

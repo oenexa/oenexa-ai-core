@@ -1,7 +1,7 @@
 package com.oenexa.application.engine;
 
-import com.oenexa.domain.CodeEngineeringDomain.TestGenerationRequest;
-import com.oenexa.domain.CodeEngineeringDomain.TestGenerationResponse;
+import com.oenexa.domain.model.code.CodeEngineeringDomain.TestGenerationRequest;
+import com.oenexa.domain.model.code.CodeEngineeringDomain.TestGenerationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -93,3 +93,4 @@ class TestSynthesizerEngineTest {
         assertTrue(res.generatedTests().isEmpty());
     }
 }
+

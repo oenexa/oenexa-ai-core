@@ -6,15 +6,15 @@ import com.oenexa.api.dto.code.CodeDtos.CodeAnalysisResultDto;
 import com.oenexa.api.dto.code.CodeDtos.SecurityAuditSummaryDto;
 import com.oenexa.api.dto.code.CodeDtos.TestSynthesisResultDto;
 import com.oenexa.api.mapper.CodeApiMapper;
-import com.oenexa.application.CodeEngineeringService;
+import com.oenexa.application.service.code.CodeEngineeringService;
 import com.oenexa.application.security.CodeSecurityPolicy;
 import com.oenexa.application.validation.CodeEngineeringValidator;
-import com.oenexa.domain.CodeEngineeringDomain.CodeAnalysisRequest;
-import com.oenexa.domain.CodeEngineeringDomain.CodeAnalysisResponse;
-import com.oenexa.domain.CodeEngineeringDomain.SecurityScanRequest;
-import com.oenexa.domain.CodeEngineeringDomain.SecurityScanResponse;
-import com.oenexa.domain.CodeEngineeringDomain.TestGenerationRequest;
-import com.oenexa.domain.CodeEngineeringDomain.TestGenerationResponse;
+import com.oenexa.domain.model.code.CodeEngineeringDomain.CodeAnalysisRequest;
+import com.oenexa.domain.model.code.CodeEngineeringDomain.CodeAnalysisResponse;
+import com.oenexa.domain.model.code.CodeEngineeringDomain.SecurityScanRequest;
+import com.oenexa.domain.model.code.CodeEngineeringDomain.SecurityScanResponse;
+import com.oenexa.domain.model.code.CodeEngineeringDomain.TestGenerationRequest;
+import com.oenexa.domain.model.code.CodeEngineeringDomain.TestGenerationResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -132,3 +132,5 @@ public class CodeEngineeringController {
         return ResponseEntity.ok(codeEngineeringService.synthesizeTests(request));
     }
 }
+
+

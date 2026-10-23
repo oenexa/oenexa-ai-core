@@ -1,9 +1,9 @@
 package com.oenexa.application.engine;
 
-import com.oenexa.domain.AiEngineerDomain.BugFixRequest;
-import com.oenexa.domain.AiEngineerDomain.BugFixResult;
-import com.oenexa.domain.AiEngineerDomain.RefactoringRequest;
-import com.oenexa.domain.AiEngineerDomain.RefactoringResult;
+import com.oenexa.domain.model.code.AiEngineerDomain.BugFixRequest;
+import com.oenexa.domain.model.code.AiEngineerDomain.BugFixResult;
+import com.oenexa.domain.model.code.AiEngineerDomain.RefactoringRequest;
+import com.oenexa.domain.model.code.AiEngineerDomain.RefactoringResult;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -122,7 +122,7 @@ class RefactoringEngineTest {
         RefactoringRequest request = new RefactoringRequest(
                 "public class UserDto { private String name; public String getName() { return name; } public void setName(String name) { this.name = name; } }",
                 "IMMUTABLE_RECORD",
-                com.oenexa.domain.AiEngineerDomain.SupportedLanguage.JAVA
+                com.oenexa.domain.model.code.AiEngineerDomain.SupportedLanguage.JAVA
         );
 
         RefactoringResult result = engine.refactorCode(request);
@@ -145,3 +145,5 @@ class RefactoringEngineTest {
         assertTrue(refactorRes.backwardsCompatible());
     }
 }
+
+

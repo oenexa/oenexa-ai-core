@@ -1,8 +1,8 @@
 package com.oenexa.api.controller;
 
 import com.oenexa.application.cognitive.OenexaAgentOperatingSystem;
-import com.oenexa.domain.OenexaAgentOsDomain.*;
-import com.oenexa.domain.OenexaCognitiveDomain.*;
+import com.oenexa.domain.model.agent.OenexaAgentOsDomain.*;
+import com.oenexa.domain.model.cognitive.OenexaCognitiveDomain.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -55,3 +55,4 @@ public class OenexaAgentOsController {
         ));
     }
 }
+

@@ -1,8 +1,8 @@
 package com.oenexa.application.engine;
 
-import com.oenexa.domain.ChatDomain.MultimodalAttachment;
-import com.oenexa.domain.ChatDomain.MultimodalType;
-import com.oenexa.domain.TargetCapabilitiesDomain.*;
+import com.oenexa.domain.model.chat.ChatDomain.MultimodalAttachment;
+import com.oenexa.domain.model.chat.ChatDomain.MultimodalType;
+import com.oenexa.domain.model.orchestration.TargetCapabilitiesDomain.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -71,3 +71,4 @@ class OenexaMultimodalEngineTest {
         assertNotNull(ctx2.createdAt());
     }
 }
+

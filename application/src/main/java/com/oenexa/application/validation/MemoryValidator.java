@@ -1,8 +1,8 @@
 package com.oenexa.application.validation;
 
-import com.oenexa.domain.EnterpriseMemoryHierarchyDomain.HierarchicalMemoryRecord;
-import com.oenexa.domain.EnterpriseMemoryHierarchyDomain.MemoryLayerTier;
-import com.oenexa.domain.OenexaExceptions.OenexaValidationException;
+import com.oenexa.domain.model.memory.EnterpriseMemoryHierarchyDomain.HierarchicalMemoryRecord;
+import com.oenexa.domain.model.memory.EnterpriseMemoryHierarchyDomain.MemoryLayerTier;
+import com.oenexa.domain.exception.OenexaExceptions.OenexaValidationException;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -47,3 +47,4 @@ public class MemoryValidator {
         }
     }
 }
+

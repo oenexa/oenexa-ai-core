@@ -1,7 +1,7 @@
 package com.oenexa.application.engine;
 
-import com.oenexa.domain.CodeEngineeringDomain.TestGenerationRequest;
-import com.oenexa.domain.CodeEngineeringDomain.TestGenerationResponse;
+import com.oenexa.domain.model.code.CodeEngineeringDomain.TestGenerationRequest;
+import com.oenexa.domain.model.code.CodeEngineeringDomain.TestGenerationResponse;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -98,3 +98,4 @@ public class TestSynthesizerEngine {
         );
     }
 }
+

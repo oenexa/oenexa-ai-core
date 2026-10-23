@@ -1,9 +1,9 @@
 package com.oenexa.application.validation;
 
-import com.oenexa.domain.CodeEngineeringDomain.CodeAnalysisRequest;
-import com.oenexa.domain.CodeEngineeringDomain.SecurityScanRequest;
-import com.oenexa.domain.CodeEngineeringDomain.TestGenerationRequest;
-import com.oenexa.domain.OenexaExceptions.OenexaValidationException;
+import com.oenexa.domain.model.code.CodeEngineeringDomain.CodeAnalysisRequest;
+import com.oenexa.domain.model.code.CodeEngineeringDomain.SecurityScanRequest;
+import com.oenexa.domain.model.code.CodeEngineeringDomain.TestGenerationRequest;
+import com.oenexa.domain.exception.OenexaExceptions.OenexaValidationException;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -58,3 +58,4 @@ public class CodeEngineeringValidator {
         }
     }
 }
+

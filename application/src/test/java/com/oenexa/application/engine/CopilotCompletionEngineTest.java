@@ -1,7 +1,7 @@
 package com.oenexa.application.engine;
 
-import com.oenexa.domain.TargetCapabilitiesDomain.CopilotCompletionRequest;
-import com.oenexa.domain.TargetCapabilitiesDomain.CopilotCompletionResponse;
+import com.oenexa.domain.model.orchestration.TargetCapabilitiesDomain.CopilotCompletionRequest;
+import com.oenexa.domain.model.orchestration.TargetCapabilitiesDomain.CopilotCompletionResponse;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -60,3 +60,4 @@ class CopilotCompletionEngineTest {
         assertTrue(respOther.ghostText().contains("Objects.requireNonNull"));
     }
 }
+

@@ -1,6 +1,6 @@
 package com.oenexa.application.core;
 
-import com.oenexa.domain.OenexaCoreBrainDomain.CoreBrainDirective;
+import com.oenexa.domain.model.cognitive.OenexaCoreBrainDomain.CoreBrainDirective;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -80,3 +80,4 @@ class OenexaGatewayAndSecurityEngineTest {
         assertFalse(decision.isLocalFirst());
     }
 }
+

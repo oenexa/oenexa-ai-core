@@ -2,7 +2,7 @@ package com.oenexa.api.controller;
 
 import com.oenexa.application.vnext.OenexaAutonomousEngineeringSystem;
 import com.oenexa.application.vnext.OenexaAutonomousEngineeringSystem.MasterVNextExecutionResult;
-import com.oenexa.domain.OenexaVNextDomain.*;
+import com.oenexa.domain.model.cognitive.OenexaVNextDomain.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -68,3 +68,4 @@ public class OenexaVNextEngineeringController {
         return artifact.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.noContent().build());
     }
 }
+

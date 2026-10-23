@@ -1,8 +1,8 @@
 package com.oenexa.application.mapper;
 
-import com.oenexa.domain.AuthDomain.AuthClaims;
-import com.oenexa.domain.AuthDomain.UserProfile;
-import com.oenexa.domain.User;
+import com.oenexa.domain.model.auth.AuthDomain.AuthClaims;
+import com.oenexa.domain.model.auth.AuthDomain.UserProfile;
+import com.oenexa.domain.model.auth.User;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
@@ -53,3 +53,4 @@ public class AuthDtoMapper {
         );
     }
 }
+

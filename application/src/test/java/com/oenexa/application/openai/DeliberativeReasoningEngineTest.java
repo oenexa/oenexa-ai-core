@@ -1,6 +1,6 @@
 package com.oenexa.application.openai;
 
-import com.oenexa.domain.OpenAiReasoningDomain.CognitiveStage;
+import com.oenexa.domain.model.cognitive.OpenAiReasoningDomain.CognitiveStage;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -47,3 +47,4 @@ class DeliberativeReasoningEngineTest {
         assertThrows(NullPointerException.class, () -> engine.reason(null, "high"));
     }
 }
+

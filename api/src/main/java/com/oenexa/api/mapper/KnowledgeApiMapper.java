@@ -3,9 +3,9 @@ package com.oenexa.api.mapper;
 import com.oenexa.api.dto.knowledge.KnowledgeDtos.DocumentChunkDto;
 import com.oenexa.api.dto.knowledge.KnowledgeDtos.DocumentIngestRequestDto;
 import com.oenexa.api.dto.knowledge.KnowledgeDtos.KnowledgeSearchResultDto;
-import com.oenexa.domain.RagDocument.Chunk;
-import com.oenexa.domain.RagDocument.DocumentInput;
-import com.oenexa.domain.RagDocument.SearchResult;
+import com.oenexa.domain.model.knowledge.RagDocument.Chunk;
+import com.oenexa.domain.model.knowledge.RagDocument.DocumentInput;
+import com.oenexa.domain.model.knowledge.RagDocument.SearchResult;
 import org.springframework.stereotype.Component;
 
 /**
@@ -35,3 +35,4 @@ public class KnowledgeApiMapper {
         return new KnowledgeSearchResultDto(result.chunkId(), result.title(), result.snippet(), result.similarityScore());
     }
 }
+

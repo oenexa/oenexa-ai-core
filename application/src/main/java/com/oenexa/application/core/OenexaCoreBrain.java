@@ -1,15 +1,15 @@
 package com.oenexa.application.core;
 
-import com.oenexa.application.CodeEngineeringService;
-import com.oenexa.application.CollaborativeAgentService;
-import com.oenexa.application.EnterpriseKnowledgeService;
-import com.oenexa.application.EnterpriseMemoryHierarchyService;
-import com.oenexa.application.MultiModelRouterService;
+import com.oenexa.application.service.code.CodeEngineeringService;
+import com.oenexa.application.service.agent.CollaborativeAgentService;
+import com.oenexa.application.service.knowledge.EnterpriseKnowledgeService;
+import com.oenexa.application.service.memory.EnterpriseMemoryHierarchyService;
+import com.oenexa.application.service.orchestration.MultiModelRouterService;
 import com.oenexa.application.cognitive.OenexaDeliberativeReasoningEngine;
 import com.oenexa.application.openai.OpenAiToolExecutionEngine;
 import com.oenexa.application.vnext.AutonomousResolutionEngine;
-import com.oenexa.domain.ChatDomain.CodeArtifact;
-import com.oenexa.domain.OenexaCoreBrainDomain.*;
+import com.oenexa.domain.model.chat.ChatDomain.CodeArtifact;
+import com.oenexa.domain.model.cognitive.OenexaCoreBrainDomain.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -205,3 +205,5 @@ public class OenexaCoreBrain {
         }
     }
 }
+
+

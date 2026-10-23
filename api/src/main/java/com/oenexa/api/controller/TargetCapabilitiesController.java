@@ -1,8 +1,8 @@
 package com.oenexa.api.controller;
 
-import com.oenexa.application.TargetCapabilitiesService;
-import com.oenexa.domain.ChatDomain.MultimodalAttachment;
-import com.oenexa.domain.TargetCapabilitiesDomain.*;
+import com.oenexa.application.service.orchestration.TargetCapabilitiesService;
+import com.oenexa.domain.model.chat.ChatDomain.MultimodalAttachment;
+import com.oenexa.domain.model.orchestration.TargetCapabilitiesDomain.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -126,3 +126,5 @@ public class TargetCapabilitiesController {
         return ResponseEntity.ok(targetCapabilitiesService.getCapabilitiesOverview());
     }
 }
+
+

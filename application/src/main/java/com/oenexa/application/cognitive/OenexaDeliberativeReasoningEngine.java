@@ -1,6 +1,6 @@
 package com.oenexa.application.cognitive;
 
-import com.oenexa.domain.OenexaCognitiveDomain.*;
+import com.oenexa.domain.model.cognitive.OenexaCognitiveDomain.*;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -99,3 +99,4 @@ public class OenexaDeliberativeReasoningEngine {
         );
     }
 }
+

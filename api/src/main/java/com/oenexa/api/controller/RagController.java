@@ -5,10 +5,10 @@ import com.oenexa.api.dto.knowledge.KnowledgeDtos.DocumentChunkDto;
 import com.oenexa.api.dto.knowledge.KnowledgeDtos.DocumentIngestRequestDto;
 import com.oenexa.api.dto.knowledge.KnowledgeDtos.KnowledgeSearchResultDto;
 import com.oenexa.api.mapper.KnowledgeApiMapper;
-import com.oenexa.application.RagService;
+import com.oenexa.application.service.knowledge.RagService;
 import com.oenexa.application.security.KnowledgeSecurityPolicy;
 import com.oenexa.application.validation.KnowledgeValidator;
-import com.oenexa.domain.RagDocument.*;
+import com.oenexa.domain.model.knowledge.RagDocument.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -97,3 +97,5 @@ public class RagController {
         return ResponseEntity.ok(ragService.search(q, limit));
     }
 }
+
+

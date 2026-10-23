@@ -1,8 +1,8 @@
 package com.oenexa.api.controller;
 
-import com.oenexa.domain.OpenAiDomain.*;
-import com.oenexa.domain.OpenAiMediaDomain.*;
-import com.oenexa.domain.OpenAiToolProtocolDomain.*;
+import com.oenexa.domain.model.orchestration.OpenAiDomain.*;
+import com.oenexa.domain.model.orchestration.OpenAiMediaDomain.*;
+import com.oenexa.domain.model.orchestration.OpenAiToolProtocolDomain.*;
 import com.oenexa.infrastructure.openai.LocalInferenceWorker;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -144,3 +144,4 @@ public class OpenAiProtocolController {
         return ResponseEntity.ok(new OpenAiFileObject(fileId, 2048L, 1700000000L, fileId + ".yaml", "assistants"));
     }
 }
+

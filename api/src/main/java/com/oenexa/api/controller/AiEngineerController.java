@@ -1,7 +1,7 @@
 package com.oenexa.api.controller;
 
-import com.oenexa.application.AiSoftwareEngineerService;
-import com.oenexa.domain.AiEngineerDomain.*;
+import com.oenexa.application.service.code.AiSoftwareEngineerService;
+import com.oenexa.domain.model.code.AiEngineerDomain.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -57,3 +57,5 @@ public class AiEngineerController {
         return ResponseEntity.ok(engineerService.generateInfrastructure(safeReq));
     }
 }
+
+

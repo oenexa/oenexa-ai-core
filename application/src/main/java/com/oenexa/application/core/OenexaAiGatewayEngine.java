@@ -1,7 +1,7 @@
 package com.oenexa.application.core;
 
-import com.oenexa.domain.OenexaCoreBrainDomain.CoreBrainDirective;
-import com.oenexa.domain.OenexaCoreBrainDomain.GatewayRoutingDecision;
+import com.oenexa.domain.model.cognitive.OenexaCoreBrainDomain.CoreBrainDirective;
+import com.oenexa.domain.model.cognitive.OenexaCoreBrainDomain.GatewayRoutingDecision;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
@@ -58,3 +58,4 @@ public class OenexaAiGatewayEngine {
         );
     }
 }
+

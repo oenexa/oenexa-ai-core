@@ -1,7 +1,7 @@
 package com.oenexa.api.controller;
 
-import com.oenexa.application.EnterpriseVoiceService;
-import com.oenexa.domain.EnterpriseVoiceDomain.*;
+import com.oenexa.application.service.orchestration.EnterpriseVoiceService;
+import com.oenexa.domain.model.orchestration.EnterpriseVoiceDomain.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -56,3 +56,5 @@ public class EnterpriseVoiceController {
     public record CommandRequest(String spokenText) {}
     public record MeetingAnalysisRequest(String audioBase64, String meetingTitle) {}
 }
+
+

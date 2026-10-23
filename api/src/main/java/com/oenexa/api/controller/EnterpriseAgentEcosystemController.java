@@ -1,9 +1,9 @@
 package com.oenexa.api.controller;
 
-import com.oenexa.application.EnterpriseAgentEcosystemService;
-import com.oenexa.application.OenexaAgentThreadOrchestratorService;
-import com.oenexa.application.OenexaAgentThreadOrchestratorService.SwarmExecutionRequest;
-import com.oenexa.domain.AutonomousAgentEcosystemDomain.*;
+import com.oenexa.application.service.agent.EnterpriseAgentEcosystemService;
+import com.oenexa.application.service.agent.OenexaAgentThreadOrchestratorService;
+import com.oenexa.application.service.agent.OenexaAgentThreadOrchestratorService.SwarmExecutionRequest;
+import com.oenexa.domain.model.agent.AutonomousAgentEcosystemDomain.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -94,3 +94,5 @@ public class EnterpriseAgentEcosystemController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 }
+
+

@@ -1,10 +1,10 @@
 package com.oenexa.api.controller;
 
-import com.oenexa.application.CollaborativeAgentService;
-import com.oenexa.application.OenexaAutonomousAgentEngine;
+import com.oenexa.application.service.agent.CollaborativeAgentService;
+import com.oenexa.application.service.agent.OenexaAutonomousAgentEngine;
 import com.oenexa.application.security.AgentSecurityPolicy;
 import com.oenexa.application.validation.AgentGoalValidator;
-import com.oenexa.domain.ChatDomain.*;
+import com.oenexa.domain.model.chat.ChatDomain.*;
 import com.oenexa.infrastructure.persistence.entity.*;
 import com.oenexa.infrastructure.persistence.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -376,3 +376,5 @@ public class OenexaAutonomousAgentController {
         }
     }
 }
+
+

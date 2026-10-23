@@ -1,6 +1,6 @@
 package com.oenexa.application.engine;
 
-import com.oenexa.domain.AiEngineerDomain.*;
+import com.oenexa.domain.model.code.AiEngineerDomain.*;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
@@ -161,3 +161,4 @@ public class ApiGeneratorEngine {
         );
     }
 }
+

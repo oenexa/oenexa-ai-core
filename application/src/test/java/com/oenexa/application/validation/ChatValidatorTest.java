@@ -1,7 +1,7 @@
 package com.oenexa.application.validation;
 
-import com.oenexa.domain.ChatDomain.ChatRequest;
-import com.oenexa.domain.OenexaExceptions.OenexaValidationException;
+import com.oenexa.domain.model.chat.ChatDomain.ChatRequest;
+import com.oenexa.domain.exception.OenexaExceptions.OenexaValidationException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -35,3 +35,4 @@ class ChatValidatorTest {
         assertThrows(OenexaValidationException.class, () -> validator.validateChatRequest(req));
     }
 }
+
