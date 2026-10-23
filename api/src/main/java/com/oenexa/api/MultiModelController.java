@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * REST API Controller for Enterprise Multi-Model System.
  * Exposes model catalog, dynamic strategy routing, smart fallback execution,
- * and multi-model collaboration synthesis.
+ * and multimodel collaboration synthesis.
  */
 @RestController
 @RequestMapping("/api/v1/models")
