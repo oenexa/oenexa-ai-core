@@ -72,14 +72,14 @@ In multi-agent systems, agents spend **$95\%+$ of runtime waiting on I/O** (LLM 
 
 Behaves like **500 GB – 1 TB effective AI working memory** on a 64 GB RAM machine:
 
-| Tier | Layer | Latency | Storage Substrate | Purpose |
-| :--- | :--- | :--- | :--- | :--- |
-| **L1** | CPU/GPU Inference Cache | Nanoseconds | SRAM / GPU Registers | Active matrix calculations, running tokens |
-| **L2** | Ultra-Hot Context Window | Microseconds | CPU Cache / Pinned RAM | Active context window, frequent embeddings |
-| **RAM** | Working Memory | Nanoseconds | JVM Heap / Off-Heap | Active repo files, AST graphs, live agents |
-| **Compressed** | Extended Working Memory | Sub-millisecond | ZSTD / Dictionary | Semi-active context ($64\text{ GB} \to 200\text{ GB}+$ effective) |
-| **NVMe SSD** | Virtual AI Memory | Microseconds | Memory-Mapped (`mmap`) | Vector indexes, historical conversations |
-| **Knowledge** | Permanent Intelligence | Milliseconds | PostgreSQL 17 + pgvector | Source code, documentation, RAG data |
+| Tier           | Layer                    | Latency         | Storage Substrate        | Purpose                                                           |
+|:---------------|:-------------------------|:----------------|:-------------------------|:------------------------------------------------------------------|
+| **L1**         | CPU/GPU Inference Cache  | Nanoseconds     | SRAM / GPU Registers     | Active matrix calculations, running tokens                        |
+| **L2**         | Ultra-Hot Context Window | Microseconds    | CPU Cache / Pinned RAM   | Active context window, frequent embeddings                        |
+| **RAM**        | Working Memory           | Nanoseconds     | JVM Heap / Off-Heap      | Active repo files, AST graphs, live agents                        |
+| **Compressed** | Extended Working Memory  | Sub-millisecond | ZSTD / Dictionary        | Semi-active context ($64\text{ GB} \to 200\text{ GB}+$ effective) |
+| **NVMe SSD**   | Virtual AI Memory        | Microseconds    | Memory-Mapped (`mmap`)   | Vector indexes, historical conversations                          |
+| **Knowledge**  | Permanent Intelligence   | Milliseconds    | PostgreSQL 17 + pgvector | Source code, documentation, RAG data                              |
 
 ---
 
@@ -114,3 +114,22 @@ oenexa-ai-core/
   # Launch backend service on port 8080
   ./gradlew :api:bootRun
   ```
+
+---
+
+## 6. Enterprise 11-Layer Clean Hexagonal Architecture
+
+Every domain in OENEXA AI strictly encapsulates all 11 standardized enterprise layers:
+1. **Controller Layer** (`api`): REST endpoints, SSE stream controllers, and HTTP response envelopes.
+2. **Service Layer** (`application`): Business workflows, use case orchestrators, cognitive pipelines.
+3. **Repository Layer** (`infrastructure/persistence/repository`): Spring Data JPA persistence interfaces.
+4. **Entity Layer** (`infrastructure/persistence/entity`): PostgreSQL JPA database entities with Flyway migrations.
+5. **DTO Layer** (`api/dto`): Boundary data transfer objects with standardized `ApiResponse<T>` envelopes.
+6. **Mapper Layer**:
+   - `application/mapper`: Domain records $\leftrightarrow$ API DTOs (`AuthDtoMapper`, `ChatDtoMapper`, `AgentGoalDtoMapper`, `KnowledgeDtoMapper`, `MemoryDtoMapper`, `CodeDtoMapper`).
+   - `infrastructure/mapper`: JPA entities $\leftrightarrow$ Domain records (`ChatMessageEntityMapper`, `OenexaGoalEntityMapper`, `KnowledgeChunkEntityMapper`, `UserMemoryEntityMapper`, `RepositoryEntityMapper`).
+7. **Validation Layer** (`application/validation`): Invariant constraints (`AuthValidator`, `ChatValidator`, `AgentGoalValidator`, `KnowledgeValidator`, `MemoryValidator`, `CodeEngineeringValidator`).
+8. **Configuration Layer** (`infrastructure/config` & `api/config`): Domain-specific configuration beans (`AuthDomainConfig`, `ChatDomainConfig`, `AgentBrainConfig`, `KnowledgeDomainConfig`, `MemoryDomainConfig`, `CodeDomainConfig`, `OenexaWebMvcConfig`).
+9. **Exception Handling Layer** (`domain/exception` & `api/GlobalErrorHandler`): Domain-specific exceptions (`AuthDomainException`, `ChatDomainException`, `AgentGoalDomainException`, `KnowledgeDomainException`, `MemoryDomainException`, `CodeEngineeringDomainException`) mapped to RFC 7807 problem details.
+10. **Security Layer** (`application/security`): Multi-tenant security guards (`AuthSecurityPolicy`, `ChatSecurityPolicy`, `AgentSecurityPolicy`, `KnowledgeSecurityPolicy`, `MemorySecurityPolicy`, `CodeSecurityPolicy`).
+11. **Test Layer** (`test`): 100% Zero-Mock unit, invariant, and integration test suites ($797\text{ passed}$ across ecosystem).

@@ -72,7 +72,7 @@ public class LocalOllamaClient {
             HttpRequest req = HttpRequest.newBuilder()
                     .uri(URI.create(targetUrl))
                     .header("Content-Type", "application/json")
-                    .timeout(Duration.ofSeconds(60))
+                    .timeout(Duration.ofMillis(1200))
                     .POST(HttpRequest.BodyPublishers.ofString(payload))
                     .build();
 
