@@ -43,7 +43,7 @@ public class TargetCapabilitiesController {
         this.targetCapabilitiesService = Objects.requireNonNull(targetCapabilitiesService, "targetCapabilitiesService must not be null");
     }
 
-    @PostMapping("/reasoning/claude")
+    @PostMapping({"/reasoning/deep", "/reasoning/claude"})
     public ResponseEntity<ClaudeReasoningTrace> analyzeClaudeReasoning(@RequestBody ClaudeReasoningRequest request) {
         if (request == null || request.objective() == null || request.objective().isBlank()) {
             return ResponseEntity.badRequest().build();
@@ -80,7 +80,7 @@ public class TargetCapabilitiesController {
         ));
     }
 
-    @PostMapping("/coding/context")
+    @PostMapping({"/coding/context", "/synthesis/context"})
     public ResponseEntity<List<CursorContextReference>> curateCursorContext(@RequestBody CursorContextRequest request) {
         if (request == null || request.promptOrQuery() == null || request.promptOrQuery().isBlank()) {
             return ResponseEntity.badRequest().build();
@@ -88,7 +88,7 @@ public class TargetCapabilitiesController {
         return ResponseEntity.ok(targetCapabilitiesService.curateCursorContext(request.promptOrQuery(), request.repositoryId()));
     }
 
-    @PostMapping("/coding/patch")
+    @PostMapping({"/coding/patch", "/synthesis/patch"})
     public ResponseEntity<AtomicMultiFilePatch> generateCursorPatch(@RequestBody CursorPatchRequest request) {
         if (request == null || request.objective() == null || request.objective().isBlank()) {
             return ResponseEntity.badRequest().build();
@@ -96,7 +96,7 @@ public class TargetCapabilitiesController {
         return ResponseEntity.ok(targetCapabilitiesService.generateCursorAtomicPatch(request.objective(), request.targetFilePaths()));
     }
 
-    @PostMapping("/execution/devin")
+    @PostMapping({"/execution/autonomous", "/execution/devin"})
     public ResponseEntity<DevinTaskExecutionPlan> executeDevinTask(@RequestBody DevinTaskRequest request) {
         if (request == null || request.taskGoal() == null || request.taskGoal().isBlank()) {
             return ResponseEntity.badRequest().build();
@@ -105,7 +105,7 @@ public class TargetCapabilitiesController {
         return ResponseEntity.ok(targetCapabilitiesService.executeDevinAutonomousTask(request.taskGoal(), request.repositoryId(), enforce));
     }
 
-    @PostMapping("/copilot/complete")
+    @PostMapping({"/completion/intelligent", "/copilot/complete"})
     public ResponseEntity<CopilotCompletionResponse> generateCopilotCompletion(@RequestBody CopilotCompletionRequest request) {
         if (request == null || request.prefixCode() == null || request.prefixCode().isBlank()) {
             return ResponseEntity.badRequest().build();
@@ -113,7 +113,7 @@ public class TargetCapabilitiesController {
         return ResponseEntity.ok(targetCapabilitiesService.generateCopilotInlineCompletion(request));
     }
 
-    @PostMapping("/operator/automate")
+    @PostMapping({"/operator/automate", "/workflow/automate"})
     public ResponseEntity<OperatorWorkflow> executeOperatorWorkflow(@RequestBody OperatorWorkflowRequest request) {
         if (request == null || request.workflowObjective() == null || request.workflowObjective().isBlank()) {
             return ResponseEntity.badRequest().build();

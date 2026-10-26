@@ -50,6 +50,21 @@ public class TargetCapabilitiesDomain {
         }
     }
 
+    public record DeepReasoningTrace(
+            String traceId,
+            String objective,
+            List<HypothesisBranch> hypotheses,
+            HypothesisBranch selectedBranch,
+            String tradeOffAnalysis,
+            String reflectionVerdict,
+            double calibratedConfidence,
+            Instant timestamp
+    ) {
+        public DeepReasoningTrace(String objective, List<HypothesisBranch> hypotheses, HypothesisBranch selectedBranch, String tradeOffAnalysis, String reflectionVerdict) {
+            this(UUID.randomUUID().toString(), objective, hypotheses, selectedBranch, tradeOffAnalysis, reflectionVerdict, 0.99, Instant.now());
+        }
+    }
+
     public record ClaudeReasoningTrace(
             String traceId,
             String objective,
@@ -118,6 +133,23 @@ public class TargetCapabilitiesDomain {
         }
     }
 
+    // --- 3. OENEXA Code Synthesis ---
+    public enum CodeSynthesisContextType {
+        FILE, FOLDER, SYMBOL, GIT_DIFF, CODEBASE_INDEX
+    }
+
+    public record CodeSynthesisContextReference(
+            String refId,
+            CodeSynthesisContextType type,
+            String targetPathOrSymbol,
+            String extractedSnippet,
+            double relevanceScore
+    ) {
+        public CodeSynthesisContextReference(CodeSynthesisContextType type, String targetPathOrSymbol, String extractedSnippet) {
+            this(UUID.randomUUID().toString(), type, targetPathOrSymbol, extractedSnippet, 0.95);
+        }
+    }
+
     // --- 3. Cursor-Level Coding ---
     public enum CursorContextType {
         FILE, FOLDER, SYMBOL, GIT_DIFF, CODEBASE_INDEX
@@ -159,6 +191,37 @@ public class TargetCapabilitiesDomain {
         }
     }
 
+    // --- 4. OENEXA Autonomous Task Execution ---
+    public record AutonomousExecutionStage(
+            String stageId,
+            String name,
+            String commandExecuted,
+            String outputLog,
+            String status,
+            int retryAttempt,
+            Instant timestamp
+    ) {
+        public AutonomousExecutionStage(String name, String commandExecuted, String outputLog, String status) {
+            this(UUID.randomUUID().toString(), name, commandExecuted, outputLog, status, 0, Instant.now());
+        }
+    }
+
+    public record AutonomousTaskExecutionPlan(
+            String taskId,
+            String goal,
+            String repositoryId,
+            List<AutonomousExecutionStage> stages,
+            boolean buildPassed,
+            boolean zeroMockVerificationPassed,
+            AtomicMultiFilePatch appliedPatch,
+            String finalSummary,
+            Instant completedAt
+    ) {
+        public AutonomousTaskExecutionPlan(String goal, String repositoryId, List<AutonomousExecutionStage> stages, boolean buildPassed, boolean zeroMockVerificationPassed) {
+            this(UUID.randomUUID().toString(), goal, repositoryId, stages, buildPassed, zeroMockVerificationPassed, null, "Autonomous task execution completed successfully.", Instant.now());
+        }
+    }
+
     // --- 4. Devin-Level Task Execution ---
     public record DevinExecutionStage(
             String stageId,
@@ -187,6 +250,40 @@ public class TargetCapabilitiesDomain {
     ) {
         public DevinTaskExecutionPlan(String goal, String repositoryId, List<DevinExecutionStage> stages, boolean buildPassed, boolean zeroMockVerificationPassed) {
             this(UUID.randomUUID().toString(), goal, repositoryId, stages, buildPassed, zeroMockVerificationPassed, null, "Autonomous Devin task execution completed successfully.", Instant.now());
+        }
+    }
+
+    // --- 5. OENEXA Intelligent Code Completion ---
+    public record IntelligentCompletionItem(
+            String text,
+            String label,
+            String kind,
+            String documentation,
+            double confidence
+    ) {}
+
+    public record IntelligentCompletionRequest(
+            String prefixCode,
+            String suffixCode,
+            String filePath,
+            String language,
+            int cursorLine,
+            int cursorColumn
+    ) {
+        public IntelligentCompletionRequest(String prefixCode, String filePath) {
+            this(prefixCode, "", filePath, "java", 1, prefixCode != null ? prefixCode.length() : 0);
+        }
+    }
+
+    public record IntelligentCompletionResponse(
+            String completionId,
+            List<IntelligentCompletionItem> suggestions,
+            String ghostText,
+            long generationLatencyMs,
+            double confidenceScore
+    ) {
+        public IntelligentCompletionResponse(List<IntelligentCompletionItem> suggestions, String ghostText) {
+            this(UUID.randomUUID().toString(), suggestions, ghostText, 15L, 0.98);
         }
     }
 
@@ -259,11 +356,11 @@ public class TargetCapabilitiesDomain {
 
     // --- Summary Capabilities Overview Record ---
     public record TargetCapabilitiesOverview(
-            boolean claudeReasoningActive,
-            boolean geminiMultimodalActive,
-            boolean cursorCodingActive,
-            boolean devinExecutionActive,
-            boolean copilotCompletionActive,
+            boolean deepReasoningActive,
+            boolean multimodalIntelligenceActive,
+            boolean codeSynthesisActive,
+            boolean autonomousExecutionActive,
+            boolean intelligentCompletionActive,
             boolean operatorAutomationActive,
             String platformVersion,
             double overallConfidenceScore
@@ -271,6 +368,12 @@ public class TargetCapabilitiesDomain {
         public TargetCapabilitiesOverview() {
             this(true, true, true, true, true, true, "2.6.0-OENEXA-MAX", 0.99);
         }
+
+        public boolean claudeReasoningActive() { return deepReasoningActive(); }
+        public boolean geminiMultimodalActive() { return multimodalIntelligenceActive(); }
+        public boolean cursorCodingActive() { return codeSynthesisActive(); }
+        public boolean devinExecutionActive() { return autonomousExecutionActive(); }
+        public boolean copilotCompletionActive() { return intelligentCompletionActive(); }
     }
 }
 
