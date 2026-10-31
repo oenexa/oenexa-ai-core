@@ -40,6 +40,16 @@ $ErrorActionPreference = "Stop"
 $ScriptDir = $PSScriptRoot
 Set-Location $ScriptDir
 
+if (-not (Test-Path -Path $env:JAVA_HOME)) {
+    $UserJava = [System.Environment]::GetEnvironmentVariable('JAVA_HOME', 'User')
+    $MachineJava = [System.Environment]::GetEnvironmentVariable('JAVA_HOME', 'Machine')
+    if ($UserJava -and (Test-Path $UserJava)) {
+        $env:JAVA_HOME = $UserJava
+    } elseif ($MachineJava -and (Test-Path $MachineJava)) {
+        $env:JAVA_HOME = $MachineJava
+    }
+}
+
 $GradleCmd = if ($IsWindows -or $env:OS -like "*Windows*") { ".\gradlew.bat" } else { "./gradlew" }
 if (-not (Test-Path (Join-Path $ScriptDir $GradleCmd.TrimStart(".\")))) {
     Write-Error "Gradle wrapper '$GradleCmd' not found in $ScriptDir"

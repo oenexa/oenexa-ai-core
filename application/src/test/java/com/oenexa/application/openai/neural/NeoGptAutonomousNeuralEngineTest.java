@@ -30,7 +30,7 @@ class NeoGptAutonomousNeuralEngineTest {
     @Test
     @DisplayName("Should compute dense embeddings autonomously from scratch")
     void testComputeEmbedding() {
-        double[] emb = engine.computeEmbedding("Synthesize reactive payment service with Java 25");
+        double[] emb = engine.computeEmbedding("Synthesize reactive payment service with Java 27");
 
         assertNotNull(emb);
         assertEquals(engine.getWeights().getHiddenDim(), emb.length);

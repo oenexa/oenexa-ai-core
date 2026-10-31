@@ -21,7 +21,7 @@ public class OenexaDeepReasoningEngine {
 
         HypothesisBranch branchHexagonal = new HypothesisBranch(
                 "Hexagonal Modular Monolith Architecture",
-                "Isolate domain models inside pure Java 25 records with explicit inbound ports and outbound adapters.",
+                "Isolate domain models inside pure Java 27 records with explicit inbound ports and outbound adapters.",
                 List.of("Strict zero-mock testability", "Domain boundaries isolated from Spring WebFlux framework", "100% line coverage guaranteed"),
                 List.of("Requires explicit port interfaces and mapper records"),
                 0.98, 0.95, 0.965

@@ -256,7 +256,7 @@ public class OenexaLiveLlmGatewayService {
                 
                 #### Synthesized Architecture & Verification Plan:
                 - **Primary Boundary:** Hexagonal Ports & Adapters isolating core domain models.
-                - **Concurrency Model:** Java 25 Virtual Threads dispatching parallel agent tasks.
+                - **Concurrency Model:** Java 27 Virtual Threads dispatching parallel agent tasks.
                 - **Quality Invariant:** 100%% Zero-Mock test suites with complete branch verification.
                 - **Next Step:** Supply an API key or start local Ollama to unlock unbounded dynamic code generation.
                 """,

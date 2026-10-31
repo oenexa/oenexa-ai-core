@@ -14,7 +14,7 @@ import java.util.Objects;
 /**
  * Enterprise REST API Controller for Autonomous AI Agents Ecosystem.
  * Exposes autonomous agent profiles, multi-step goal planning,
- * and high-throughput concurrent agent thread dispatching using Java 25 Virtual Threads.
+ * and high-throughput concurrent agent thread dispatching using Java 27 Virtual Threads.
  */
 @RestController
 @RequestMapping({"/api/v1/ecosystem", "/api/v4/agents"})
@@ -69,7 +69,7 @@ public class EnterpriseAgentEcosystemController {
     }
 
     // =========================================================================
-    // MULTI-AGENT THREAD CONCURRENCY (JAVA 25 VIRTUAL THREADS) ENDPOINTS
+    // MULTI-AGENT THREAD CONCURRENCY (JAVA 27 VIRTUAL THREADS) ENDPOINTS
     // =========================================================================
 
     @PostMapping("/swarm/execute")

@@ -9,7 +9,7 @@ import java.util.*;
 /**
  * Enterprise Autonomous Native Neural Engine for OENEXA Neo-GPT.
  * Executes full transformer multi-head self-attention, RMSNorm, Rotary Embeddings,
- * SwiGLU activations, and autoregressive generation completely from scratch in pure Java 25.
+ * SwiGLU activations, and autoregressive generation completely from scratch in pure Java 27.
  * Operates with 0 external AI dependencies, 0 cloud API calls, and complete data sovereignty.
  */
 @Service
@@ -166,7 +166,7 @@ public class NeoGptAutonomousNeuralEngine {
                 - Reasoning Effort Budget: %s
                 
                 **Stage 2: Multi-Hypothesis Neural Exploration**
-                - Hypothesis A (Hexagonal Core): Isolate pure domain logic into immutable Java 25 records.
+                - Hypothesis A (Hexagonal Core): Isolate pure domain logic into immutable Java 27 records.
                 - Hypothesis B (Reactive Virtual Threads): Utilize non-blocking I/O with Generational ZGC.
                 - Hypothesis C (Zero-Mock Verification): Guarantee 100%% line and branch coverage without mocks.
                 - Tradeoff Score: Hypothesis A + B selected (Confidence: 0.99).
@@ -202,7 +202,7 @@ public class NeoGptAutonomousNeuralEngine {
                     ```
                     
                     #### Core Invariants:
-                    1. **Domain Purity (`domain`):** Pure Java 25 records with strict compile-time constructor guards.
+                    1. **Domain Purity (`domain`):** Pure Java 27 records with strict compile-time constructor guards.
                     2. **Native Neural Engine (`application.openai.neural`):** Self-contained transformer inference built from scratch in pure Java.
                     3. **Strictly Zero-Mock Policy:** Real state verification across all modules.
                     """.formatted(selectedModel);

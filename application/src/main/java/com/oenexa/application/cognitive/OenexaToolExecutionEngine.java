@@ -12,7 +12,7 @@ import java.util.*;
 
 /**
  * Enterprise Autonomous Function Calling & Tool Registry Engine for OENEXA.
- * Dynamically resolves and executes tool calls using Java 25 Virtual Threads,
+ * Dynamically resolves and executes tool calls using Java 27 Virtual Threads,
  * strictly complying with the zero-mock mandate.
  */
 @Service
@@ -60,7 +60,7 @@ public class OenexaToolExecutionEngine {
                 ),
                 OenexaToolDefinition.function(
                         "docker_pipeline_builder",
-                        "Synthesize multi-stage eclipse-temurin:25 Dockerfile and non-root Kubernetes manifests",
+                        "Synthesize multi-stage eclipse-temurin:27 Dockerfile and non-root Kubernetes manifests",
                         Map.of("serviceName", "string", "port", "integer")
                 )
         );
@@ -130,13 +130,13 @@ public class OenexaToolExecutionEngine {
             }
             case "docker_pipeline_builder" -> {
                 String dockerfile = """
-                        # Multi-Stage Build using Eclipse Temurin Java 25
-                        FROM eclipse-temurin:25-jdk-alpine AS builder
+                        # Multi-Stage Build using Eclipse Temurin Java 27
+                        FROM eclipse-temurin:27-jdk-alpine AS builder
                         WORKDIR /app
                         COPY . .
                         RUN ./gradlew bootJar --no-daemon
 
-                        FROM eclipse-temurin:25-jre-alpine
+                        FROM eclipse-temurin:27-jre-alpine
                         WORKDIR /app
                         RUN addgroup -S oenexa && adduser -S oenexa -G oenexa
                         USER oenexa

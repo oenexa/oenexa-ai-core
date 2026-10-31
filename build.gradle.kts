@@ -4,7 +4,7 @@ plugins {
     java
 }
 
-val javaVersion = 25
+val javaVersion = 27
 
 allprojects {
     group = "ai.oenexa"
@@ -31,8 +31,6 @@ subprojects {
     }
 
     dependencies {
-        "compileOnly"(rootProject.libs.lombok)
-        "annotationProcessor"(rootProject.libs.lombok)
         "testImplementation"("org.springframework.boot:spring-boot-starter-test")
         "testImplementation"("org.springframework.boot:spring-boot-webtestclient")
         "testImplementation"("io.projectreactor:reactor-test")
@@ -64,9 +62,7 @@ subprojects {
             override fun afterTest(testDescriptor: TestDescriptor, result: TestResult) {}
             override fun afterSuite(suite: TestDescriptor, result: TestResult) {
                 if (suite.parent == null) {
-                    println("\n================================================================================")
                     println("  MODULE: [${project.name}] - TASK: [$name] -> ${result.resultType}")
-                    println("  Tests: ${result.testCount} total | ${result.successfulTestCount} passed | ${result.failedTestCount} failed | ${result.skippedTestCount} skipped")
                     println("================================================================================\n")
                 }
             }

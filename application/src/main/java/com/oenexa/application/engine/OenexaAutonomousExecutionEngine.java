@@ -43,7 +43,7 @@ public class OenexaAutonomousExecutionEngine {
         stages.add(new AutonomousExecutionStage(
                 "Sandbox Build & Compilation",
                 "./gradlew.bat compileJava",
-                "BUILD SUCCESSFUL in 3s. Eclipse-Temurin 25 compiler clean.",
+                "BUILD SUCCESSFUL in 3s. Eclipse-Temurin 27 compiler clean.",
                 "SUCCESS"
         ));
 

@@ -43,7 +43,7 @@ services:
       - oenexa-net
 
   # ----------------------------------------------------------------------------
-  # OENEXA AI Core - Spring Boot 4 Backend (Java 25)
+  # OENEXA AI Core - Spring Boot 4 Backend (Java 27)
   # ----------------------------------------------------------------------------
   backend:
     build:

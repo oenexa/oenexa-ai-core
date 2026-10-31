@@ -118,7 +118,7 @@ public class OenexaAgentOperatingSystem {
     private String resolveActionForPersona(OenexaAgentPersona persona) {
         return switch (persona) {
             case ARCHITECT_AGENT -> "DESIGN_HEXAGONAL_ARCHITECTURE";
-            case BACKEND_AGENT -> "SYNTHESIZE_JAVA25_REACTIVE_SERVICES";
+            case BACKEND_AGENT -> "SYNTHESIZE_JAVA27_REACTIVE_SERVICES";
             case FRONTEND_AGENT -> "GENERATE_REACT_VITE_COMPONENTS";
             case SECURITY_AGENT -> "SAST_VULNERABILITY_AND_SECRET_SCAN";
             case QA_AGENT -> "SYNTHESIZE_ZERO_MOCK_TEST_SUITES";
@@ -133,11 +133,11 @@ public class OenexaAgentOperatingSystem {
     private String resolveOutputForPersona(OenexaAgentPersona persona, String goal) {
         return switch (persona) {
             case ARCHITECT_AGENT -> "Synthesized C4 Component model with sealed boundaries for: " + goal;
-            case BACKEND_AGENT -> "Synthesized non-blocking Spring services leveraging Java 25 Virtual Threads.";
+            case BACKEND_AGENT -> "Synthesized non-blocking Spring services leveraging Java 27 Virtual Threads.";
             case FRONTEND_AGENT -> "Generated React 18 / Material UI tabs compliant with strict Single Responsibility Principle.";
             case SECURITY_AGENT -> "SAST Audit Passed: 0 OWASP vulnerabilities, 0 hardcoded secrets, 0 insecure deserializations.";
             case QA_AGENT -> "Synthesized JUnit 5 & AssertJ suites verifying 100% JaCoCo line coverage with strictly zero mocks.";
-            case DEVOPS_AGENT -> "Generated multi-stage Dockerfile (Temurin 25) with non-root security context.";
+            case DEVOPS_AGENT -> "Generated multi-stage Dockerfile (Temurin 27) with non-root security context.";
             case DATABASE_AGENT -> "Formulated idempotent Flyway migration (V6) with PostgreSQL pgvector indexes.";
             case DOCUMENTATION_AGENT -> "Generated OpenAPI 3.0 YAML specification and Mermaid architecture sequence flow.";
             case REFACTORING_AGENT -> "Refactored legacy conditional branches to Java pattern matching switch expressions.";

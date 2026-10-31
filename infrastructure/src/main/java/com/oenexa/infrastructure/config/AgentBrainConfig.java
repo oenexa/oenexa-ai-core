@@ -8,7 +8,7 @@ import java.util.concurrent.Executors;
 
 /**
  * Enterprise Configuration Layer for Autonomous Agent Brain & Swarm Orchestration.
- * Configures Java 25 Virtual Thread Executors for high-concurrency cognitive processing.
+ * Configures Java 27 Virtual Thread Executors for high-concurrency cognitive processing.
  */
 @Configuration
 public class AgentBrainConfig {

@@ -25,7 +25,7 @@ public final class OenexaAgentOsDomain {
 
     public enum OenexaAgentPersona {
         ARCHITECT_AGENT("Software Architect", "Hexagonal boundaries, sealed records, C4 contracts"),
-        BACKEND_AGENT("Backend Engineer", "Reactive WebFlux, Java 25 virtual threads, REST APIs"),
+        BACKEND_AGENT("Backend Engineer", "Reactive WebFlux, Java 27 virtual threads, REST APIs"),
         FRONTEND_AGENT("Frontend Engineer", "React 18, Vite, Material UI, Monaco editor integration"),
         SECURITY_AGENT("AppSec Specialist", "OWASP Top 10, secret detection, SAST vulnerability scanner"),
         QA_AGENT("Verification Engineer", "Strictly zero-mock JUnit 5 test synthesis, 100% JaCoCo"),

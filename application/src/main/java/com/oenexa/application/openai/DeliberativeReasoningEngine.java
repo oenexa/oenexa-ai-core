@@ -40,7 +40,7 @@ public class DeliberativeReasoningEngine {
 
         // Stage 2: Multi-Hypothesis Exploration
         List<String> hypotheses = List.of(
-                "Hypothesis A: Hexagonal Modular Monolith with sealed Java 25 domain records and zero framework leakage.",
+                "Hypothesis A: Hexagonal Modular Monolith with sealed Java 27 domain records and zero framework leakage.",
                 "Hypothesis B: Reactive Event-Driven pipeline with transactional outbox and R2DBC persistence.",
                 "Hypothesis C: Minimal stateless domain service with defensive invariants and strictly zero-mock tests."
         );

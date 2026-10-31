@@ -19,7 +19,7 @@ import java.util.UUID;
 
 /**
  * Domain contracts for Interactive Chat, Reasoning, Tool Calling, and Context Windows.
- * Follows modern Java 25 record idioms with defensive copies and non-null validation.
+ * Follows modern Java 27 record idioms with defensive copies and non-null validation.
  */
 public class ChatDomain {
 

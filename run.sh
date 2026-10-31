@@ -78,7 +78,7 @@ load_env() {
 check_java() {
     if ! command -v java >/dev/null 2>&1; then
         log_error "Java runtime not found in PATH."
-        log_error "Please install JDK 21+ (JDK 25/26 recommended) and ensure 'java' is on PATH."
+        log_error "Please install JDK 21+ (JDK 27 recommended) and ensure 'java' is on PATH."
         exit 1
     fi
 

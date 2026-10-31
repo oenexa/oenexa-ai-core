@@ -79,7 +79,7 @@ public class ChatResponseSynthesisEngine {
                     "3. Formulation Plan: Apply standard refactoring patterns preserving existing behavioral contracts.";
             case "DEVOPS_PIPELINE" ->
                     "1. Intent Analysis: Identified request as DevOps & Containerization Workflow.\n" +
-                    "2. Context Evaluation: Validating Eclipse Temurin JDK 25 container base, ZGC memory limits, and non-root execution.\n" +
+                    "2. Context Evaluation: Validating Eclipse Temurin JDK 27 container base, ZGC memory limits, and non-root execution.\n" +
                     "3. Formulation Plan: Provide multi-stage Docker build and container verification sequence.";
             case "TESTING_SYNTHESIS" ->
                     "1. Intent Analysis: Identified request as Test Suite Generation & Coverage Optimization.\n" +
@@ -87,7 +87,7 @@ public class ChatResponseSynthesisEngine {
                     "3. Formulation Plan: Synthesize unit test fixtures and boundary parameter sets.";
             case "CODE_GENERATION" ->
                     "1. Intent Analysis: Identified request as Modern Code Generation.\n" +
-                    "2. Context Evaluation: Leveraging Java 25 records, sealed types, pattern matching, and virtual threads.\n" +
+                    "2. Context Evaluation: Leveraging Java 27 records, sealed types, pattern matching, and virtual threads.\n" +
                     "3. Formulation Plan: Generate type-safe, production-ready code with complete invariants.";
             default ->
                     "1. Intent Analysis: Identified request as General AI Software Engineering Query.\n" +
@@ -108,7 +108,7 @@ public class ChatResponseSynthesisEngine {
                     "    APP --> DOM[Inner Hexagon: " + entity + " Pure Domain]\n" +
                     "    INFRA[Secondary Adapters: JPA Repositories & Cache] --> DOM\n" +
                     "```\n\n" +
-                    "- **Domain Tier (`domain`):** Pure Java 25 business invariants, records, zero framework leakage.\n" +
+                    "- **Domain Tier (`domain`):** Pure Java 27 business invariants, records, zero framework leakage.\n" +
                     "- **Application Tier (`application`):** Orchestrates use-cases and coordinates cross-domain workflows.\n" +
                     "- **Infrastructure Tier (`infrastructure`):** Spring Data JPA repositories, Flyway schema migrations, Redis.\n" +
                     "- **API Tier (`api`):** Spring MVC REST endpoints, RFC 7807 problem details, Actuator telemetry.\n\n" +
@@ -172,7 +172,7 @@ public class ChatResponseSynthesisEngine {
             case "DEVOPS_PIPELINE" ->
                     "### 🐳 DevOps & CI/CD Engine Activated\n\n" +
                     "**Deployment & Container Orchestration:** `" + entity + "`\n\n" +
-                    "- **Containerization:** Multi-stage Docker packaging with `eclipse-temurin:25-jre` and ZGC generational garbage collection.\n" +
+                    "- **Containerization:** Multi-stage Docker packaging with `eclipse-temurin:27-jre` and ZGC generational garbage collection.\n" +
                     "- **Health Checks:** Containerized liveness probes via `/api/health` with non-root security contexts.\n\n" +
                     "```yaml\n" +
                     "# Container Orchestration Manifest for " + entity + "\n" +
@@ -229,7 +229,7 @@ public class ChatResponseSynthesisEngine {
             case "CODE_GENERATION" ->
                     "### 💻 Code Synthesizer Activated\n\n" +
                     "**Domain Synthesis for:** `" + entity + "`\n\n" +
-                    "- **Language Standard:** Java 25 Standard Edition with modern records, switch expressions, and virtual threads.\n" +
+                    "- **Language Standard:** Java 27 Standard Edition with modern records, switch expressions, and virtual threads.\n" +
                     "- **Output Quality:** Fully type-safe, validated constructors, and clean documentation.\n\n" +
                     "```java\n" +
                     "package com.oenexa.workspace;\n\n" +

@@ -5,7 +5,7 @@ import java.util.*;
 
 /**
  * Enterprise Native Byte-Pair Encoding (BPE) Neural Tokenizer for OENEXA Neo-GPT.
- * Built from scratch in pure Java 25 with 100% round-trip UTF-8 fidelity and special tokens.
+ * Built from scratch in pure Java 27 with 100% round-trip UTF-8 fidelity and special tokens.
  */
 public final class NeoGptTokenizer {
 

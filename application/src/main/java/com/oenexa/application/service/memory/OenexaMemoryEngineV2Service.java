@@ -29,7 +29,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * L1 (Current Thought) -> L2 (Active Thought) -> L3 (RAM Working Memory) ->
  * L4 (Compressed Short-Term) -> L5 (NVMe SSD Long-Term) -> L6 (Knowledge Storage).
  *
- * Employs Java 25 Virtual Threads for multi-thread parallel fetching and smart eviction.
+ * Employs Java 27 Virtual Threads for multi-thread parallel fetching and smart eviction.
  */
 @Service
 public final class OenexaMemoryEngineV2Service {

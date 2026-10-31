@@ -1,12 +1,10 @@
 package com.oenexa.infrastructure.persistence.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
 
 import java.math.BigDecimal;
 import java.time.Instant;
 
-@Getter
 @Entity
 @Table(name = "tests")
 public class TestExecutionEntity {
@@ -49,4 +47,35 @@ public class TestExecutionEntity {
         this.runAt = Instant.now();
     }
 
+    public String getId() {
+        return id;
+    }
+
+    public String getRepositoryId() {
+        return repositoryId;
+    }
+
+    public String getTestFramework() {
+        return testFramework;
+    }
+
+    public int getTestCount() {
+        return testCount;
+    }
+
+    public int getPassedCount() {
+        return passedCount;
+    }
+
+    public int getFailedCount() {
+        return failedCount;
+    }
+
+    public BigDecimal getCoveragePct() {
+        return coveragePct;
+    }
+
+    public Instant getRunAt() {
+        return runAt;
+    }
 }

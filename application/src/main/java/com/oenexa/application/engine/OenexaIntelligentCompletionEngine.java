@@ -25,7 +25,7 @@ public class OenexaIntelligentCompletionEngine {
         if (prefix.toLowerCase().contains("record") || prefix.toLowerCase().contains("class")) {
             ghostText = "public record SolutionDto(UUID id, String status, Instant createdAt) {}";
             items.add(new IntelligentCompletionItem(
-                    ghostText, "Record Dto Definition", "RECORD", "Generates immutable Java 25 record", 0.99
+                    ghostText, "Record Dto Definition", "RECORD", "Generates immutable Java 27 record", 0.99
             ));
         } else if (prefix.toLowerCase().contains("test") || prefix.toLowerCase().contains("void")) {
             ghostText = "    @Test\n    void shouldVerifyZeroMockState() {\n        var result = service.execute();\n        assertNotNull(result);\n    }";

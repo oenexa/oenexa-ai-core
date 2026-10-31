@@ -24,7 +24,7 @@ public class PatternRepository {
         store.put("PAT-ZERO-MOCK", new VNextPattern("PAT-ZERO-MOCK", VNextPatternCategory.SOLUTION, "Zero-Mock Real Domain Testing", "Test synthesis for domain/app", "Instantiate real records with invariant assertions", 15, 0, 1.0));
         store.put("PAT-HEXAGONAL-ISOLATION", new VNextPattern("PAT-HEXAGONAL-ISOLATION", VNextPatternCategory.REASONING, "Hexagonal Inbound/Outbound Isolation", "Boundary decoupling", "Strictly isolate domain from Spring/JPA", 12, 0, 1.0));
         store.put("PAT-NPE-GUARD", new VNextPattern("PAT-NPE-GUARD", VNextPatternCategory.FAILURE, "Defensive Object Dereference Guard", "CWE-476 prevention", "Inject Objects.requireNonNull or Optional", 20, 0, 1.0));
-        store.put("PAT-VIRTUAL-THREADS", new VNextPattern("PAT-VIRTUAL-THREADS", VNextPatternCategory.PERFORMANCE, "Java 25 Structured Concurrency", "High I/O swarm dispatch", "Dispatch per-task virtual threads with structured scope", 18, 0, 1.0));
+        store.put("PAT-VIRTUAL-THREADS", new VNextPattern("PAT-VIRTUAL-THREADS", VNextPatternCategory.PERFORMANCE, "Java 27 Structured Concurrency", "High I/O swarm dispatch", "Dispatch per-task virtual threads with structured scope", 18, 0, 1.0));
         store.put("PAT-ZSTD-SSD-FIRST", new VNextPattern("PAT-ZSTD-SSD-FIRST", VNextPatternCategory.OPTIMIZATION, "ZSTD Memory Compaction", "L4/L5 memory exhaustion", "Compress cold context vectors with ZSTD", 10, 0, 1.0));
     }
 

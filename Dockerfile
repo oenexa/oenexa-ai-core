@@ -1,11 +1,11 @@
 # ==============================================================================
 # OENEXA AI Core - Multi-Stage Container Image
-# Targets Java 25 & Spring Boot 4.1.1 on Eclipse Temurin
+# Targets Java 27 & Spring Boot 4.1.1 on Eclipse Temurin
 # Repository: github.com/oenexa/oenexa-ai-core
 # ==============================================================================
 
-# Stage 1: Build the application with Gradle wrapper and Java 25 JDK
-FROM eclipse-temurin:25-jdk-noble AS builder
+# Stage 1: Build the application with Gradle wrapper and Java 27 JDK
+FROM eclipse-temurin:27-jdk-noble AS builder
 WORKDIR /workspace/app
 
 # Copy wrapper and configuration first for layer caching
@@ -23,7 +23,7 @@ COPY . ./
 RUN ./gradlew :api:bootJar -x test --no-daemon --parallel
 
 # Stage 2: Minimal, secure runtime image
-FROM eclipse-temurin:25-jre-noble AS runner
+FROM eclipse-temurin:27-jre-noble AS runner
 WORKDIR /app
 
 # Install curl for health probes
