@@ -14,7 +14,7 @@ import java.util.*;
 
 /**
  * Enterprise Native Autonomous OpenAI-Compatible Inference Engine for OENEXA.
- * Powered 100% by OENEXA's internal Neo-GPT Neural Engine built from scratch in pure Java 27.
+ * Powered 100% by OENEXA's internal Neo-GPT Neural Engine built from scratch in pure Java 25.
  * Zero external cloud dependencies, zero external AI APIs, zero telemetry, 100% air-gapped sovereign execution.
  */
 @Service
@@ -77,7 +77,7 @@ public class LocalInferenceWorker {
 
         String effectiveModel = routeModel(request.model(), prompt);
 
-        // Execute self-contained native neural generation completely in pure Java 27
+        // Execute self-contained native neural generation completely in pure Java 25
         var neuralResult = neuralEngine.generate(prompt, effectiveModel, request.reasoningEffort());
 
         String content = neuralResult.text() + "\n\n*(Synthesized autonomously by OENEXA Neo-GPT Native Neural Engine • 0 External AI Dependencies)*";

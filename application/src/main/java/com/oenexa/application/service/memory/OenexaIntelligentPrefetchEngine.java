@@ -24,7 +24,7 @@ import java.util.function.Consumer;
  *
  * Employs structural AST heuristic associations:
  * e.g., UserService.java -> UserRepository.java, UserController.java, JwtService.java.
- * Harnesses Java 27 Virtual Threads for zero-overhead background prefetching.
+ * Harnesses Java 25 Virtual Threads for zero-overhead background prefetching.
  */
 @Service
 public final class OenexaIntelligentPrefetchEngine {
@@ -87,7 +87,7 @@ public final class OenexaIntelligentPrefetchEngine {
             return;
         }
 
-        // Java 27 Virtual Thread asynchronous dispatch
+        // Java 25 Virtual Thread asynchronous dispatch
         Thread.ofVirtual().name("oenexa-prefetch-" + currentKey).start(() -> {
             for (String key : prediction.predictedKeys()) {
                 try {

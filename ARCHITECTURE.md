@@ -3,7 +3,7 @@
 > **System Identity:** `[AI-CORE] ⚡` OENEXA AI Core Backend Service  
 > **Paired Frontend UI:** `[AI-WEB] 💻` [`oenexa-ai-web`](../oenexa-ai-web) (`http://localhost:3000` via Docker / `http://localhost:5173` via Vite)  
 > **Repository:** `https://github.com/oenexa/oenexa-ai-core`  
-> **Runtime Baseline:** Java 27+ (Virtual Threads) | Spring Boot 4.1.1 | Spring AI 2.0.1 | PostgreSQL 15 | Redis 7 | Gradle 9.8.0  
+> **Runtime Baseline:** Java 25+ (Virtual Threads) | Spring Boot 4.1.1 | Spring AI 2.0.1 | PostgreSQL 15 | Redis 7 | Gradle 9.8.0  
 > **Architecture Pattern:** Clean Hexagonal Modular Monolith (`domain`, `application`, `infrastructure`, `api`)  
 > **Master Ecosystem Directory:** [`AI_AGENT_DEVELOPER_REPO_MAPPING.md`](../AI_AGENT_DEVELOPER_REPO_MAPPING.md)  
 
@@ -14,7 +14,7 @@
 OENEXA AI Core is the enterprise-grade AI Operating System and autonomous software engineering platform. It rivals systems such as Claude, ChatGPT, Gemini, Microsoft Copilot, and DeepSeek by combining deep Chain-of-Thought reasoning, a 10-Agent Autonomous DAG execution engine, a 7-Layer Memory Hierarchy with NVMe context caching, Model Context Protocol (MCP v1.0) interoperability, multimodal intelligence (Voice STT/TTS and Vision OCR/SVG), and banking-grade security.
 
 The platform strictly adheres to a **Clean Hexagonal Architecture**:
-1. **Core Business Logic (Inner Hexagon - `domain`):** Pure, framework-agnostic Java 27 domain objects, records, value objects, domain events, and boundary contracts.
+1. **Core Business Logic (Inner Hexagon - `domain`):** Pure, framework-agnostic Java 25 domain objects, records, value objects, domain events, and boundary contracts.
 2. **Application Orchestration Layer (`application`):** Autonomous agent ecosystem, memory hierarchy management, MCP protocol handlers, use-case workflows, and multimodel router orchestration.
 3. **Infrastructure Layer (Outer Hexagon - `infrastructure`):** PostgreSQL JPA entities (Flyway migrations), zero-copy NVMe SSD memory-mapped buffer adapters (`MappedByteBuffer`), Redis context cache, and distributed/in-process event publishers.
 4. **Primary Adapters (`api`):** Spring Boot 4.1.1 executable bootJar (`com.oenexa.api.OenexaApiApplication`) with Virtual Threads, REST controllers (`/api/v4/*`, `/api/v1/*`), and OpenAPI documentation.
@@ -34,7 +34,7 @@ C4Context
 
     Enterprise_Boundary(b_oenexa, "OENEXA AI Ecosystem Boundary") {
         System(oenexa_web, "OENEXA AI Web", "React 18 + Vite 5 SPA, Monaco Editor, 10-Agent DAG Inspector, Memory Telemetry (Port 3000/5173)")
-        System(oenexa_core, "OENEXA AI Core", "Spring Boot 4.1.1 + Java 27 Clean Hexagonal Architecture (Port 8080)")
+        System(oenexa_core, "OENEXA AI Core", "Spring Boot 4.1.1 + Java 25 Clean Hexagonal Architecture (Port 8080)")
     }
 
     System_Ext(gemini_api, "Google Gemini & Cloud LLMs", "Claude 3.5, Gemini 2.5 Pro, GPT-4o, DeepSeek V3 for reasoning and generation")
@@ -141,7 +141,7 @@ flowchart TB
         EngineerSvc["AiSoftwareEngineerService (AST Parsing & Code Generation)"]
     end
 
-    subgraph Ring1 ["Ring 1: Inner Domain Core (Pure Java 27)"]
+    subgraph Ring1 ["Ring 1: Inner Domain Core (Pure Java 25)"]
         direction TB
         AgentDomain["AutonomousAgentEcosystemDomain (Records, Roles, Invariants)"]
         MemoryDomain["EnterpriseMemoryHierarchyDomain (L1..L7 Layer Contracts)"]
@@ -169,7 +169,7 @@ The backend is organized into 4 strictly bounded Gradle modules:
 
 | Module                | Architectural Role        | Responsibilities & Capabilities                                                                                                                                                                                                                                                                                                                  | Test Gate                                               |
 |:----------------------|:--------------------------|:-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:--------------------------------------------------------|
-| **`:domain`**         | Inner Hexagon             | Pure Java 27 business models, immutable records, sealed interfaces, and domain events. Zero external framework dependencies. Contains 10-Agent persona contracts, 7-Layer memory hierarchy definitions, MCP v1.0 protocol schemas, multimodal voice/media contracts, and subscription quota rules.                                               | **100% Zero-Mock Verification (100% Lines & Branches)** |
+| **`:domain`**         | Inner Hexagon             | Pure Java 25 business models, immutable records, sealed interfaces, and domain events. Zero external framework dependencies. Contains 10-Agent persona contracts, 7-Layer memory hierarchy definitions, MCP v1.0 protocol schemas, multimodal voice/media contracts, and subscription quota rules.                                               | **100% Zero-Mock Verification (100% Lines & Branches)** |
 | **`:application`**    | Use-Cases & Orchestration | Orchestration services: `EnterpriseAgentEcosystemService` (10-agent DAG scheduler), `EnterpriseMemoryHierarchyService` (7 memory layers with NVMe SSD context cache), `ModelContextProtocolService` (MCP tool execution), `IntelligentConversationService`, `EnterpriseSubscriptionService`, `EnterpriseVoiceService`, `EnterpriseMediaService`. | **100% Zero-Mock Verification (100% Lines & Branches)** |
 | **`:infrastructure`** | Outer Adapters            | Spring Data JPA entities, Flyway database migrations (`V1` to `V6`), zero-copy `MappedByteBuffer` file cache for out-of-RAM context buffer, Redis adapters, and event publishers.                                                                                                                                                                | **100% Zero-Mock Verification (100% Lines & Branches)** |
 | **`:api`**            | Primary Inbound Adapter   | Spring Boot 4.1.1 executable application (`OenexaApiApplication`) with Virtual Threads. Exposes REST controllers for all V4 endpoints (`/api/v4/*`), V1 endpoints (`/api/v1/*`), global RFC 7807 problem details error handling, and Actuator probes.                                                                                            | **100% Zero-Mock Verification (100% Lines & Branches)** |
@@ -258,7 +258,7 @@ graph TD
 6. **Step 6 (Knowledge Retrieval):** Query durable PostgreSQL tables, Qdrant vector store, or MinIO S3 bucket. Assemble context and cascade promotion: `Knowledge -> SSD -> Compressed -> RAM -> L2 -> L1`.
 
 ### Key Subsystems
-- **Intelligent Prefetch Engine:** Predicts subsequent files based on code structural associations (e.g., `UserService.java` preloads `UserRepository.java`, `UserController.java`, `JwtService.java`) asynchronously via Java 27 Virtual Threads (`Thread.ofVirtual()`).
+- **Intelligent Prefetch Engine:** Predicts subsequent files based on code structural associations (e.g., `UserService.java` preloads `UserRepository.java`, `UserController.java`, `JwtService.java`) asynchronously via Java 25 Virtual Threads (`Thread.ofVirtual()`).
 - **Context Compression Engine (100 MB -> 10-30 MB):** 5-phase pipeline combining line deduplication, semantic token pruning, embedding clustering, FP32-to-INT8 quantization, and dictionary compression.
 - **Multi-Factor Smart Eviction:** Evaluates $\text{PriorityScore} = 0.30 \times \text{Freq} + 0.35 \times \text{Recency} + 0.20 \times \text{Imp} + 0.15 \times \text{Usage}$. Automatically demotes cold records from RAM $\to$ Compressed $\to$ SSD $\to$ Knowledge Storage.
 - **Repository Memory Graph:** Segments 10M+ file repositories into modular topological nodes (Module A, B, C...) to load only relevant modules into RAM.

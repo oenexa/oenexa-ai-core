@@ -18,7 +18,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Enterprise Multi-Agent Thread Orchestration Engine for OENEXA AI.
- * Employs Java 27 Virtual Threads & Structured Concurrency to dispatch multiple
+ * Employs Java 25 Virtual Threads & Structured Concurrency to dispatch multiple
  * autonomous agents across multi-stage execution pipelines with zero thread starvation.
  *
  * Supports two execution strategies:
@@ -236,7 +236,7 @@ public final class OenexaAgentThreadOrchestratorService {
     private String getAgentTaskDescription(EnterpriseAgentType agent, String goal) {
         return switch (agent) {
             case ARCHITECT -> "Model C4 container blueprint and verify clean hexagonal boundaries for: " + goal;
-            case SOFTWARE_ENGINEER -> "Synthesize immutable Java 27 domain records and zero-mock services for: " + goal;
+            case SOFTWARE_ENGINEER -> "Synthesize immutable Java 25 domain records and zero-mock services for: " + goal;
             case SECURITY -> "Execute parallel SAST scanning, secret leak detection, and OWASP Top 10 audit";
             case QA -> "Synthesize 100% zero-mock regression tests and verify edge-case branch mutations";
             case DEVOPS -> "Generate multi-stage distroless Dockerfile and non-root Kubernetes manifests";
@@ -259,7 +259,7 @@ public final class OenexaAgentThreadOrchestratorService {
 
         return switch (agent) {
             case ARCHITECT -> "Architectural Blueprint for " + goal + ": Hexagonal Ports & Adapters established with 0 cyclic dependencies.";
-            case SOFTWARE_ENGINEER -> "Code Synthesized for " + goal + ": Pure Java 27 records with strict Objects.requireNonNull invariants.";
+            case SOFTWARE_ENGINEER -> "Code Synthesized for " + goal + ": Pure Java 25 records with strict Objects.requireNonNull invariants.";
             case SECURITY -> "Security Audit for " + goal + ": 0 High/Critical SAST vulnerabilities found. 0 API credentials leaked.";
             case QA -> "Verification for " + goal + ": 100% Zero-Mock tests executed. 0 flaky assertions, all branch paths covered.";
             case DEVOPS -> "Infrastructure for " + goal + ": Docker distroless image configured (<45MB) with Kubernetes Helm chart.";

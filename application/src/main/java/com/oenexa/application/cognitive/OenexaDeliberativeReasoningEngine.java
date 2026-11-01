@@ -39,7 +39,7 @@ public class OenexaDeliberativeReasoningEngine {
 
         // Stage 2: Multi-Hypothesis Exploration
         List<String> hypotheses = List.of(
-                "Hypothesis A: Hexagonal Modular Monolith with sealed Java 27 domain records and zero framework leakage.",
+                "Hypothesis A: Hexagonal Modular Monolith with sealed Java 25 domain records and zero framework leakage.",
                 "Hypothesis B: Reactive Event-Driven pipeline with transactional outbox and R2DBC persistence.",
                 "Hypothesis C: Minimal stateless domain service with defensive invariants and strictly zero-mock tests."
         );
@@ -67,7 +67,7 @@ public class OenexaDeliberativeReasoningEngine {
                 "**Goal:** " + userPrompt + "\n\n" +
                 "#### Architectural Decision Record (ADR):\n" +
                 "- **Pattern:** Hexagonal Architecture with Sealed Invariant Records.\n" +
-                "- **Concurrency:** Java 27 Virtual Threads with structured concurrency scopes.\n" +
+                "- **Concurrency:** Java 25 Virtual Threads with structured concurrency scopes.\n" +
                 "- **Verification:** 100% JaCoCo coverage verified strictly with zero mocks (real repositories and in-memory test doubles).\n" +
                 "- **Data Sovereignty:** 100% Local-First air-gapped execution with zero telemetry leakage.\n\n" +
                 "```java\n" +

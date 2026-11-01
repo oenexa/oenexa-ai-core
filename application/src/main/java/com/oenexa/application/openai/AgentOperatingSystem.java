@@ -127,7 +127,7 @@ public class AgentOperatingSystem {
     private String resolveActionForPersona(AgentPersona persona) {
         return switch (persona) {
             case ARCHITECT_AGENT -> "Define Hexagonal Architecture domain contracts & C4 component boundaries";
-            case BACKEND_AGENT -> "Implement reactive Java 27 domain records and non-blocking service endpoints";
+            case BACKEND_AGENT -> "Implement reactive Java 25 domain records and non-blocking service endpoints";
             case FRONTEND_AGENT -> "Synthesize React 18 UI components, Vite layout, and Monaco editor bindings";
             case SECURITY_AGENT -> "Perform SAST static code audit and secret detection (OWASP Top 10 compliance)";
             case QA_AGENT -> "Synthesize strictly zero-mock JUnit 5 & AssertJ test suites (100% JaCoCo coverage)";
@@ -142,7 +142,7 @@ public class AgentOperatingSystem {
     private String resolveOutputForPersona(AgentPersona persona, String goal) {
         return switch (persona) {
             case ARCHITECT_AGENT -> "Hexagonal domain boundaries defined with sealed records; 0 framework leaks.";
-            case BACKEND_AGENT -> "Synthesized Java 27 services with defensive invariants.";
+            case BACKEND_AGENT -> "Synthesized Java 25 services with defensive invariants.";
             case FRONTEND_AGENT -> "Generated React 18 components with Material UI design standards.";
             case SECURITY_AGENT -> "SAST Audit Clean: 0 vulnerabilities found, 0 credential leaks identified.";
             case QA_AGENT -> "Zero-Mock test suite compiled; 100% line and branch coverage guaranteed.";

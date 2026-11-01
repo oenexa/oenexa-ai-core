@@ -27,7 +27,7 @@ public class HypothesisGenerator {
 
         hypotheses.add(new Hypothesis(
                 "HYP-VTHREAD-REACTIVE",
-                "Orchestrate execution pipeline using Java 27 Virtual Threads and structured concurrency scopes",
+                "Orchestrate execution pipeline using Java 25 Virtual Threads and structured concurrency scopes",
                 0.94,
                 List.of("Zero thread-pool starvation", "Sub-millisecond unmount during blocking I/O", "4.5x-5.5x speedup"),
                 List.of("Must avoid pinning carrier threads on synchronized blocks")

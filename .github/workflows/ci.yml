@@ -15,10 +15,10 @@ jobs:
       - name: Checkout Code Repository (github.com/oenexa/oenexa-ai-core)
         uses: actions/checkout@v4
 
-      - name: Set up Java 27 (Eclipse Temurin)
+      - name: Set up Java 25 (Eclipse Temurin)
         uses: actions/setup-java@v4
         with:
-          java-version: '27'
+          java-version: '25'
           distribution: 'temurin'
           cache: 'gradle'
 

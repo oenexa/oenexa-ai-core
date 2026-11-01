@@ -218,7 +218,7 @@ public class EnterpriseMultiModelOrchestrator {
                 ### 🏛️ Phase 1: Architectural Blueprint (Engine: claude-3-5-sonnet)
                 - Hexagonal Ports & Adapters Architecture
                 - Domain Invariant: Strictly Zero-Mock verification policy
-                - Sealed Java 27 Records with defensive non-null boundaries
+                - Sealed Java 25 Records with defensive non-null boundaries
                 """;
 
         String coderImplementation = """

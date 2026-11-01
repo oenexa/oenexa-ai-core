@@ -241,12 +241,12 @@ class TargetCapabilitiesDomainTest {
     void testCopilotCompletionRecords() {
         // CopilotCompletionItem
         TargetCapabilitiesDomain.CopilotCompletionItem item = new TargetCapabilitiesDomain.CopilotCompletionItem(
-                "public record UserProfile(UUID id, String email) {}", "UserProfile record", "RECORD", "Java 27 Record definition", 0.99
+                "public record UserProfile(UUID id, String email) {}", "UserProfile record", "RECORD", "Java 25 Record definition", 0.99
         );
         assertEquals("public record UserProfile(UUID id, String email) {}", item.text());
         assertEquals("UserProfile record", item.label());
         assertEquals("RECORD", item.kind());
-        assertEquals("Java 27 Record definition", item.documentation());
+        assertEquals("Java 25 Record definition", item.documentation());
         assertEquals(0.99, item.confidence());
 
         // CopilotCompletionRequest

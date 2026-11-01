@@ -24,7 +24,7 @@ public class RefactoringEngine {
         StringBuilder sb = new StringBuilder();
 
         if (source.contains("class ") && source.contains("private ") && source.contains("get") && source.contains("set")) {
-            improvements.add("Refactored mutable JavaBean into an immutable Java 27 record.");
+            improvements.add("Refactored mutable JavaBean into an immutable Java 25 record.");
             improvements.add("Enforced non-null defensive boundaries via compact constructor.");
             sb.append("""
                     package com.oenexa.workspace;

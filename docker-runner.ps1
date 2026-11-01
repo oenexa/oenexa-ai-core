@@ -1,7 +1,7 @@
 # ==============================================================================
 # OENEXA AI Engineer - Unified Docker Runner (PowerShell for Windows)
 # ==============================================================================
-# Orchestrates Docker containers for both backend (Spring Boot 4 / Java 27)
+# Orchestrates Docker containers for both backend (Spring Boot 4 / Java 25)
 # and frontend (React 18/19 Vite / Nginx), plus PostgreSQL 15 and Redis 7.
 # ==============================================================================
 

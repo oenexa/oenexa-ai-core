@@ -13,7 +13,7 @@ class NeoGptTokenizerTest {
     private final NeoGptTokenizer tokenizer = new NeoGptTokenizer();
 
     @Test
-    @DisplayName("Should encode and decode Java 27 code strings with 100% fidelity")
+    @DisplayName("Should encode and decode Java 25 code strings with 100% fidelity")
     void testEncodeDecodeRoundTrip() {
         String code = "public record Solution(String id, boolean active) {}";
         List<Integer> tokens = tokenizer.encode(code);

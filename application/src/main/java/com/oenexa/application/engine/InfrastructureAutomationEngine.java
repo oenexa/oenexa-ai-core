@@ -21,12 +21,12 @@ public class InfrastructureAutomationEngine {
 
         String dockerfile = String.format("""
                 # Multi-stage secure distroless build for %s
-                FROM eclipse-temurin:27-jdk-alpine AS builder
+                FROM eclipse-temurin:25-jdk-alpine AS builder
                 WORKDIR /workspace
                 COPY . .
                 RUN ./gradlew bootJar --no-daemon -x test
                 
-                FROM gcr.io/distroless/java27-debian12:nonroot
+                FROM gcr.io/distroless/java25-debian12:nonroot
                 WORKDIR /app
                 COPY --from=builder /workspace/build/libs/*.jar app.jar
                 USER nonroot:nonroot
@@ -103,10 +103,10 @@ public class InfrastructureAutomationEngine {
                     runs-on: ubuntu-latest
                     steps:
                     - uses: actions/checkout@v4
-                    - name: Set up JDK 27
+                    - name: Set up JDK 25
                       uses: actions/setup-java@v4
                       with:
-                        java-version: '27'
+                        java-version: '25'
                         distribution: 'temurin'
                     - name: Enforce Zero-Mock Test Suite
                       run: ./gradlew test --no-daemon

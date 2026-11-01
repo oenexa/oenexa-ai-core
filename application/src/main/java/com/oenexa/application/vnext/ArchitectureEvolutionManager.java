@@ -20,7 +20,7 @@ public class ArchitectureEvolutionManager {
 
         return switch (normalized) {
             case "DOMAIN" -> new ArchitectureEvolutionPlan(
-                    "DOMAIN", "Mutable Entity Pojos", "Pure Sealed Java 27 Domain Records with Invariants",
+                    "DOMAIN", "Mutable Entity Pojos", "Pure Sealed Java 25 Domain Records with Invariants",
                     true, List.of("Convert setters to defensive constructor records", "Enforce Objects.requireNonNull", "Zero framework imports")
             );
             case "APPLICATION" -> new ArchitectureEvolutionPlan(

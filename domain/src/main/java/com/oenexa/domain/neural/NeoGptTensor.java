@@ -6,7 +6,7 @@ import java.util.Objects;
 /**
  * Enterprise Native Neural Tensor Mathematics Engine for OENEXA Neo-GPT.
  * Implements high-performance matrix multiplications, RMSNorm, Rotary Positional Embeddings (RoPE),
- * Softmax, and SwiGLU activation functions in pure Java 27.
+ * Softmax, and SwiGLU activation functions in pure Java 25.
  */
 public final class NeoGptTensor {
 

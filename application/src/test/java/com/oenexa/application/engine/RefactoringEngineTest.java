@@ -129,7 +129,7 @@ class RefactoringEngineTest {
 
         assertNotNull(result);
         assertTrue(result.refactoredCode().contains("public record RefactoredEntity"));
-        assertTrue(result.improvementsApplied().stream().anyMatch(s -> s.contains("immutable Java 27 record")));
+        assertTrue(result.improvementsApplied().stream().anyMatch(s -> s.contains("immutable Java 25 record")));
         assertTrue(result.cyclomaticComplexityAfter() < result.cyclomaticComplexityBefore());
     }
 

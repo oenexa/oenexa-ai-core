@@ -23,11 +23,11 @@ The backend exposes these capabilities through REST APIs. Integrations and optio
 | `infrastructure` | Persistence and external-service adapters                                    |
 | `api`            | Spring Boot application, REST controllers, configuration, and error handling |
 
-The API is implemented with Java 27 and Spring Boot 4.1.1. The project uses Gradle Kotlin DSL, Spring MVC, Spring Data JPA, and Flyway. Local development uses H2; the Docker profile is configured for PostgreSQL and can enable Redis.
+The API is implemented with Java 25 and Spring Boot 4.1.1. The project uses Gradle Kotlin DSL, Spring MVC, Spring Data JPA, and Flyway. Local development uses H2; the Docker profile is configured for PostgreSQL and can enable Redis.
 
 ## Requirements
 
-- JDK 27 (the Gradle build uses a Java 27 toolchain)
+- JDK 25 (the Gradle build uses a Java 25 toolchain)
 - Docker and Docker Compose for the containerized stack
 - For the full Docker stack, a sibling checkout of [`oenexa-ai-web`](../oenexa-ai-web) is required by the Compose build context
 

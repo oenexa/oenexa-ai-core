@@ -190,7 +190,7 @@ class CleanArchitecture11LayersIntegrationTest {
     @Test
     @DisplayName("Layer 1-11 Flow: Chat Domain message processing, security filter, and summary mapping")
     void shouldExecuteChatDomainThroughAll11Layers() {
-        SendMessageRequestDto sendDto = new SendMessageRequestDto("Architect hexagonal clean architecture for Java 27 microservices", "conv-layer-test", "gemini-2.5-pro", true);
+        SendMessageRequestDto sendDto = new SendMessageRequestDto("Architect hexagonal clean architecture for Java 25 microservices", "conv-layer-test", "gemini-2.5-pro", true);
         ResponseEntity<ApiResponse<ChatTurnResponseDto>> chatResp = chatController.sendMessageV2(sendDto);
 
         assertEquals(HttpStatus.OK, chatResp.getStatusCode());

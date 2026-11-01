@@ -46,7 +46,7 @@ public class CollaborativeAgentService {
                     "### 💻 Code Agent Output\n" +
                     "- Generated REST Controller with RFC 7807 problem details.\n" +
                     "- Created Spring Data repository interface and domain service.\n" +
-                    "- Applied Java 27 records with non-null defensive invariants.";
+                    "- Applied Java 25 records with non-null defensive invariants.";
             case BUG_FIX_AGENT ->
                     "### 🐞 Bug Fix Agent Output\n" +
                     "- Identified potential NullPointerException in parameter deserialization.\n" +
@@ -64,7 +64,7 @@ public class CollaborativeAgentService {
                     "- Verified JWT token expiry and permission scopes.";
             case DEVOPS_AGENT ->
                     "### 🐳 DevOps Agent Output\n" +
-                    "- Multi-stage Dockerfile configured with eclipse-temurin:27.\n" +
+                    "- Multi-stage Dockerfile configured with eclipse-temurin:25.\n" +
                     "- Kubernetes deployment manifest and readiness probes generated.\n" +
                     "- Terraform AWS EKS module updated.";
             case DOCUMENTATION_AGENT ->

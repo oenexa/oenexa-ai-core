@@ -3,7 +3,7 @@
 # Assumes api/build/libs/api-0.1.0-SNAPSHOT.jar was built on host via ./run.sh build
 # Repository: github.com/oenexa/oenexa-ai-core
 # ==============================================================================
-FROM eclipse-temurin:27-jre-noble AS runner
+FROM eclipse-temurin:25-jre-noble AS runner
 WORKDIR /app
 
 RUN apt-get update && apt-get install -y --no-install-recommends curl && rm -rf /var/lib/apt/lists/*

@@ -31,7 +31,7 @@ public class ModelContextProtocolService {
         // 1. Core OENEXA Engineering Tools
         registerTool(new McpToolDefinition(
                 "oenexa_ast_refactor",
-                "Performs AST code refactoring, migrates deprecated APIs, and enforces Java 27 Virtual Threads.",
+                "Performs AST code refactoring, migrates deprecated APIs, and enforces Java 25 Virtual Threads.",
                 Map.of("targetFile", "string", "instruction", "string")
         ));
         registerTool(new McpToolDefinition(
@@ -108,7 +108,7 @@ public class ModelContextProtocolService {
         return switch (toolName) {
             case "oenexa_ast_refactor" -> {
                 String file = String.valueOf(args.getOrDefault("targetFile", "Source.java"));
-                String instr = String.valueOf(args.getOrDefault("instruction", "Refactor to Java 27"));
+                String instr = String.valueOf(args.getOrDefault("instruction", "Refactor to Java 25"));
                 yield McpToolCallResult.text(String.format("Refactored '%s' following instruction '%s': All synchronized blocks replaced with Virtual Thread ReentrantLocks.", file, instr));
             }
             case "oenexa_zero_mock_test_generator" -> {

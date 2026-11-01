@@ -13,7 +13,7 @@ import java.util.*;
 
 /**
  * Enterprise Autonomous Function Calling & Tool Registry Engine.
- * Dynamically resolves and executes tool calls using Java 27 Virtual Threads,
+ * Dynamically resolves and executes tool calls using Java 25 Virtual Threads,
  * strictly complying with the zero-mock mandate.
  */
 @Service
@@ -157,7 +157,7 @@ public class OpenAiToolExecutionEngine {
             }
             case "devops_sandbox_runner" -> {
                 String service = extractStringArg(args, "serviceName", "oenexa-backend");
-                String dockerfile = "FROM eclipse-temurin:27-jre\nWORKDIR /app\nCOPY build/libs/" + service + ".jar app.jar\nENTRYPOINT [\"java\", \"-jar\", \"app.jar\"]";
+                String dockerfile = "FROM eclipse-temurin:25-jre\nWORKDIR /app\nCOPY build/libs/" + service + ".jar app.jar\nENTRYPOINT [\"java\", \"-jar\", \"app.jar\"]";
                 CodeArtifact art = new CodeArtifact(
                         UUID.randomUUID().toString(),
                         "Dockerfile",
@@ -169,7 +169,7 @@ public class OpenAiToolExecutionEngine {
                 yield new ToolExecutionResult(
                         callId,
                         name,
-                        "Multi-stage Dockerfile synthesized with Eclipse Temurin JDK 27 and non-root security context.",
+                        "Multi-stage Dockerfile synthesized with Eclipse Temurin JDK 25 and non-root security context.",
                         true,
                         Optional.of(art)
                 );

@@ -3,7 +3,7 @@
 > **System:** `[AI-CORE] ⚡` OENEXA AI Operating System Backend  
 > **Repository:** `C:\workspace\oenexarepo\oenexa-ai-core` | `github.com/oenexa/oenexa-ai-core`  
 > **Paired Frontend UI:** `[AI-WEB] 💻` [`oenexa-ai-web`](../oenexa-ai-web) (`http://localhost:5173`)  
-> **Runtime Stack:** Java 27+ | Spring Boot 4.1.1 | Spring MVC (Virtual Threads) | PostgreSQL 17 + pgvector | Redis 7 | JUnit 5 Platform (Zero Mocks)  
+> **Runtime Stack:** Java 25+ | Spring Boot 4.1.1 | Spring MVC (Virtual Threads) | PostgreSQL 17 + pgvector | Redis 7 | JUnit 5 Platform (Zero Mocks)  
 > **Architecture Pattern:** Clean Hexagonal Modular Monolith (`domain`, `application`, `infrastructure`, `api`)
 
 ---
@@ -21,7 +21,7 @@ sequenceDiagram
     participant UI as [AI-WEB] OENEXA Swarm Cockpit
     participant API as [AI-CORE] Enterprise REST API
     participant Orch as Virtual Thread Orchestrator
-    participant VThreads as Java 27 Virtual Threads (Per-Agent)
+    participant VThreads as Java 25 Virtual Threads (Per-Agent)
     participant Memory as SSD-First Memory Engine
 
     User->>UI: Enter Directive / Select Preset Goal
@@ -31,7 +31,7 @@ sequenceDiagram
     Orch->>VThreads: Fork Virtual Threads (1-2 KB Heap Stack)
     par Concurrent Agent Execution
         VThreads->>VThreads: Architect Agent (C4 Modeling)
-        VThreads->>VThreads: SWE Agent (Java 27 Records)
+        VThreads->>VThreads: SWE Agent (Java 25 Records)
         VThreads->>VThreads: Security Agent (OWASP SAST Scan)
         VThreads->>VThreads: QA Agent (Zero-Mock Tests)
         VThreads->>VThreads: DevOps Agent (Distroless Docker/K8s)
@@ -44,13 +44,13 @@ sequenceDiagram
 
 ---
 
-## 2. Multi-Agent Concurrency Engine (Java 27 Virtual Threads)
+## 2. Multi-Agent Concurrency Engine (Java 25 Virtual Threads)
 
 In multi-agent systems, agents spend **$95\%+$ of runtime waiting on I/O** (LLM API calls, vector searches, network fetches). Standard OS thread pools cause thread starvation and high memory overhead.
 
 ### Technical Proof: Virtual Threads vs. OS Threads
 
-* **Stack Allocation:** Traditional OS threads reserve $\sim 1\text{ MB}$ upfront. Java 27 Virtual Threads allocate $\sim 1 - 2\text{ KB}$ dynamically on the JVM heap ($500\times - 1,000\times$ less RAM).
+* **Stack Allocation:** Traditional OS threads reserve $\sim 1\text{ MB}$ upfront. Java 25 Virtual Threads allocate $\sim 1 - 2\text{ KB}$ dynamically on the JVM heap ($500\times - 1,000\times$ less RAM).
 * **Context Switching:** JVM user-space continuation yields in $10 - 50\text{ ns}$ (vs. $1 - 2\ \mu\text{s}$ OS kernel trap).
 * **Zero Carrier Pinning:** When an agent waits on I/O, its virtual thread unmounts from the underlying OS carrier thread immediately, preventing starvation.
 
@@ -88,7 +88,7 @@ Behaves like **500 GB – 1 TB effective AI working memory** on a 64 GB RAM mach
 ```
 oenexa-ai-core/
 ├── domain/            # Pure business entities & value records (Zero framework lock-in)
-├── application/       # Orchestration services, Java 27 virtual thread dispatchers
+├── application/       # Orchestration services, Java 25 virtual thread dispatchers
 ├── infrastructure/    # PostgreSQL 17 (JPA/Flyway), Redis 7, pgvector adapters
 └── api/               # Spring MVC REST endpoints & Model Context Protocol (MCP v1.0)
 ```

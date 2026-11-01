@@ -4,7 +4,7 @@ plugins {
     java
 }
 
-val javaVersion = 27
+val javaVersion = 25
 
 allprojects {
     group = "ai.oenexa"

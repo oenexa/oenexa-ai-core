@@ -189,7 +189,7 @@ public class OenexaAutonomousLifecycleOrchestrator {
                 latencyMs,
                 0.99,
                 repeatedErrorsPrevented.get(),
-                "Throughput optimized via Java 27 Virtual Threads (Total processed: " + count + ")"
+                "Throughput optimized via Java 25 Virtual Threads (Total processed: " + count + ")"
         );
     }
 
