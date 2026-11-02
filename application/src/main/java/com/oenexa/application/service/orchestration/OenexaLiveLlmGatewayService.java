@@ -206,7 +206,7 @@ public class OenexaLiveLlmGatewayService {
                     ? (host.endsWith("/") ? host + "api/generate" : host + "/api/generate")
                     : "http://localhost:11434/api/generate";
 
-            String model = (preferredModel != null && !preferredModel.isBlank()) ? preferredModel : "deepseek-r1:8b";
+            String model = resolveOllamaModel(preferredModel);
             String jsonPayload = String.format("""
                     {"model":"%s","prompt":"%s","stream":false}
                     """, model, escapeJson(prompt));
@@ -214,7 +214,7 @@ public class OenexaLiveLlmGatewayService {
             HttpRequest req = HttpRequest.newBuilder()
                     .uri(URI.create(ep))
                     .header("content-type", "application/json")
-                    .timeout(Duration.ofSeconds(15))
+                    .timeout(Duration.ofSeconds(120))
                     .POST(HttpRequest.BodyPublishers.ofString(jsonPayload))
                     .build();
 
@@ -238,6 +238,19 @@ public class OenexaLiveLlmGatewayService {
         } catch (Exception ignored) {
         }
         return null;
+    }
+
+
+    private String resolveOllamaModel(String preferredModel) {
+        if (preferredModel == null || preferredModel.isBlank() || "auto".equalsIgnoreCase(preferredModel)) {
+            return "qwen2.5-coder:7b";
+        }
+        String m = preferredModel.toLowerCase();
+        if (m.contains("deepseek")) return "deepseek-r1:8b";
+        if (m.contains("llama")) return "llama3.2:3b";
+        if (m.contains("qwen") || m.contains("coder") || m.contains("code")) return "qwen2.5-coder:7b";
+        if (m.contains("oenexa")) return "qwen2.5-coder:7b";
+        return preferredModel;
     }
 
     private LiveLlmResponse generateDynamicContextualFallback(String prompt, String preferredModel) {
@@ -287,7 +300,7 @@ public class OenexaLiveLlmGatewayService {
 
     private String extractJsonField(String json, String field) {
         if (json == null) return null;
-        Pattern p = Pattern.compile("\"" + field + "\"\\s*:\\s*\"((?:[^\"\\\\]|\\\\.)*)\"");
+        Pattern p = Pattern.compile("\"" + field + "\"\\s*:\\s*\"((?:[^\"\\\\]|\\\\.)*)\"", Pattern.DOTALL);
         Matcher m = p.matcher(json);
         if (m.find()) {
             return m.group(1);
