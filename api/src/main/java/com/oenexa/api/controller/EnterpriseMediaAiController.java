@@ -22,7 +22,7 @@ import java.util.Objects;
  */
 @RestController
 @RequestMapping("/api/v1/media")
-@CrossOrigin(origins = "*")
+@CrossOrigin(originPatterns = "*")
 public class EnterpriseMediaAiController {
 
     private final EnterpriseMediaAiService mediaService;

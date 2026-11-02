@@ -14,7 +14,7 @@ import java.util.Objects;
  */
 @RestController
 @RequestMapping("/api/v1/engineer")
-@CrossOrigin(origins = "*")
+@CrossOrigin(originPatterns = "*")
 public class AiEngineerController {
 
     private final AiSoftwareEngineerService engineerService;

@@ -22,7 +22,7 @@ import java.util.Objects;
  */
 @RestController
 @RequestMapping("/api/v4/mcp")
-@CrossOrigin(origins = "*")
+@CrossOrigin(originPatterns = "*")
 public class ModelContextProtocolController {
 
     private final ModelContextProtocolService mcpService;

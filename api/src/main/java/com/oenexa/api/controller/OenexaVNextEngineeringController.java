@@ -16,7 +16,7 @@ import java.util.*;
  */
 @RestController
 @RequestMapping("/api/v4/vnext")
-@CrossOrigin(origins = "*")
+@CrossOrigin(originPatterns = "*")
 public class OenexaVNextEngineeringController {
 
     public record ExecutionRequest(String input, Map<String, String> context) {}

@@ -33,7 +33,7 @@ import java.util.Objects;
  */
 @RestController
 @RequestMapping("/api/v1")
-@CrossOrigin(origins = "*")
+@CrossOrigin(originPatterns = "*")
 public class CodeEngineeringController {
 
     private final CodeEngineeringService codeEngineeringService;

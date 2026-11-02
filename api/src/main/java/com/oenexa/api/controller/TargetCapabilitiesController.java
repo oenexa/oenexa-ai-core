@@ -20,7 +20,7 @@ import java.util.Objects;
  */
 @RestController
 @RequestMapping("/api/v1/capabilities")
-@CrossOrigin(origins = "*")
+@CrossOrigin(originPatterns = "*")
 public class TargetCapabilitiesController {
 
     public record ClaudeReasoningRequest(String objective, String codeContext) {}

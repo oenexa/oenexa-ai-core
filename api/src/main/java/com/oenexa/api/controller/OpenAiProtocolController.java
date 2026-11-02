@@ -20,7 +20,7 @@ import java.util.concurrent.Executors;
  */
 @RestController
 @RequestMapping({"/v1", "/api/v1/cognitive", "/api/v1/oenexa/cognitive"})
-@CrossOrigin(origins = "*")
+@CrossOrigin(originPatterns = "*")
 public class OpenAiProtocolController {
 
     private final LocalInferenceWorker localInferenceWorker;

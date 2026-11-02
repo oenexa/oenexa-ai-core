@@ -24,7 +24,7 @@ import java.util.Objects;
  */
 @RestController
 @RequestMapping("/api/v1")
-@CrossOrigin(origins = "*")
+@CrossOrigin(originPatterns = "*")
 public class OenexaAutonomousAgentController {
 
     public record OenexaManualHealRequest(String issueDetected, String rootCause) {}

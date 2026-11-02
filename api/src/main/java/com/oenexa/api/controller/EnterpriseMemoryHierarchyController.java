@@ -28,7 +28,7 @@ import java.util.Objects;
  */
 @RestController
 @RequestMapping("/api/v4/memory")
-@CrossOrigin(origins = "*")
+@CrossOrigin(originPatterns = "*")
 public class EnterpriseMemoryHierarchyController {
 
     public record StoreMemoryRequest(

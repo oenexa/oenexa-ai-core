@@ -21,7 +21,7 @@ import java.util.Objects;
  */
 @RestController
 @RequestMapping("/api/v1/billing")
-@CrossOrigin(origins = "*")
+@CrossOrigin(originPatterns = "*")
 public class EnterpriseBillingController {
 
     private final EnterpriseBillingService billingService;

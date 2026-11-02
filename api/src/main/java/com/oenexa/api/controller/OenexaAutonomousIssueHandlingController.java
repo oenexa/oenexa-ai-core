@@ -22,7 +22,7 @@ import java.util.Objects;
  */
 @RestController
 @RequestMapping("/api/v4/autonomous")
-@CrossOrigin(origins = "*")
+@CrossOrigin(originPatterns = "*")
 public class OenexaAutonomousIssueHandlingController {
 
     public record LifecycleExecutionRequest(String input, Double confidenceThreshold) {}

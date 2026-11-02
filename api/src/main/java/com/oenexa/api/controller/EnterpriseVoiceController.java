@@ -21,7 +21,7 @@ import java.util.Objects;
  */
 @RestController
 @RequestMapping("/api/v1/voice")
-@CrossOrigin(origins = "*")
+@CrossOrigin(originPatterns = "*")
 public class EnterpriseVoiceController {
 
     private final EnterpriseVoiceService voiceService;

@@ -15,7 +15,7 @@ import java.util.*;
  */
 @RestController
 @RequestMapping({"/api/v1/agent-os", "/api/v1/oenexa/agent"})
-@CrossOrigin(origins = "*")
+@CrossOrigin(originPatterns = "*")
 public class OenexaAgentOsController {
 
     private final OenexaAgentOperatingSystem agentOperatingSystem;

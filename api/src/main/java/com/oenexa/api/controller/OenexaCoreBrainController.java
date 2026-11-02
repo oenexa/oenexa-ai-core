@@ -25,7 +25,7 @@ import java.util.Objects;
  */
 @RestController
 @RequestMapping("/api/v1/core")
-@CrossOrigin(origins = "*")
+@CrossOrigin(originPatterns = "*")
 public class OenexaCoreBrainController {
 
     private final OenexaCoreBrain coreBrain;

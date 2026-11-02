@@ -18,7 +18,7 @@ import java.util.Objects;
  */
 @RestController
 @RequestMapping({"/api/v1/ecosystem", "/api/v4/agents"})
-@CrossOrigin(origins = "*")
+@CrossOrigin(originPatterns = "*")
 public class EnterpriseAgentEcosystemController {
 
     public record PlanGoalRequest(String goalTitle, String objective, List<EnterpriseAgentType> requestedAgents) {}

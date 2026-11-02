@@ -17,7 +17,7 @@ import java.util.UUID;
  */
 @RestController
 @RequestMapping("/api/v1/oenexa")
-@CrossOrigin(origins = "*", allowedHeaders = "*")
+@CrossOrigin(originPatterns = "*", allowedHeaders = "*")
 public class OenexaIntelligenceGatewayController {
 
     private final IntelligenceEngine intelligenceEngine;
