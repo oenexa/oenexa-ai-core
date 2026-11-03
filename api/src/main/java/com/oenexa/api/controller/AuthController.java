@@ -120,13 +120,15 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
-        if (request.usernameOrEmail() == null || request.password() == null) {
+        String identifier = request != null ? request.resolveIdentifier() : "";
+        if (identifier.isBlank() || request.password() == null || request.password().isBlank()) {
             return ResponseEntity.badRequest().body(Map.of("error", "Username/email and password must not be empty"));
         }
 
+        LoginRequest normalized = new LoginRequest(identifier, request.password(), request.device());
         try {
-            authValidator.validateLogin(request);
-            TokenPair tokens = enterpriseAuthService.login(request);
+            authValidator.validateLogin(normalized);
+            TokenPair tokens = enterpriseAuthService.login(normalized);
             return ResponseEntity.ok(tokens);
         } catch (OenexaValidationException e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
@@ -141,12 +143,30 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
-        if (request.username() == null || request.email() == null || request.password() == null) {
+        if (request == null) {
+            return ResponseEntity.badRequest().body(Map.of("error", "Username, email, and password are required"));
+        }
+        String username = request.username();
+        if ((username == null || username.isBlank()) && request.email() != null && request.email().contains("@")) {
+            String derived = request.email().substring(0, request.email().indexOf('@')).trim();
+            if (derived.length() >= 3) {
+                username = derived;
+            }
+        }
+        String fullName = request.fullName();
+        if ((fullName == null || fullName.isBlank()) && (request.firstName() != null || request.lastName() != null)) {
+            String f = request.firstName() != null ? request.firstName().trim() : "";
+            String l = request.lastName() != null ? request.lastName().trim() : "";
+            fullName = (f + " " + l).trim();
+        }
+
+        if (username == null || username.isBlank() || request.email() == null || request.email().isBlank() || request.password() == null || request.password().isBlank()) {
             return ResponseEntity.badRequest().body(Map.of("error", "Username, email, and password are required"));
         }
 
         try {
-            TokenPair tokens = enterpriseAuthService.register(request);
+            RegisterRequest normalized = new RegisterRequest(username, request.email(), request.password(), fullName);
+            TokenPair tokens = enterpriseAuthService.register(normalized);
             return ResponseEntity.status(HttpStatus.CREATED).body(tokens);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
@@ -312,5 +332,3 @@ public class AuthController {
         }
     }
 }
-
-

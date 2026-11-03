@@ -18,17 +18,80 @@ import java.time.Instant;
  */
 public class AuthDomain {
 
-    public record TokenPair(String accessToken, String refreshToken, long expiresInSeconds) {}
+    public record TokenPair(String accessToken, String refreshToken, long expiresInSeconds) {
+        public String getToken() {
+            return accessToken;
+        }
 
-    public record AuthClaims(String userId, String username, String role, Instant issuedAt, Instant expiresAt) {}
-
-    public record LoginRequest(String usernameOrEmail, String password, DeviceFingerprint device) {
-        public LoginRequest(String usernameOrEmail, String password) {
-            this(usernameOrEmail, password, null);
+        public String getTokenType() {
+            return "Bearer";
         }
     }
 
-    public record RegisterRequest(String username, String email, String password, String fullName) {}
+    public record AuthClaims(String userId, String username, String role, Instant issuedAt, Instant expiresAt) {}
+
+    public record LoginRequest(String usernameOrEmail, String password, DeviceFingerprint device, String email, String username) {
+        public LoginRequest(String usernameOrEmail, String password, DeviceFingerprint device) {
+            this(usernameOrEmail, password, device, null, null);
+        }
+
+        public LoginRequest(String usernameOrEmail, String password) {
+            this(usernameOrEmail, password, null, null, null);
+        }
+
+        public LoginRequest {
+            if (usernameOrEmail == null || usernameOrEmail.isBlank()) {
+                if (email != null && !email.isBlank()) {
+                    usernameOrEmail = email.trim();
+                } else if (username != null && !username.isBlank()) {
+                    usernameOrEmail = username.trim();
+                }
+            }
+        }
+
+        public String resolveIdentifier() {
+            if (usernameOrEmail != null && !usernameOrEmail.isBlank()) return usernameOrEmail.trim();
+            if (email != null && !email.isBlank()) return email.trim();
+            if (username != null && !username.isBlank()) return username.trim();
+            return "";
+        }
+    }
+
+    public record RegisterRequest(String username, String email, String password, String fullName, String firstName, String lastName) {
+        public RegisterRequest(String username, String email, String password, String fullName) {
+            this(username, email, password, fullName, null, null);
+        }
+
+        public RegisterRequest {
+            if ((username == null || username.isBlank()) && email != null && email.contains("@")) {
+                String prefix = email.substring(0, email.indexOf('@')).trim();
+                if (prefix.length() >= 3) {
+                    username = prefix;
+                }
+            }
+            if ((fullName == null || fullName.isBlank()) && (firstName != null || lastName != null)) {
+                String f = firstName != null ? firstName.trim() : "";
+                String l = lastName != null ? lastName.trim() : "";
+                fullName = (f + " " + l).trim();
+            }
+        }
+
+        public String resolveUsername() {
+            if (username != null && !username.isBlank()) return username.trim();
+            if (email != null && email.contains("@")) {
+                String prefix = email.substring(0, email.indexOf('@')).trim();
+                if (prefix.length() >= 3) return prefix;
+            }
+            return "";
+        }
+
+        public String resolveFullName() {
+            if (fullName != null && !fullName.isBlank()) return fullName.trim();
+            String f = firstName != null ? firstName.trim() : "";
+            String l = lastName != null ? lastName.trim() : "";
+            return (f + " " + l).trim();
+        }
+    }
 
     public record RefreshRequest(String refreshToken) {}
 
@@ -102,4 +165,3 @@ public class AuthDomain {
             java.util.Map<String, String> details
     ) {}
 }
-

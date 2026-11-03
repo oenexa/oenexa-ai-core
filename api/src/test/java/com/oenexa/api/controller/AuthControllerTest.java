@@ -88,6 +88,8 @@ class AuthControllerTest {
         assertTrue(resp.getBody() instanceof TokenPair);
         TokenPair pair = (TokenPair) resp.getBody();
         assertNotNull(pair.accessToken());
+        assertEquals(pair.accessToken(), pair.getToken());
+        assertEquals("Bearer", pair.getTokenType());
     }
 
     @Test
@@ -124,6 +126,23 @@ class AuthControllerTest {
         ResponseEntity<?> respEmail = controller.login(new LoginRequest("charlie@oenexa.com", "SecretPassword!"));
         assertEquals(HttpStatus.OK, respEmail.getStatusCode());
         assertTrue(respEmail.getBody() instanceof TokenPair);
+
+        // Login by email explicitly as email field
+        ResponseEntity<?> respEmailField = controller.login(new LoginRequest(null, "SecretPassword!", null, "charlie@oenexa.com", null));
+        assertEquals(HttpStatus.OK, respEmailField.getStatusCode());
+        assertTrue(respEmailField.getBody() instanceof TokenPair);
+        TokenPair pair = (TokenPair) respEmailField.getBody();
+        assertEquals(pair.accessToken(), pair.getToken());
+        assertEquals("Bearer", pair.getTokenType());
+    }
+
+    @Test
+    @DisplayName("Should register user with email, password, and first/last name deriving username")
+    void shouldRegisterWithDerivedUsername() {
+        RegisterRequest req = new RegisterRequest(null, "zoe.engineer@oenexa.com", "Password123!", null, "Zoe", "Engineer");
+        ResponseEntity<?> resp = controller.register(req);
+        assertEquals(HttpStatus.CREATED, resp.getStatusCode());
+        assertTrue(resp.getBody() instanceof TokenPair);
     }
 
     @Test
@@ -288,6 +307,3 @@ class AuthControllerTest {
         assertEquals(HttpStatus.UNAUTHORIZED, controller.auditLogs(null).getStatusCode());
     }
 }
-
-
-
