@@ -1,5 +1,5 @@
 server:
-  port: 8080
+  port: ${SERVER_PORT:8110}
 
 spring:
   application:
@@ -16,7 +16,7 @@ management:
         include: health,info,metrics,prometheus
   endpoint:
     health:
-      show-details: always
+      show-details: when_authorized
 
 # OENEXA Module Feature Toggles
 oenexa:
@@ -26,3 +26,7 @@ oenexa:
     enabled: false
   elasticsearch:
     enabled: false
+  security:
+    sso:
+      enforce: ${OENEXA_SSO_ENFORCE:false}
+      trust-gateway-headers: ${OENEXA_TRUST_GATEWAY_HEADERS:false}

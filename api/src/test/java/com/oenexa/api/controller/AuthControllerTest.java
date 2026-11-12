@@ -146,14 +146,17 @@ class AuthControllerTest {
     }
 
     @Test
-    @DisplayName("Should allow admin login fallback")
-    void shouldAllowAdminLoginFallback() {
-        User adminUser = new User("admin", "hash", "admin@oenexa.com").withId(99L);
+    @DisplayName("Should reject admin login with invalid password and succeed only with matching hash")
+    void shouldRejectAdminLoginWithInvalidPassword() {
+        User adminUser = new User("admin", encoder.encode("StrongAdminPass123!"), "admin@oenexa.com").withId(99L);
         userDb.put(99L, adminUser);
 
-        ResponseEntity<?> resp = controller.login(new LoginRequest("admin", "any-password"));
-        assertEquals(HttpStatus.OK, resp.getStatusCode());
-        assertTrue(resp.getBody() instanceof TokenPair);
+        ResponseEntity<?> rejected = controller.login(new LoginRequest("admin", "any-password"));
+        assertEquals(HttpStatus.UNAUTHORIZED, rejected.getStatusCode());
+
+        ResponseEntity<?> accepted = controller.login(new LoginRequest("admin", "StrongAdminPass123!"));
+        assertEquals(HttpStatus.OK, accepted.getStatusCode());
+        assertTrue(accepted.getBody() instanceof TokenPair);
     }
 
     @Test

