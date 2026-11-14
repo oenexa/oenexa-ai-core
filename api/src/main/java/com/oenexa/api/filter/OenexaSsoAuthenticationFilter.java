@@ -114,6 +114,8 @@ public class OenexaSsoAuthenticationFilter implements Filter {
         return path.equals("/api/health")
                 || path.equals("/api/status")
                 || path.startsWith("/api/v1/auth/")
+                || path.startsWith("/.well-known/")
+                || path.startsWith("/oauth2/")
                 || path.equals("/actuator/health")
                 || path.equals("/actuator/info");
     }
