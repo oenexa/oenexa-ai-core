@@ -1,0 +1,18 @@
+﻿groups:
+  - name: oenexa-ai-core-alerts
+    rules:
+      - alert: ServiceDown
+        expr: up{service=\"oenexa-ai-core\"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: \"oenexa-ai-core instance is down\"
+          description: \"Pod for oenexa-ai-core has been down for more than 1 minute.\"
+      - alert: High5xxRate
+        expr: rate(http_requests_total{service=\"oenexa-ai-core\",status=~\"5..\"}[5m]) > 0.05
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: \"Elevated 5xx error rate on oenexa-ai-core\"
