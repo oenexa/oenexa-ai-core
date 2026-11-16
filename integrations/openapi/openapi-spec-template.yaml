@@ -1,0 +1,38 @@
+openapi: 3.1.0
+info:
+  title: OENEXA Sovereign AI Core REST API
+  description: Central Intelligence Layer and Engineering Copilot for the OENEXA ecosystem.
+  version: 4.0.0
+  contact:
+    name: OENEXA Architecture Team
+    url: https://ai.oenexa.com
+servers:
+  - url: https://api.ai.oenexa.com
+    description: Production Cluster
+  - url: http://localhost:8080
+    description: Local Development Environment
+paths:
+  /api/v4/gateway/evaluate:
+    post:
+      summary: Evaluate AI routing and tenant prompt governance
+      responses:
+        "200":
+          description: Route decision returned successfully
+  /api/v4/assistant/repository/analyze:
+    post:
+      summary: Analyze repository AST and architectural conformance
+      responses:
+        "200":
+          description: Repository report generated
+  /api/v4/documents/generate:
+    post:
+      summary: Generate structured technical ADR, Spec, or Runbook
+      responses:
+        "200":
+          description: Document synthesized successfully
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

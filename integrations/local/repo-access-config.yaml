@@ -1,0 +1,20 @@
+version: 1.0.0
+provider: LOCAL_FILESYSTEM
+settings:
+  baseDirectory: file:///workspace/oenexarepo
+  watchMode: true
+  maxDepth: 5
+  excludeDirectories:
+    - .git
+    - .gradle
+    - node_modules
+    - build
+    - dist
+    - target
+  languageExtensions:
+    java: [.java]
+    typescript: [.ts, .tsx]
+    golang: [.go]
+    yaml: [.yaml, .yml]
+    markdown: [.md]
+    sql: [.sql]

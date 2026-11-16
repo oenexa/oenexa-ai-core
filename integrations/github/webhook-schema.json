@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "GitHubWebhookPayload",
+  "type": "object",
+  "required": ["action", "repository", "sender"],
+  "properties": {
+    "action": { "type": "string" },
+    "repository": {
+      "type": "object",
+      "required": ["name", "full_name"],
+      "properties": {
+        "name": { "type": "string" },
+        "full_name": { "type": "string" },
+        "default_branch": { "type": "string" }
+      }
+    },
+    "pull_request": {
+      "type": "object",
+      "properties": {
+        "number": { "type": "integer" },
+        "title": { "type": "string" },
+        "head": { "type": "object" },
+        "base": { "type": "object" }
+      }
+    },
+    "sender": {
+      "type": "object",
+      "properties": {
+        "login": { "type": "string" }
+      }
+    }
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "GitLabWebhookPayload",
+  "type": "object",
+  "required": ["object_kind", "project", "user"],
+  "properties": {
+    "object_kind": { "type": "string" },
+    "project": {
+      "type": "object",
+      "required": ["name", "path_with_namespace"],
+      "properties": {
+        "name": { "type": "string" },
+        "path_with_namespace": { "type": "string" },
+        "default_branch": { "type": "string" }
+      }
+    },
+    "object_attributes": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "integer" },
+        "title": { "type": "string" },
+        "target_branch": { "type": "string" },
+        "source_branch": { "type": "string" }
+      }
+    },
+    "user": {
+      "type": "object",
+      "properties": {
+        "username": { "type": "string" }
+      }
+    }
+  }
+}
