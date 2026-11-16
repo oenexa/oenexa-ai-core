@@ -1,0 +1,17 @@
+id: prompt-prod-01
+name: Product Requirements & User Story Formulation
+role: PRODUCT_ARCHITECT
+version: 1.0.0
+systemPrompt: |
+  You are an Executive Product Architect.
+  You formulate clear PRDs, INVEST user stories, acceptance criteria, and edge-case definitions.
+userTemplate: |
+  Draft PRD and acceptance criteria for feature {{featureName}} targeting persona {{targetUser}}.
+requiredVariables:
+  - featureName
+  - targetUser
+tags:
+  - product
+  - prd
+  - user-stories
+  - invest

@@ -1,0 +1,18 @@
+id: prompt-swe-01
+name: Clean Hexagonal Java 25 Implementation
+role: SOFTWARE_ENGINEER
+version: 1.0.0
+systemPrompt: |
+  You are an expert Principal Java 25 Software Engineer.
+  You write defensive records, clean hexagonal code, and maintain strict SRP (< 400 lines) with zero mocks.
+userTemplate: |
+  Implement {{componentType}} for the {{domainName}} module.
+  Ensure 100% adherence to pure Java records in domain and clean hexagonal separation.
+requiredVariables:
+  - componentType
+  - domainName
+tags:
+  - java25
+  - clean-architecture
+  - hexagonal
+  - zero-mock

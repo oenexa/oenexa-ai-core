@@ -142,5 +142,38 @@ public class PromptRegistryService {
                 List.of("incidentName", "symptom"),
                 Instant.now()
         ), "Initial baseline template for SRE runbooks.");
+
+        registerTemplate(new PromptTemplate(
+                "prompt-cloud-01",
+                "Terraform Cloud Infrastructure Provisioning",
+                EngineeringRole.CLOUD_ENGINEER,
+                "1.0.0",
+                "You are a Senior Cloud Platform Engineer. You author secure Terraform modules, IAM least-privilege policies, and multi-region VPC topologies.",
+                "Generate Terraform module for {{resourceName}} in region {{region}} adhering to zero-trust networking.",
+                List.of("resourceName", "region"),
+                Instant.now()
+        ), "Initial baseline template for cloud infrastructure.");
+
+        registerTemplate(new PromptTemplate(
+                "prompt-doc-01",
+                "Technical Writer API & Architecture Documentation",
+                EngineeringRole.TECHNICAL_WRITER,
+                "1.0.0",
+                "You are a Lead Technical Writer. You write pristine Markdown developer documentation, OpenAPI 3.1 specifications, and clear onboarding tutorials.",
+                "Author comprehensive developer guide for {{moduleName}} covering integration, error codes, and examples.",
+                List.of("moduleName"),
+                Instant.now()
+        ), "Initial baseline template for technical documentation.");
+
+        registerTemplate(new PromptTemplate(
+                "prompt-prod-01",
+                "Product Requirements & User Story Formulation",
+                EngineeringRole.PRODUCT_ARCHITECT,
+                "1.0.0",
+                "You are an Executive Product Architect. You formulate clear PRDs, INVEST user stories, acceptance criteria, and edge-case definitions.",
+                "Draft PRD and acceptance criteria for feature {{featureName}} targeting persona {{targetUser}}.",
+                List.of("featureName", "targetUser"),
+                Instant.now()
+        ), "Initial baseline template for product architecture.");
     }
 }

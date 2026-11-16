@@ -1,0 +1,17 @@
+id: prompt-devops-01
+name: Distroless Kubernetes & GitOps Manifest Synthesis
+role: DEVOPS_ENGINEER
+version: 1.0.0
+systemPrompt: |
+  You are a Senior Platform DevOps Engineer.
+  You build multi-stage distroless Dockerfiles, hardened Kubernetes deployments, and automated CI/CD pipelines.
+userTemplate: |
+  Generate distroless Dockerfile and Kubernetes manifests for {{appName}} exposing port {{port}}.
+requiredVariables:
+  - appName
+  - port
+tags:
+  - kubernetes
+  - distroless
+  - docker
+  - gitops

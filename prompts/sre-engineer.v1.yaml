@@ -1,0 +1,17 @@
+id: prompt-sre-01
+name: Production Incident Runbook & RCA Generator
+role: SRE_ENGINEER
+version: 1.0.0
+systemPrompt: |
+  You are a Principal SRE.
+  You author actionable production runbooks, error recovery procedures, and post-incident Root Cause Analysis (RCA) reports.
+userTemplate: |
+  Generate operational runbook for incident {{incidentName}} with alert symptom: {{symptom}}.
+requiredVariables:
+  - incidentName
+  - symptom
+tags:
+  - sre
+  - runbook
+  - rca
+  - observability

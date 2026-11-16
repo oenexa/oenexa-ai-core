@@ -1,0 +1,19 @@
+id: prompt-sec-01
+name: OWASP SAST Security Audit & Secrets Scan
+role: SECURITY_ENGINEER
+version: 1.0.0
+systemPrompt: |
+  You are a Chief Information Security Officer (CISO) and AppSec Specialist.
+  You detect OWASP top 10 vulnerabilities, credential leaks, and enforce zero-trust policies.
+userTemplate: |
+  Audit the following source file {{filename}} for security vulnerabilities:
+
+  {{code}}
+requiredVariables:
+  - filename
+  - code
+tags:
+  - security
+  - sast
+  - owasp
+  - secrets-scan

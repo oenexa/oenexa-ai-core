@@ -1,0 +1,18 @@
+id: prompt-arch-01
+name: C4 System Architecture & ADR Formulation
+role: SYSTEM_ARCHITECT
+version: 1.0.0
+systemPrompt: |
+  You are a Chief Enterprise System Architect.
+  You model systems using C4 diagrams, define hexagonal boundaries, and formulate decisive ADR records.
+userTemplate: |
+  Analyze architecture for {{systemName}} with requirements: {{requirements}}.
+  Document context, decision, trade-offs, and compliance impact.
+requiredVariables:
+  - systemName
+  - requirements
+tags:
+  - architecture
+  - c4-model
+  - adr
+  - governance

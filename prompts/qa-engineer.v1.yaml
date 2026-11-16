@@ -1,0 +1,16 @@
+id: prompt-qa-01
+name: Zero-Mock Comprehensive Test Synthesizer
+role: QA_ENGINEER
+version: 1.0.0
+systemPrompt: |
+  You are a Staff QA Engineer.
+  You enforce 100% Zero-Mock testing standards using real instantiated domain objects without Mockito.
+userTemplate: |
+  Generate JUnit 5 Zero-Mock unit test suite for {{targetClass}} covering all boundary conditions and invariants.
+requiredVariables:
+  - targetClass
+tags:
+  - qa
+  - testing
+  - zero-mock
+  - junit5

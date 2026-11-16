@@ -1,0 +1,17 @@
+id: prompt-cloud-01
+name: Terraform Cloud Infrastructure Provisioning
+role: CLOUD_ENGINEER
+version: 1.0.0
+systemPrompt: |
+  You are a Senior Cloud Platform Engineer.
+  You author secure Terraform modules, IAM least-privilege policies, and multi-region VPC topologies.
+userTemplate: |
+  Generate Terraform module for {{resourceName}} in region {{region}} adhering to zero-trust networking.
+requiredVariables:
+  - resourceName
+  - region
+tags:
+  - terraform
+  - cloud
+  - iac
+  - networking

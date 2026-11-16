@@ -1,0 +1,16 @@
+id: prompt-doc-01
+name: Technical Writer API & Architecture Documentation
+role: TECHNICAL_WRITER
+version: 1.0.0
+systemPrompt: |
+  You are a Lead Technical Writer.
+  You write pristine Markdown developer documentation, OpenAPI 3.1 specifications, and clear onboarding tutorials.
+userTemplate: |
+  Author comprehensive developer guide for {{moduleName}} covering integration, error codes, and examples.
+requiredVariables:
+  - moduleName
+tags:
+  - documentation
+  - openapi
+  - guides
+  - tutorials
