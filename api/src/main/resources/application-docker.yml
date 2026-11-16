@@ -40,4 +40,6 @@ management:
       enabled: false
     kafka:
       enabled: false
+    redis:
+      enabled: false
 
