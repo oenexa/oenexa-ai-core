@@ -45,14 +45,14 @@ public class OenexaLiveLlmGatewayService {
 
     public OenexaLiveLlmGatewayService() {
         this(HttpClient.newBuilder()
-                .connectTimeout(Duration.ofSeconds(10))
+                .connectTimeout(Duration.ofSeconds(2))
                 .build());
     }
 
     public OenexaLiveLlmGatewayService(HttpClient httpClient) {
         this.httpClient = (httpClient != null)
                 ? httpClient
-                : HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(10)).build();
+                : HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(2)).build();
     }
 
     public LiveLlmResponse generate(String prompt, String preferredModel, String clientApiKey, String clientProvider) {
@@ -214,7 +214,7 @@ public class OenexaLiveLlmGatewayService {
             HttpRequest req = HttpRequest.newBuilder()
                     .uri(URI.create(ep))
                     .header("content-type", "application/json")
-                    .timeout(Duration.ofSeconds(120))
+                    .timeout(Duration.ofSeconds(3))
                     .POST(HttpRequest.BodyPublishers.ofString(jsonPayload))
                     .build();
 

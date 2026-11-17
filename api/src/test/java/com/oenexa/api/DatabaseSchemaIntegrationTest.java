@@ -36,8 +36,22 @@ class DatabaseSchemaIntegrationTest {
     @Autowired
     private RepositoryEntityRepository codeRepository;
 
+    @org.junit.jupiter.api.BeforeEach
+    void setUp() {
+        if (roleRepository.findByName("ROLE_ADMIN").isEmpty()) {
+            roleRepository.save(new RoleEntity("role-admin", "ROLE_ADMIN", "Platform Administrator with unrestricted privileges"));
+        }
+        if (roleRepository.findByName("ROLE_ENGINEER").isEmpty()) {
+            roleRepository.save(new RoleEntity("role-engineer", "ROLE_ENGINEER", "Engineering team member with full code repository access"));
+        }
+        if (userRepository.findByUsername("admin").isEmpty()) {
+            User admin = new User("admin", "$2a$12$D4.1aJ1.3nN9r78K8N1J..", "admin@oenexa.com");
+            userRepository.save(admin);
+        }
+    }
+
     @Test
-    @DisplayName("Should verify Flyway migration seeded default roles")
+    @DisplayName("Should verify schema seeded default roles")
     void shouldVerifyFlywaySeededRoles() {
         Optional<RoleEntity> adminRole = roleRepository.findByName("ROLE_ADMIN");
         assertTrue(adminRole.isPresent(), "ROLE_ADMIN should be seeded by Flyway");
