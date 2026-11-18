@@ -23,12 +23,43 @@ public class AutonomousSwarmExecutionService {
     private final Map<String, SwarmExecutionPlan> plans = new ConcurrentHashMap<>();
     private final Map<String, SwarmTelemetryRecord> telemetries = new ConcurrentHashMap<>();
 
+    public record SwarmStreamEvent(
+            String eventType,
+            String planId,
+            String message,
+            Object payload,
+            Instant timestamp
+    ) {
+        public static SwarmStreamEvent of(String eventType, String planId, String message, Object payload) {
+            return new SwarmStreamEvent(eventType, planId, message, payload, Instant.now());
+        }
+    }
+
     public SwarmExecutionPlan executeSwarmPlan(SwarmExecutionRequest request) {
+        return executeSwarmPlanWithStreaming(request, event -> {});
+    }
+
+    public SwarmExecutionPlan executeSwarmPlanWithStreaming(
+            SwarmExecutionRequest request,
+            java.util.function.Consumer<SwarmStreamEvent> eventConsumer
+    ) {
         Objects.requireNonNull(request, "request must not be null");
+        Objects.requireNonNull(eventConsumer, "eventConsumer must not be null");
 
         String planId = "swarm-plan-" + UUID.randomUUID().toString().substring(0, 8);
         Instant startedAt = Instant.now();
         List<SwarmTaskNode> plannedTasks = buildTaskGraph(request);
+
+        eventConsumer.accept(SwarmStreamEvent.of(
+                "plan_initialized",
+                planId,
+                "Swarm execution plan initialized with " + plannedTasks.size() + " task nodes",
+                Map.of(
+                        "strategy", request.strategy().name(),
+                        "personaCount", request.requiredPersonas().size(),
+                        "taskCount", plannedTasks.size()
+                )
+        ));
 
         Map<String, String> synthesizedArtifacts = new ConcurrentHashMap<>();
         List<SwarmTaskNode> completedTasks = new CopyOnWriteArrayList<>();
@@ -45,6 +76,17 @@ public class AutonomousSwarmExecutionService {
         long totalWallClockMs = Math.max(1, System.currentTimeMillis() - startWallClock);
         for (SwarmTaskNode task : completedTasks) {
             totalSequentialMs += task.durationMs();
+            eventConsumer.accept(SwarmStreamEvent.of(
+                    "task_completed",
+                    planId,
+                    "Completed task node: " + task.title(),
+                    Map.of(
+                            "taskId", task.taskId(),
+                            "persona", task.persona().name(),
+                            "durationMs", task.durationMs(),
+                            "outputArtifact", task.outputArtifact()
+                    )
+            ));
         }
 
         double speedup = totalSequentialMs > 0 && totalWallClockMs > 0
@@ -77,6 +119,9 @@ public class AutonomousSwarmExecutionService {
                 plannedTasks.size()
         );
         telemetries.put(planId, telemetry);
+
+        eventConsumer.accept(SwarmStreamEvent.of("telemetry_update", planId, "Live telemetry aggregated: " + speedup + "x speedup", telemetry));
+        eventConsumer.accept(SwarmStreamEvent.of("plan_completed", planId, "Swarm execution plan successfully finished", completedPlan));
 
         return completedPlan;
     }

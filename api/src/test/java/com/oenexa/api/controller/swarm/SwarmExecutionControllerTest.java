@@ -103,4 +103,12 @@ class SwarmExecutionControllerTest {
         ResponseEntity<ApiResponse<SwarmTelemetryResponseDto>> missingResponse = controller.getPlanTelemetry("missing-id");
         assertEquals(HttpStatus.NOT_FOUND, missingResponse.getStatusCode());
     }
+
+    @Test
+    @DisplayName("Should initialize and return SseEmitter for live swarm streaming")
+    void testStreamSwarmPlan() {
+        var emitter = controller.streamSwarmPlan("Live Swarm Streaming Goal", "PARALLEL_MAX_SPEED");
+        assertNotNull(emitter);
+        assertEquals(60_000L, emitter.getTimeout());
+    }
 }

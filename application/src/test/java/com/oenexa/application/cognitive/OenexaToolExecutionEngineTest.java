@@ -24,12 +24,14 @@ class OenexaToolExecutionEngineTest {
     void shouldListRegisteredTools() {
         List<OenexaToolDefinition> tools = engine.getRegisteredTools();
         assertNotNull(tools);
-        assertEquals(5, tools.size());
+        assertEquals(7, tools.size());
         assertTrue(tools.stream().anyMatch(t -> t.function().name().equals("ast_analyzer")));
         assertTrue(tools.stream().anyMatch(t -> t.function().name().equals("sast_security_scanner")));
         assertTrue(tools.stream().anyMatch(t -> t.function().name().equals("zero_mock_test_synthesizer")));
         assertTrue(tools.stream().anyMatch(t -> t.function().name().equals("docker_pipeline_builder")));
         assertTrue(tools.stream().anyMatch(t -> t.function().name().equals("workspace_patch_engine")));
+        assertTrue(tools.stream().anyMatch(t -> t.function().name().equals("post_quantum_blockchain_oracle")));
+        assertTrue(tools.stream().anyMatch(t -> t.function().name().equals("orderbook_anomaly_detector")));
     }
 
     @Test
@@ -90,6 +92,32 @@ class OenexaToolExecutionEngineTest {
         assertTrue(result.success());
         assertTrue(result.generatedArtifact().isPresent());
         assertTrue(result.generatedArtifact().get().title().endsWith(".patch"));
+    }
+
+    @Test
+    @DisplayName("Should execute post_quantum_blockchain_oracle tool and produce L1 telemetry artifact")
+    void shouldExecutePostQuantumBlockchainOracle() {
+        OenexaToolCall call = new OenexaToolCall("call-6", "function", new OenexaFunctionCall("post_quantum_blockchain_oracle", "{}"));
+        var result = engine.executeTool(call);
+
+        assertNotNull(result);
+        assertTrue(result.success());
+        assertTrue(result.generatedArtifact().isPresent());
+        assertTrue(result.generatedArtifact().get().codeContent().contains("Dilithium-5"));
+        assertTrue(result.executionOutput().contains("Post-Quantum"));
+    }
+
+    @Test
+    @DisplayName("Should execute orderbook_anomaly_detector tool and produce audit artifact")
+    void shouldExecuteOrderbookAnomalyDetector() {
+        OenexaToolCall call = new OenexaToolCall("call-7", "function", new OenexaFunctionCall("orderbook_anomaly_detector", "{}"));
+        var result = engine.executeTool(call);
+
+        assertNotNull(result);
+        assertTrue(result.success());
+        assertTrue(result.generatedArtifact().isPresent());
+        assertTrue(result.generatedArtifact().get().codeContent().contains("spoofingProbability"));
+        assertTrue(result.executionOutput().contains("Orderbook audit complete"));
     }
 
     @Test
